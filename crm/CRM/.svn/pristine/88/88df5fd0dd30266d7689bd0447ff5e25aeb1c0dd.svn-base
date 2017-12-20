@@ -1,0 +1,84 @@
+package com.crm.service.impl;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.crm.model.Bas_dict_t;
+import com.crm.service.DictService;
+/**
+ * 数据字典实现类
+ * @author yuduan
+ *
+ */
+public class DictServiceImpl extends BaseServiceImpl implements DictService {
+
+	/**
+	 * 基础数据字典-保存更新
+	 * @param b 基础数据字典
+	 */
+	@Override
+	public void saveDict(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		saveOrUpdate(b);
+	}
+	/**
+	 * 基础数据字典-删除
+	 * @param b 基础数据字典
+	 */
+	@Override
+	public void delDict(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		delete(b);
+	}
+	/**
+	 * 基础数据字典-查询
+	 * @param b 基础数据字典
+	 */
+	@Override
+	public List<Bas_dict_t> showDict(String type,String name,String value) {
+		// TODO Auto-generated method stub
+		StringBuffer hql=new StringBuffer();
+		boolean isFirst=true;
+		hql.append("from Bas_dict_t d ");
+		if(StringUtils.isEmpty(type))
+			if(isFirst)
+				{hql.append("where d.dict_type='"+type+"'");isFirst=false;}
+			else hql.append("d.dict_type='"+type+"'");
+		if(StringUtils.isEmpty(name))
+			if(isFirst)
+			{hql.append("where d.dict_item='"+name+"'");isFirst=false;}
+		else hql.append("d.dict_item='"+name+"'");
+		if(StringUtils.isEmpty(value))
+			if(isFirst)
+			hql.append("where d.dict_value='"+value+"'");
+		else hql.append("d.dict_value='"+value+"'");
+		
+		System.out.println(hql.toString());
+		return getQuery(hql.toString()).list();
+	}
+	/**
+	 * 产品数据查询-显示产品信息
+	 */
+	@Override
+	public void showProduct(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * 库存查询-得到库存信息
+	 */
+	@Override
+	public void showStock(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+
+	
+
+
+}
+
+

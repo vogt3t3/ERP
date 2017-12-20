@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.staff.ISocietyRelationsDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.staff.SocietyRelations">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="relation" jdbcType="VARCHAR" property="relation" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="duty_name" jdbcType="VARCHAR" property="dutyName" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+      id, name, relation, phone, address, company_name, duty_name, user_id, company_id, 
+      create_date, update_date
+  </sql>
+  
+
+  <select id="selectByUserId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    id,name,relation,phone,address,company_name,duty_name,user_id,company_id,create_date,update_date
+    from oa_society_relations
+    where user_id = #{userId}
+  </select>
+  
+  
+    <select id="selectByExample" parameterType="java.util.Map" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List"/>
+    from oa_society_relations
+    <where>
+      <if test="name != null">
+       and  name = #{name,jdbcType=VARCHAR}
+      </if>
+      <if test="relation != null">
+       and  relation = #{relation}
+      </if>
+      <if test="phone != null">
+       and  phone = #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="address != null">
+       and  address = #{address,jdbcType=VARCHAR}
+      </if>
+      <if test="companyName != null">
+       and  company_name = #{companyName,jdbcType=VARCHAR}
+      </if>
+      <if test="dutyName != null">
+       and  duty_name = #{dutyName,jdbcType=VARCHAR}
+      </if>
+      <if test="empId != null">
+       and  user_id = #{empId,jdbcType=BIGINT}
+      </if>
+      <if test="companyId != null">
+       and  company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="createDate != null">
+       and  create_date = #{createDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateDate != null">
+       and  update_date = #{updateDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="startPos != null">
+      limit #{startPos} , #{pageSize}
+      </if>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from oa_society_relations
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+ 
+  <delete id="deleteByUserId" parameterType="java.util.Map">
+    delete from oa_society_relations
+    where user_id in
+       <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+      #{item}  
+    </foreach>
+  </delete>
+ 
+
+  <insert id="insert" parameterType="com.aiiju.bean.oa.staff.SocietyRelations">
+    insert into oa_society_relations
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        name,
+      </if>
+      <if test="relation != null">
+        relation,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="address != null">
+        address,
+      </if>
+      <if test="companyName != null">
+        company_name,
+      </if>
+      <if test="dutyName != null">
+        duty_name,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="relation != null">
+        #{relation},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null">
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyName != null">
+        #{dutyName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+
+  <update id="updateByExample" parameterType="com.aiiju.bean.oa.staff.SocietyRelations">
+    update oa_society_relations
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="relation != null">
+        relation = #{relation},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null">
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null">
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyName != null">
+        duty_name = #{dutyName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+
+</mapper>

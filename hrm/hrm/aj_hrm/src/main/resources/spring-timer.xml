@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cxf="http://cxf.apache.org/core"
+	xmlns:simple="http://cxf.apache.org/simple"
+	xmlns:soap="http://cxf.apache.org/bindings/soap"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+       http://cxf.apache.org/bindings/soap http://cxf.apache.org/schemas/configuration/soap.xsd
+       http://cxf.apache.org/simple http://cxf.apache.org/schemas/simple.xsd
+       http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"  >
+
+	
+	<!-- 薪资定时器，每日零点刷新薪资 -->
+	<bean id="salaryUpdateJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref ="salaryUpdateServiceJob" />
+		<property name="targetMethod" value="salaryUpdate" />
+	</bean>
+	<bean id="salaryUpdateTask" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref ="salaryUpdateJob" />
+		<property name="cronExpression" value="0 0 0 * * ?" />
+	</bean>
+	
+	<!-- 修改考勤规则为生效状态定时器:每天凌晨1点执行  -->
+	<bean id="signRuleJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref ="attendanceRuleJob" />
+		<property name="targetMethod" value="changeRuleToUsed" />
+	</bean>
+	<bean id="signRuleTask" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref ="signRuleJob" />
+		<property name="cronExpression" value="0 0 1 * * ?" />
+	</bean>
+	
+	<!-- 启动定时器 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	   <property name="startupDelay" value="10"/> 
+		<property name="triggers">
+			<list>
+				<ref local="salaryUpdateTask" />
+				<ref local="signRuleTask" />
+			</list>
+		</property>
+		<property name="quartzProperties">  
+            <props>
+                <!-- 主要是这个参数 -->
+                <prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>  
+            </props>
+        </property>
+	</bean>
+</beans>

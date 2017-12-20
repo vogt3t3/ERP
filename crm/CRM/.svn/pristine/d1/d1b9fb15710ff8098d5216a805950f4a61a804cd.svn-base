@@ -1,0 +1,26 @@
+package com.crm.service;
+
+import com.crm.model.Cst_customer_t;
+import com.crm.model.Sal_chance_t;
+import com.crm.model.Sal_plan_t;
+/**
+ * 营销信息管理
+ * @author yuduan
+ *
+ */
+public interface SalService extends BaseService {
+
+	/**
+	 * 营销计划-保存更新、删除
+	 * @param p 计划
+	 */
+	void savePlan(Sal_plan_t p);
+	void delPlan(Sal_plan_t p);
+	/**
+	 * 营销机会-保存更新、删除
+	 * @param c 机会
+	 */
+	void saveChance(Sal_chance_t c);
+	void delChance(Sal_chance_t c);
+	
+}

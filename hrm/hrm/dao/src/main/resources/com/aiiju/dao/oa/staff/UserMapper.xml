@@ -1,0 +1,1240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.staff.IUserDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.staff.User">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="certificate_type" jdbcType="TINYINT" property="certificateType" />
+    <result column="certificate_no" jdbcType="VARCHAR" property="certificateNo" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="sex_name" jdbcType="VARCHAR" property="sexName" />
+    <result column="nation" jdbcType="VARCHAR" property="nation" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="position_id" jdbcType="BIGINT" property="positionId" />
+    <result column="duty_id" jdbcType="BIGINT" property="dutyId" />
+    <result column="duty_type_id" jdbcType="BIGINT" property="dutyTypeId" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="join_date" jdbcType="TIMESTAMP" property="joinDate" />
+    <result column="regular_date" jdbcType="TIMESTAMP" property="regularDate" />
+    <result column="marital_status" jdbcType="TINYINT" property="maritalStatus" />
+    <result column="formal_face" jdbcType="TINYINT" property="formalFace" />
+    <result column="birdth_day" jdbcType="TIMESTAMP" property="birdthDay" />
+    <result column="eduational_level" jdbcType="TINYINT" property="eduationalLevel" />
+    <result column="my_native" jdbcType="VARCHAR" property="myNative" />
+    <result column="two_level_pwd" jdbcType="VARCHAR" property="twoLevelPwd" />
+    <result column="work_date" jdbcType="TIMESTAMP" property="workDate" />
+    <result column="user_no" jdbcType="VARCHAR" property="userNo" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="cur_conpany_age" jdbcType="INTEGER" property="curConpanyAge" />
+    <result column="company_age" jdbcType="INTEGER" property="companyAge" />
+    <result column="birdth_address" jdbcType="VARCHAR" property="birdthAddress" />
+    <result column="home_address" jdbcType="VARCHAR" property="homeAddress" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="user_draw" jdbcType="TINYINT" property="userDraw" />
+    <result column="is_admin" jdbcType="TINYINT" property="isAdmin" />
+    <result column="nick" jdbcType="VARCHAR" property="nick" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="is_active" jdbcType="TINYINT" property="isActive" />
+    <result column="login_user_id" jdbcType="BIGINT" property="loginUserId" />
+    <result column="role_ids" jdbcType="VARCHAR" property="roleIds" />
+    
+    <association property="fileInfo" column="id" select="selectImg"/>
+    <association property="userHeadImg" column="id" select="selectUserHeadImg"/>
+    <association property="deptName" column="dept_id" select="selectDeptName"/>
+    <association property="positionName" column="position_id" select="selectPositionName"/>
+    <association property="dutyTypeName" column="duty_type_id" select="selectDutyTypeName"/>
+    <association property="dutyName" column="duty_id" select="selectDutyName"/>
+    <association property="companyName" column="company_id" select="selectCompanyName"/>
+    <collection  property="deptList" column="dept_id" select="com.aiiju.dao.oa.dept.IDepartmentDao.getDepartmentById"/>
+  </resultMap>
+  <resultMap id="BaseResultMapCount" type="com.aiiju.bean.oa.staff.UserCount" extends="BaseResultMap">
+    <result column="nums" jdbcType="INTEGER" property="nums" />
+    <result column="nian" jdbcType="INTEGER" property="nian" />
+    <result column="eduational_level" jdbcType="TINYINT" property="eduationalLevel" />
+    <result column="join_date" jdbcType="TIMESTAMP" property="joinDate" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="duty_type_id" jdbcType="BIGINT" property="dutyTypeId" />
+  </resultMap>
+  
+  
+  <resultMap id="NewBaseResult" type="com.aiiju.bean.oa.staff.User" >
+   	<id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+    <result column="position_id" jdbcType="BIGINT" property="positionId" />
+    <result column="login_user_id" jdbcType="BIGINT" property="loginUserId" />
+    
+    <association property="userHeadImg" column="id" select="selectUserHeadImg"/>
+    <association property="positionName" column="position_id" select="selectPositionName"/>
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List">
+      id, dept_id, name, certificate_type, certificate_no,if(sex=1,'男',if(sex=2,'女','未设置')) sex_name, nation, status, position_id, two_level_pwd,is_admin,
+      duty_id, duty_type_id, phone, join_date, regular_date, marital_status, formal_face, 
+      birdth_day, eduational_level, my_native, work_date, user_no, age, cur_conpany_age, 
+      company_age, birdth_address, home_address, company_id, email,create_date, update_date, 
+      remark,nick,is_del,user_draw,login_user_id,if(is_active=0,'未激活','已激活') isActiveName,role_ids,is_active
+  </sql>
+  
+      <select id="selectUserHeadImg" resultType="java.lang.String">
+  			select url from oa_file where fId = #{id} and business_id=5
+  		</select>
+  
+       <select id="selectCompanyName" resultType="java.lang.String">
+ 			 select name company_name from oa_department where company_id = #{company_id}  and parent_dept_id=0
+  </select>
+    <select id="selectImg" resultType="com.aiiju.bean.oa.config.FileInfo">
+  select * from oa_file where fId = #{id} and business_id=5
+  </select>
+    <select id="selectDeptName" resultType="java.lang.String">
+  select name from oa_department where id = #{deptId}
+  </select>
+  <select id="selectPositionName" resultType="java.lang.String">
+  select name  from oa_company_position_info  where id = #{positionId}
+  </select>
+  <select id="selectDutyName" resultType="java.lang.String">
+  select name from oa_company_duty_info where id = #{dutyId}
+  </select>
+  <select id="selectDutyTypeName" resultType="java.lang.String">
+  select name from oa_position_type_info where id = #{dutyTypeId}
+  </select>
+  
+  <select id="countSex" parameterType="java.util.Map" resultMap="BaseResultMapCount">
+  	select count(*) nums,sex,dept_id,company_id from oa_user where dept_id in 
+  	        <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	      #{item.id}  
+	    </foreach>
+  	 and company_id=#{companyId}  group by sex order by sex asc
+  </select>
+  <select id="countAge" parameterType="java.util.Map" resultMap="BaseResultMapCount">
+  	select count(*) nums,age,dept_id,company_id from oa_user where dept_id in 
+  	        <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	     #{item.id}   
+	    </foreach>
+	     and company_id=#{companyId} group by age order by age asc
+  </select>
+  <select id="countEduational" parameterType="java.util.Map" resultMap="BaseResultMapCount">
+  	select count(*) nums,eduational_level,dept_id,company_id from oa_user where dept_id in 
+  	        <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	      #{item.id}   
+	    </foreach>
+	     and company_id=#{companyId} group by eduational_level order by eduational_level asc
+  </select>
+  <select id="countStatus" parameterType="java.util.Map" resultMap="BaseResultMapCount">
+  	select count(*) nums,status,dept_id,company_id from oa_user where dept_id in 
+  	        <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	     #{item.id}  
+	    </foreach>
+	     and company_id=#{companyId} group by status order by status asc
+  </select>
+  <select id="countDutyType" parameterType="java.util.Map" resultMap="BaseResultMapCount">
+  	select count(*) nums,duty_type_id,dept_id,company_id from oa_user where dept_id in 
+  	        <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	      #{item.id}  
+	    </foreach>
+	     and company_id=#{companyId} group by duty_type_id order by duty_type_id asc
+  </select>
+  <select id="countYear" parameterType="java.util.Map" resultMap="BaseResultMapCount">
+  	select count(*) nums,join_date nian,dept_id,company_id from oa_user where dept_id in 
+  	        <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	     #{item.id}  
+	    </foreach>
+	     and company_id=#{companyId} group by year(join_date)  order by year(join_date) asc
+  </select>
+  
+   <select id="countStatusNums" parameterType="java.util.Map" resultType="java.lang.Integer">
+  	select count(*) from oa_user where company_id=#{companyId} and status=#{status}
+  </select>
+  
+  <select id="seleteById" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List"/>
+    from oa_user
+    
+    <where>
+	     <if test="id != null">
+	    	and  id = #{id}
+	     </if>
+	     
+	     <if test="loginUserId != null">
+	     	and login_user_id = #{loginUserId}
+	     </if>
+	     
+	     <if test="companyId != null">
+	     	and company_id = #{companyId}
+	     </if>
+     </where>
+  </select>
+  
+  <select id="countUser" resultType="java.lang.Integer">
+    select count(*) from oa_user
+      <where>
+            <if test="deptIds != null">
+        and dept_id in
+         <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	      #{item.id}  
+	    </foreach>
+      </if>
+      <if test="name != null">
+       and  name like '%'||#{name}||'%'
+      </if>
+      <if test="certificatetype != null">
+       and  certificate_type = #{certificateType}
+      </if>
+      <if test="certificateno != null">
+       and  certificate_no = #{certificateNo}
+      </if>
+      <if test="sex != null">
+       and  sex = #{sex}
+      </if>
+      <if test="nation != null">
+       and  nation = #{nation}
+      </if>
+      <if test="status != null">
+       and  status = #{status}
+      </if>
+      <if test="positionId != null">
+       and  position_id = #{positionId}
+      </if>
+       <if test="positionIds != null">
+       and  position_id in
+        <foreach item="item" index="index" collection="positionIds" open="(" separator="," close=")">  
+	      #{item}  
+	    </foreach>
+      </if>
+      <if test="dutyId != null">
+       and  duty_id = #{dutyId}
+      </if>
+      <if test="dutyTypeId != null">
+       and  duty_type_id = #{dutyTypeId}
+      </if>
+      <if test="phone != null">
+       and  phone = #{phone}
+      </if>
+      <if test="joinDate != null">
+        and join_date = #{joinDate}
+      </if>
+      <if test="regularDate != null">
+        and regular_date = #{regularDate}
+      </if>
+      <if test="maritalStatus != null">
+       and  marital_status = #{maritalStatus}
+      </if>
+      <if test="formalFace != null">
+       and  formal_face = #{formalFace}
+      </if>
+      <if test="birdthDay != null">
+       and  birdth_day = #{birdthDay}
+      </if>
+      <if test="eduationalLevel != null">
+        and eduational_level = #{eduationalLevel}
+      </if>
+      <if test="myNative != null">
+        and my_native = #{myNative}
+      </if>
+      <if test="workDate != null">
+        and work_date = #{workDate}
+      </if>
+      <if test="userNo != null">
+        and user_no = #{userNo}
+      </if>
+      <if test="age != null">
+        and age = #{age}
+      </if>
+      <if test="startAge != null">
+        and age > #{startAge}
+      </if>
+       <if test="endAge != null">
+        <![CDATA[and age <#{endAge} ]]>
+      </if>
+      <if test="curConpanyAge != null">
+       and  cur_conpany_age = #{curConpanyAge}
+      </if>
+      <if test="companyAge != null">
+       and  company_age = #{companyAge}
+      </if>
+      <if test="birdthAddress != null">
+       and  birdth_address = #{birdthAddress}
+      </if>
+      <if test="homeAddress != null">
+       and  home_address = #{homeAddress}
+      </if>
+      <if test="companyId != null">
+       and  company_id = #{companyId}
+      </if>
+      <if test="createDate != null">
+       and  create_date = #{createDate}
+      </if>
+      <if test="updateDate != null">
+       and  update_date = #{updateDate}
+      </if>
+       <if test="email != null" >
+       and email = #{email},
+      </if>
+      <if test="remark != null">
+       and  remark = #{remark}
+      </if>
+      <if test="nick != null">
+       and  nick = #{nick}
+      </if>
+      <if test="isDel != null">
+       and  is_del = #{isDel}
+      </if>
+      <if test="userDraw != null">
+       and  user_draw = #{userDraw}
+      </if>
+      <if test="loginUserId != null">
+       and  login_user_id = #{loginUserId}
+      </if>
+      <if test="isActive != null">
+       and  is_active = #{isActive}
+      </if>
+      <if test="roleIds != null">
+       and  role_ids = #{roleIds}
+      </if>
+      </where>
+  </select>
+  
+  <select id="selectUserNos" parameterType="java.lang.Long" resultType="java.lang.String">
+  select user_no from oa_user where company_id=#{companyId}
+  </select>
+  <select id="selectUserPhone" parameterType="java.lang.Long" resultType="java.lang.String">
+  select phone from oa_user where company_id=#{companyId}
+  </select>
+  
+  
+  <select id="selectByExample" parameterType="java.util.Map" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List"/>
+    from oa_user
+    <where>
+      <if test="ids != null">
+       and id in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+	      #{item}  
+	    </foreach>
+      </if>
+       <if test="loginUserIds != null">
+       and login_user_id in
+        <foreach item="item" index="index" collection="loginUserIds" open="(" separator="," close=")">  
+	      #{item}  
+	    </foreach>
+      </if>
+      <if test="name != null">
+       and name like "%"#{name}"%"
+      </if>
+      <if test="certificatetype != null">
+       and  certificate_type = #{certificateType}
+      </if>
+      <if test="certificateno != null">
+       and  certificate_no = #{certificateNo}
+      </if>
+      <if test="sex != null">
+       and  sex=#{sex}
+      </if>
+      <if test="nation != null">
+       and  nation = #{nation}
+      </if>
+      <if test="status != null">
+       and  status = #{status}
+      </if>
+      <if test="positionId != null">
+       and  position_id = #{positionId}
+      </if>
+      <if test="dutyId != null">
+       and  duty_id = #{dutyId}
+      </if>
+      <if test="dutyTypeId != null">
+       and  duty_type_id = #{dutyTypeId}
+      </if>
+      <if test="phone != null">
+       and  phone = #{phone}
+      </if>
+      <if test="startDate != null">
+        and join_date &lt;=#{startDate}
+      </if>
+      <if test="endDate != null">
+      	and join_date  &gt;=#{startDate}
+      </if>
+      <if test="regularDate != null">
+        and regular_date = #{regularDate}
+      </if>
+      <!-- 查询单个部门下的所有员工(考勤模块用的特殊参数名) -->
+       <if test="deptIdSignRule != null">
+        and dept_id = #{deptIdSignRule}
+       </if>
+      <if test="deptIds != null">
+        and dept_id in
+         <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	      #{item.id}  
+	    </foreach>
+      </if>
+       <if test="deptIdString != null">
+        and dept_id in
+         <foreach item="item" index="index" collection="deptIdString" open="(" separator="," close=")">  
+	      #{item}  
+	    </foreach>
+      </if>
+      <if test="maritalStatus != null">
+       and  marital_status = #{maritalStatus}
+      </if>
+      <if test="formalFace != null">
+       and  formal_face = #{formalFace}
+      </if>
+      <if test="birdthDay != null">
+       and  birdth_day = #{birdthDay}
+      </if>
+      <if test="eduationalLevel != null">
+        and eduational_level = #{eduationalLevel}
+      </if>
+      <if test="myNative != null">
+        and my_native = #{myNative}
+      </if>
+      <if test="workDate != null">
+        and work_date = #{workDate}
+      </if>
+      <if test="userNo != null">
+        and user_no = #{userNo}
+      </if>
+      <if test="age != null">
+        and age = #{age}
+      </if>
+      <if test="startAge != null">
+        and age > #{startAge}
+      </if>
+       <if test="endAge != null">
+        <![CDATA[and age <#{endAge} ]]>
+      </if>
+      <if test="curConpanyAge != null">
+       and  cur_conpany_age = #{curConpanyAge}
+      </if>
+      <if test="companyAge != null">
+       and  company_age = #{companyAge}
+      </if>
+      <if test="birdthAddress != null">
+       and  birdth_address = #{birdthAddress}
+      </if>
+      <if test="homeAddress != null">
+       and  home_address = #{homeAddress}
+      </if>
+      <if test="companyId != null">
+       and  company_id = #{companyId}
+      </if>
+      <if test="createDate != null">
+       and  create_date = #{createDate}
+      </if>
+      <if test="updateDate != null">
+       and  update_date = #{updateDate}
+      </if>
+       <if test="email != null" >
+       and email = #{email},
+      </if>
+      <if test="remark != null">
+       and  remark = #{remark}
+      </if>
+      <if test="nick != null">
+       and  nick = #{nick}
+      </if>
+      <if test="isDel != null">
+       and  is_del = #{isDel}
+      </if>
+      <if test="userDraw != null">
+       and  user_draw = #{userDraw}
+      </if>
+      <if test="loginUserId != null">
+       and  login_user_id = #{loginUserId}
+      </if>
+     <if test="isActive != null">
+       and  is_active = #{isActive}
+      </if>
+     <if test="roleIds != null">
+       and  role_ids = #{roleIds}
+      </if>
+	    <if test="pageSize != null">
+	  	limit #{startRow},#{pageSize}
+	  	</if>
+    </where>
+  </select>
+  
+  
+  <delete id="deleteByIds" parameterType="java.util.Map">
+    delete from oa_user
+    where id in
+    <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+      #{item}  
+    </foreach>
+  </delete>
+  
+
+  <insert id="insert" parameterType="com.aiiju.bean.oa.staff.User" keyProperty="id" >
+    insert into oa_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+    
+    <if test="id != null">
+        id,
+      </if>
+      <if test="deptId != null">
+        dept_id,
+      </if>
+       <if test="isAdmin != null">
+        is_admin,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+       <if test="loginUserId != null">
+       login_user_id,
+      </if>
+      <if test="certificateType != null">
+        certificate_type,
+      </if>
+      <if test="certificateNo != null">
+        certificate_no,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="nation != null">
+        nation,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="positionId != null">
+        position_id,
+      </if>
+      <if test="dutyId != null">
+        duty_id,
+      </if>
+      <if test="dutyTypeId != null">
+        duty_type_id,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="joinDate != null">
+        join_date,
+      </if>
+      <if test="regularDate != null">
+        regular_date,
+      </if>
+      <if test="maritalStatus != null">
+        marital_status,
+      </if>
+      <if test="formalFace != null">
+        formal_face,
+      </if>
+      <if test="birdthDay != null">
+        birdth_day,
+      </if>
+      <if test="eduationalLevel != null">
+        eduational_level,
+      </if>
+      <if test="myNative != null">
+        my_native,
+      </if>
+      <if test="workDate != null">
+        work_date,
+      </if>
+      <if test="userNo != null">
+        user_no,
+      </if>
+      <if test="age != null">
+        age,
+      </if>
+      <if test="curConpanyAge != null">
+        cur_conpany_age,
+      </if>
+      <if test="companyAge != null">
+        company_age,
+      </if>
+      <if test="birdthAddress != null">
+        birdth_address,
+      </if>
+      <if test="homeAddress != null">
+        home_address,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="nick != null">
+        nick ,
+      </if>
+      <if test="userDraw != null">
+       user_draw,
+      </if>
+      <if test="email != null">
+       email, 
+      </if>
+      <if test="isActive != null">
+       is_active,
+      </if>
+           <if test="roleIds != null">
+       role_ids
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    <if test="id != null">
+        #{id},
+      </if>
+      <if test="deptId != null">
+        #{deptId},
+      </if>
+       <if test="isAdmin != null">
+        #{isAdmin},
+      </if>
+      <if test="name != null">
+        #{name},
+      </if>
+      <if test="loginUserId != null">
+       #{loginUserId},
+      </if>
+      <if test="certificateType != null">
+        #{certificateType},
+      </if>
+      <if test="certificateNo != null">
+        #{certificateNo},
+      </if>
+      <if test="sex != null">
+        #{sex},
+      </if>
+      <if test="nation != null">
+        #{nation},
+      </if>
+      <if test="status != null">
+        #{status},
+      </if>
+      <if test="positionId != null">
+        #{positionId},
+      </if>
+      <if test="dutyId != null">
+        #{dutyId},
+      </if>
+      <if test="dutyTypeId != null">
+        #{dutyTypeId},
+      </if>
+      <if test="phone != null">
+        #{phone},
+      </if>
+      <if test="joinDate != null">
+        #{joinDate},
+      </if>
+      <if test="regularDate != null">
+        #{regularDate},
+      </if>
+      <if test="maritalStatus != null">
+        #{maritalStatus},
+      </if>
+      <if test="formalFace != null">
+        #{formalFace},
+      </if>
+      <if test="birdthDay != null">
+        #{birdthDay},
+      </if>
+      <if test="eduationalLevel != null">
+        #{eduationalLevel},
+      </if>
+      <if test="myNative != null">
+        #{myNative},
+      </if>
+      <if test="workDate != null">
+        #{workDate},
+      </if>
+      <if test="userNo != null">
+        #{userNo},
+      </if>
+      <if test="age != null">
+        #{age},
+      </if>
+      <if test="curConpanyAge != null">
+        #{curConpanyAge},
+      </if>
+      <if test="companyAge != null">
+        #{companyAge},
+      </if>
+      <if test="birdthAddress != null">
+        #{birdthAddress},
+      </if>
+      <if test="homeAddress != null">
+        #{homeAddress},
+      </if>
+      <if test="companyId != null">
+        #{companyId},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate},
+      </if>
+      <if test="remark != null">
+        #{remark},
+      </if>
+       <if test="nick != null">
+        #{nick},
+      </if>
+      <if test="userDraw != null">
+        #{userDraw},
+      </if>
+  		<if test="email != null">
+       #{email},
+      </if>
+     <if test="isActive != null">
+       #{isActive},
+      </if>
+           <if test="roleIds != null">
+       #{roleIds}
+      </if>
+    </trim>
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+  
+  <insert id="inserts" parameterType="java.util.List">
+  insert into oa_user
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        name,
+        certificate_type,
+        certificate_no,
+        sex,
+        nation,
+        status,
+        position_id,
+        phone,
+        regular_date,
+        marital_status,
+        formal_face,
+        user_no,
+        birdth_address,
+        home_address,
+        company_id,
+        email,
+        
+    </trim>
+    	values
+   <foreach collection ="list" item="item" index= "index" separator =",">
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        #{item.name},
+        #{item.certificateType},
+        #{item.certificateNo},
+        #{item.sex},
+        #{item.nation},
+        #{item.status},
+        #{item.positionId},
+        #{item.phone},
+        #{item.regularDate},
+        #{item.maritalStatus},
+        #{item.formalFace},
+        #{item.userNo,},
+        #{item.birdthAddress},
+        #{item.homeAddress},
+        #{item.companyId},
+        #{item.email},
+    </trim>
+   </foreach>
+  </insert>
+  
+  
+  <update id="updateByExample" parameterType="com.aiiju.bean.oa.staff.User">
+    update oa_user
+    <set>
+      <if test="registerCompanyId != null">
+        company_id = #{registerCompanyId},
+      </if>
+      <if test="deptId != null">
+        dept_id = #{deptId},
+      </if>
+      <if test="name != null">
+        name = #{name},
+      </if>
+      <if test="twoLevelPwd != null">
+        two_level_pwd = #{twoLevelPwd},
+      </if>
+      <if test="certificateType != null">
+        certificate_type = #{certificateType},
+      </if>
+      <if test="certificateNo != null">
+        certificate_no = #{certificateNo},
+      </if>
+      <if test="sex != null">
+        sex = #{sex},
+      </if>
+      <if test="nation != null">
+        nation = #{nation},
+      </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="positionId != null">
+        position_id = #{positionId},
+      </if>
+      <if test="dutyId != null">
+        duty_id = #{dutyId},
+      </if>
+      <if test="dutyTypeId != null">
+        duty_type_id = #{dutyTypeId},
+      </if>
+      <if test="phone != null">
+        phone = #{phone},
+      </if>
+      <if test="joinDate != null">
+        join_date = #{joinDate},
+      </if>
+      <if test="regularDate != null">
+        regular_date = #{regularDate},
+      </if>
+      <if test="maritalStatus != null">
+        marital_status = #{maritalStatus},
+      </if>
+      <if test="formalFace != null">
+        formal_face = #{formalFace},
+      </if>
+      <if test="birdthDay != null">
+        birdth_day = #{birdthDay},
+      </if>
+      <if test="eduationalLevel != null">
+        eduational_level = #{eduationalLevel},
+      </if>
+      <if test="myNative != null">
+        my_native = #{myNative},
+      </if>
+      <if test="workDate != null">
+        work_date = #{workDate},
+      </if>
+      <if test="userNo != null">
+        user_no = #{userNo},
+      </if>
+      <if test="age != null">
+        age = #{age},
+      </if>
+      <if test="curConpanyAge != null">
+        cur_conpany_age = #{curConpanyAge},
+      </if>
+      <if test="companyAge != null">
+        company_age = #{companyAge},
+      </if>
+      <if test="birdthAddress != null">
+        birdth_address = #{birdthAddress},
+      </if>
+      <if test="homeAddress != null">
+        home_address = #{homeAddress},
+      </if>
+        <if test="email != null" >
+        email = #{email},
+      </if>
+      <if test="remark != null">
+        remark = #{remark},
+      </if>
+      <if test="nick != null">
+         nick = #{nick},
+      </if>
+      <if test="isDel != null">
+         is_del = #{isDel},
+      </if>
+      <if test="userDraw != null">
+         user_draw = #{userDraw},
+      </if>
+     <if test="loginUserId != null">
+        login_user_id = #{loginUserId},
+      </if>
+     <if test="isActive != null">
+        is_active = #{isActive},
+      </if>
+     <if test="roleIds != null">
+        role_ids = #{roleIds}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  <update id="updateByPHP" parameterType="com.aiiju.bean.oa.staff.User">
+    update oa_user
+    <set>
+      <if test="name != null">
+        name = #{name},
+      </if>
+      <if test="sex != null">
+        sex = #{sex},
+      </if>
+      <if test="phone != null">
+        phone = #{phone},
+      </if>
+      <if test="birdthDay != null">
+        birdth_day = #{birdthDay},
+      </if>
+      <if test="age != null">
+        age = #{age},
+      </if>
+       <if test="email != null" >
+        email = #{email},
+      </if>
+     <if test="roleIds != null">
+        role_ids = #{roleIds},
+      </if>
+           <if test="isActive != null">
+        is_active = #{isActive}
+      </if>
+    </set>
+    where login_user_id = #{loginUserId}
+  </update>
+  
+  <resultMap id="fileMapCount" type="com.aiiju.bean.oa.config.FileInfo" >
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="fId" jdbcType="BIGINT" property="fid" />
+  </resultMap>
+ 
+ 	<select id="selectUrl" parameterType="java.lang.Long" resultMap="fileMapCount">
+ 		select url,fId from oa_file where fId in
+    	 <foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+     	 	#{item}  
+    	</foreach>
+   		 and business_id=5
+ </select>
+ 
+ <!-- 根据loginUserId更新用户信息 -->
+ <update id="updateUserInfoByLoginUserId" parameterType="com.aiiju.bean.oa.staff.User">
+    update oa_user
+    <set>
+      <if test="deptId != null">
+        dept_id = #{deptId},
+      </if>
+      <if test="name != null">
+        name = #{name},
+      </if>
+      <if test="twoLevelPwd != null">
+        two_level_pwd = #{twoLevelPwd},
+      </if>
+      <if test="certificateType != null">
+        certificate_type = #{certificateType},
+      </if>
+      <if test="certificateNo != null">
+        certificate_no = #{certificateNo},
+      </if>
+      <if test="sex != null">
+        sex = #{sex},
+      </if>
+      <if test="nation != null">
+        nation = #{nation},
+      </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="positionId != null">
+        position_id = #{positionId},
+      </if>
+      <if test="dutyId != null">
+        duty_id = #{dutyId},
+      </if>
+      <if test="dutyTypeId != null">
+        duty_type_id = #{dutyTypeId},
+      </if>
+      <if test="phone != null">
+        phone = #{phone},
+      </if>
+      <if test="joinDate != null">
+        join_date = #{joinDate},
+      </if>
+      <if test="regularDate != null">
+        regular_date = #{regularDate},
+      </if>
+      <if test="maritalStatus != null">
+        marital_status = #{maritalStatus},
+      </if>
+      <if test="formalFace != null">
+        formal_face = #{formalFace},
+      </if>
+      <if test="birdthDay != null">
+        birdth_day = #{birdthDay},
+      </if>
+      <if test="eduationalLevel != null">
+        eduational_level = #{eduationalLevel},
+      </if>
+      <if test="myNative != null">
+        my_native = #{myNative},
+      </if>
+      <if test="workDate != null">
+        work_date = #{workDate},
+      </if>
+      <if test="userNo != null">
+        user_no = #{userNo},
+      </if>
+      <if test="age != null">
+        age = #{age},
+      </if>
+      <if test="curConpanyAge != null">
+        cur_conpany_age = #{curConpanyAge},
+      </if>
+      <if test="companyAge != null">
+        company_age = #{companyAge},
+      </if>
+      <if test="birdthAddress != null">
+        birdth_address = #{birdthAddress},
+      </if>
+      <if test="homeAddress != null">
+        home_address = #{homeAddress},
+      </if>
+        <if test="email != null" >
+        email = #{email},
+      </if>
+      <if test="remark != null">
+        remark = #{remark},
+      </if>
+      <if test="nick != null">
+         nick = #{nick},
+      </if>
+      <if test="isDel != null">
+         is_del = #{isDel},
+      </if>
+      <if test="isActive != null">
+         is_active = #{isActive},
+      </if>
+      <if test="userDraw != null">
+         user_draw = #{userDraw}
+      </if>
+    </set>
+    where login_user_id = #{loginUserId}
+  </update>
+  
+  <!-- 根据部门ID获取部门人数（deptId为空时查询公司全部人数） -->
+  <select id="getUserCountByDeptId" parameterType="java.util.Map" resultType="java.lang.Integer">
+  	SELECT count(id) 
+  	FROM oa_user 
+  	WHERE company_id=#{companyId}
+  	<if test="deptIds != null">
+  	AND dept_id IN
+		<foreach collection="deptIds" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+  	</if>
+  </select>
+  
+  <!-- 根据loginUserId和手机号获取用户信息（updateUserForAPP方法专用） -->
+  <select id="getUserForAPP" parameterType="java.util.Map" resultMap="BaseResultMap">
+   	SELECT 
+    <include refid="Base_Column_List"/>
+    FROM oa_user
+    WHERE phone = #{phone}
+    AND is_del = 0
+    AND login_user_id = #{loginUserId}
+  </select>
+  
+  <!-- 根据id更新用户信息（updateUserForAPP方法专用） -->
+ <update id="updateUserForAPP" parameterType="com.aiiju.bean.oa.staff.User">
+    update oa_user
+    <set>
+      <if test="companyId != null">
+        company_id = #{companyId},
+      </if>
+      <if test="deptId != null">
+        dept_id = #{deptId},
+      </if>
+      <if test="name != null">
+        name = #{name},
+      </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="phone != null">
+        phone = #{phone},
+      </if>
+      <if test="userNo != null">
+        user_no = #{userNo},
+      </if>
+    </set>
+    where login_user_id = #{loginUserId}
+  </update>
+  
+  	<!-- 根据用户ID批量获取用户信息 -->
+	<select id="selectUserListById" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT id, name
+		FROM oa_user
+		WHERE company_id = #{companyId} 
+		<if test="null != sendToPersonIds">
+			AND id in
+			<foreach collection="sendToPersonIds" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+	
+	
+	<!-- 根据用户ID批量获取用户部门信息数组 -->
+	<select id="selectUserDeptIdArrayById" parameterType="java.util.Map" resultType="java.lang.String">
+		SELECT dept_id
+		FROM oa_user
+		WHERE company_id = #{companyId} 
+		<if test="null != sendToPersonIds">
+			AND id in
+			<foreach collection="sendToPersonIds" index="index" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+	
+	
+	<!--新版通讯录（分成管理员数组，员工数组（无部门），员工数组（有部门））-->
+	 <select id="selectNewByExample" parameterType="java.util.Map" resultMap="NewBaseResult">
+   select 
+     id,dept_id, name,  position_id, login_user_id
+    from oa_user
+    <where>
+      <if test="ids != null">
+       and id in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+	      #{item}  
+	    </foreach>
+      </if>
+       <if test="loginUserIds != null">
+       and login_user_id in
+        <foreach item="item" index="index" collection="loginUserIds" open="(" separator="," close=")">  
+	      #{item}  
+	    </foreach>
+      </if>
+      <if test="name != null">
+       and name like "%"#{name}"%"
+      </if>
+      <if test="certificatetype != null">
+       and  certificate_type = #{certificateType}
+      </if>
+      <if test="certificateno != null">
+       and  certificate_no = #{certificateNo}
+      </if>
+      <if test="sex != null">
+       and  sex=#{sex}
+      </if>
+      <if test="nation != null">
+       and  nation = #{nation}
+      </if>
+      <if test="status != null">
+       and  status = #{status}
+      </if>
+      <if test="positionId != null">
+       and  position_id = #{positionId}
+      </if>
+      <if test="dutyId != null">
+       and  duty_id = #{dutyId}
+      </if>
+      <if test="dutyTypeId != null">
+       and  duty_type_id = #{dutyTypeId}
+      </if>
+      <if test="phone != null">
+       and  phone = #{phone}
+      </if>
+      <if test="startDate != null">
+        and join_date &lt;=#{startDate}
+      </if>
+      <if test="endDate != null">
+      	and join_date  &gt;=#{startDate}
+      </if>
+      <if test="regularDate != null">
+        and regular_date = #{regularDate}
+      </if>
+      <if test="deptIds != null">
+        and dept_id in
+         <foreach item="item" index="index" collection="deptIds" open="(" separator="," close=")">  
+	      #{item.id}  
+	    </foreach>
+      </if>
+      <if test="maritalStatus != null">
+       and  marital_status = #{maritalStatus}
+      </if>
+      <if test="formalFace != null">
+       and  formal_face = #{formalFace}
+      </if>
+      <if test="birdthDay != null">
+       and  birdth_day = #{birdthDay}
+      </if>
+      <if test="eduationalLevel != null">
+        and eduational_level = #{eduationalLevel}
+      </if>
+      <if test="myNative != null">
+        and my_native = #{myNative}
+      </if>
+      <if test="workDate != null">
+        and work_date = #{workDate}
+      </if>
+      <if test="userNo != null">
+        and user_no = #{userNo}
+      </if>
+      <if test="age != null">
+        and age = #{age}
+      </if>
+      <if test="startAge != null">
+        and age > #{startAge}
+      </if>
+       <if test="endAge != null">
+        <![CDATA[and age <#{endAge} ]]>
+      </if>
+      <if test="curConpanyAge != null">
+       and  cur_conpany_age = #{curConpanyAge}
+      </if>
+      <if test="companyAge != null">
+       and  company_age = #{companyAge}
+      </if>
+      <if test="birdthAddress != null">
+       and  birdth_address = #{birdthAddress}
+      </if>
+      <if test="homeAddress != null">
+       and  home_address = #{homeAddress}
+      </if>
+      <if test="companyId != null">
+       and  company_id = #{companyId}
+      </if>
+      <if test="createDate != null">
+       and  create_date = #{createDate}
+      </if>
+      <if test="updateDate != null">
+       and  update_date = #{updateDate}
+      </if>
+       <if test="email != null" >
+       and email = #{email},
+      </if>
+      <if test="remark != null">
+       and  remark = #{remark}
+      </if>
+      <if test="nick != null">
+       and  nick = #{nick}
+      </if>
+      <if test="isDel != null">
+       and  is_del = #{isDel}
+      </if>
+      <if test="userDraw != null">
+       and  user_draw = #{userDraw}
+      </if>
+      <if test="loginUserId != null">
+       and  login_user_id = #{loginUserId}
+      </if>
+     <if test="isActive != null">
+       and  is_active = #{isActive}
+      </if>
+     <if test="roleIds != null">
+       and  role_ids = #{roleIds}
+      </if>
+	    <if test="pageSize != null">
+	  	limit #{startRow},#{pageSize}
+	  	</if>
+    </where>
+  </select>
+	<select id="selectBycompanyIdAndLoginUserId" parameterType="java.util.Map" resultMap="BaseResultMap">
+	 SELECT <include refid="Base_Column_List"/>
+	 FROM oa_user
+	 <where>
+	 	<if test="companyId !=null">
+	 		and company_id =#{companyId}
+	 	</if>
+		 <if test="userId !=null">
+	 		and id=#{userId}
+	 	</if>
+	 </where>
+	</select>
+</mapper>

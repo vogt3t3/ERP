@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.duty.IAbilityRequireDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.duty.AbilityRequire" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="quality" property="quality" jdbcType="VARCHAR" />
+    <result column="p_id" property="pId" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List">
+  	id,company_id,quality,p_id,type,create_date,update_date
+  </sql>
+  
+  <!-- 通过Pid查询 -->
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List"/>
+    from oa_ability_require
+    where id = #{id}
+  </select>
+  
+  
+  <!-- 按条件查询结果集 -->
+  <select id="selectByExample" parameterType="java.util.Map" resultMap="BaseResultMap">
+  select 
+  <include refid="Base_Column_List"/>
+  from oa_ability_require 
+  <where>
+  	<if test="companyId != null">
+  	company_id=#{companyId}
+  	</if>
+  	<if test="quality != null">
+  	and quality=#{quality}
+  	</if>
+  	<if test="pId != null">
+  	and p_id=#{pId}
+  	</if>
+  	<if test="type != null">
+  	and type=#{type}
+  	</if>
+  	<if test="updateDate != null">
+  	and update_date=#{updateDate}
+  	</if>
+  	<if test="createDate != null">
+  	and create_date=#{createDate}
+  	</if>
+  	<if test="startPos != null">
+      limit #{startPos} , #{pageSize}
+    </if>
+  </where>
+  </select>
+  
+  <!-- 通过id删除 -->
+  <delete id="deleteByParam" parameterType="java.util.Map" >
+    delete from oa_ability_require
+    <where>
+    <if test="id!=null">
+    and id=#{id}
+    </if>
+    <if  test="pId!=null">
+    and p_id=#{pId}
+    </if>
+    <if test="type!=null">
+    and type=#{type}
+    </if>
+    </where>
+  </delete>
+  
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.aiiju.bean.oa.duty.AbilityRequire"  keyProperty="id">
+    insert into oa_ability_require
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="quality != null" >
+        quality,
+      </if>
+      <if test="pId != null" >
+        p_id,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        #{companyId},
+      </if>
+      <if test="quality != null" >
+        #{quality},
+      </if>
+      <if test="pId != null" >
+        #{pId},
+      </if>
+      <if test="type != null" >
+        #{type},
+      </if>
+    </trim>
+     <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+	<!-- 条件更新 -->
+  <update id="updateByExample" parameterType="com.aiiju.bean.oa.duty.AbilityRequire" >
+    update oa_ability_require
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="quality != null" >
+        quality = #{quality,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+
+    </set>
+    where id = #{id}
+  </update>
+  
+</mapper>

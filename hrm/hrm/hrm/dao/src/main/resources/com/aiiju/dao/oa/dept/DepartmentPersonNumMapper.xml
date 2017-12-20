@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.dept.IDepartmentPersonNumDao">
+	<!-- 人员编制列表返回-->
+	<resultMap id="PersonnelForceResultMap" type="com.aiiju.bean.oa.dept.PersonnelForce">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="start_date" property="startDate" jdbcType="VARCHAR" />
+		<result column="end_date" property="endDate" jdbcType="VARCHAR" />
+		<result column="personnal_force" property="personnalForce" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 获取部门维护里面的 人员编制列表-->
+	<select id="getDepartmentPersonNum" parameterType="java.util.Map" resultMap="PersonnelForceResultMap">
+	  SELECT id,DATE_FORMAT(start_date,'%Y-%m-%d') start_date,DATE_FORMAT(end_date,'%Y-%m-%d') end_date,personnal_force
+	  FROM oa_personnel_force
+	  WHERE dept_id=#{deptId} AND company_id=#{companyId}
+	</select>
+	<!-- 插入人员编制时间段是否已存在-->
+	<select id="existsDepartmentPersonNum" parameterType="java.util.Map" resultType="int">
+		SELECT
+			count(id)
+		FROM
+			oa_personnel_force t
+		 WHERE
+			dept_id = #{deptId}
+		AND company_id = #{companyId}
+		<![CDATA[
+			AND( (
+					t.start_date <=  DATE_FORMAT(
+						#{startDate},
+						'%Y-%m-%d %H:%i:%s'
+					)
+					AND t.end_date >= DATE_FORMAT(
+						#{startDate},
+						'%Y-%m-%d %H:%i:%s'
+					)
+				)
+			OR (
+				t.start_date <= DATE_FORMAT(
+					#{endDate},
+					'%Y-%m-%d %H:%i:%s'
+				)
+				AND t.end_date >= DATE_FORMAT(
+					#{endDate},
+					'%Y-%m-%d %H:%i:%s'
+				)
+			))
+		]]>
+		<if test="null != id">
+			AND id != #{id}
+		</if> 
+	</select>
+	<!-- 新增人员编制 -->
+	<insert id="addDepartmentPersonNum" parameterType="java.util.Map">
+		INSERT INTO 
+		oa_personnel_force(start_date,end_date,personnal_force,dept_id,company_id,create_date,update_date) 
+		VALUES(date_format(#{startDate},'%Y-%m-%d'),date_format(#{endDate},'%Y-%m-%d'),#{personnalForce},#{deptId},#{companyId},now(),#{updateDate})
+	</insert>
+	<!-- 更新人员编制 -->
+	<update id="updateDepartmentPersonNum" parameterType="java.util.Map">
+		UPDATE oa_personnel_force
+		<set>
+			<if test="startDate != null">start_date=#{startDate},</if>
+			<if test="endDate != null">end_date=#{endDate},</if>
+			<if test="personnalForce != null">personnal_force=#{personnalForce},</if>
+			update_date=now()
+		</set>
+		WHERE id=#{id}
+	</update>
+	<!-- 删除一条人员编制 -->
+	<delete id="delDepartmentPersonNum" parameterType="java.util.Map">
+		DELETE FROM oa_personnel_force WHERE id=#{id}
+	</delete>
+</mapper>
+
+ 

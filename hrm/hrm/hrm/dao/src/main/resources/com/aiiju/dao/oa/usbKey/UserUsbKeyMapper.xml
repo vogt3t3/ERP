@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.usbKey.IUserUsbKeyDao"> 
+	<resultMap id="UserUsbKeyResultMap" type="com.aiiju.bean.oa.usbKey.UserUsbKey">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" />
+		<result column="company_id" property="companyId" jdbcType="BIGINT" />
+		<result column="usbkey_id" property="usbKeyId" jdbcType="BIGINT" /> 
+		<result column="second_password" property="secondPassword" jdbcType="VARCHAR" /> 
+		<result column="serial_time" property="serialTime" jdbcType="TIMESTAMP" /> 
+		<association property="usbKey" column="id = usbkey_id"   select="com.aiiju.dao.oa.usbKey.IUsbKeyDao.selectUsbKey"></association>
+	</resultMap>
+	
+	<sql id="UserUsbKey_Column">
+		id,user_id,company_id,usbkey_id,second_password
+	</sql>
+	
+	<!-- 添加用户Usb关联信息 -->
+	<insert id="addUserUsbKey" parameterType="com.aiiju.bean.oa.usbKey.UserUsbKey" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO usb_user_usbkey 
+			<trim prefix="(" suffix=")" suffixOverrides="," >
+		      <if test="userId != null" >
+		        user_id,
+		      </if>
+		      <if test="companyId != null" >
+		        company_id,
+		      </if>
+		      <if test="usbKeyId != null" >
+		        usbkey_id,
+		      </if>
+		      <if test="secondPassword != null" >
+		      second_password,
+		      </if>
+		    </trim>
+		      <trim prefix="VALUES (" suffix=")" suffixOverrides="," >
+		      <if test="companyId != null" >
+		        	#{userId},
+		      </if>
+		      <if test="companyId != null" >
+		     	 	#{companyId},
+		      </if>
+		      <if test="usbKeyId != null" >
+		        	#{usbKeyId},
+		      </if>
+		      <if test="secondPassword != null" >
+		      		#{secondPassword},
+		      </if>
+		 	</trim>
+	</insert>
+	
+	
+	<update id="updateUserUsbKey" parameterType="com.aiiju.bean.oa.usbKey.UserUsbKey" >
+		UPDATE usb_user_usbkey 
+			<set>
+				<if test="companyId != null" >
+		        	user_id = #{userId},
+		      </if>
+		      <if test="companyId != null" >
+		     	 	 company_id = #{companyId},
+		      </if>
+		      <if test="usbKeyId != null" >
+		        	usbkey_id = #{usbKeyId},
+		      </if>
+		      <if test="secondPassword != null" >
+		      		second_password = #{secondPassword},
+		      </if>
+		
+			</set>
+			where  user_id = #{userId} 
+	</update>
+	
+	<select id="selectUserUsbKey" parameterType="java.util.Map" resultMap="UserUsbKeyResultMap">
+		SELECT 
+			<include refid="UserUsbKey_Column" />
+		FROM  usb_user_usbkey
+		<where>
+         	 <if test="userId != null" >
+		       	 and	user_id = #{userId}
+		      </if>
+		      <if test="companyId != null" >
+		     		and 	 company_id = #{companyId}
+		      </if>
+		      <if test="usbKeyId != null" >
+		        	and usbkey_id = #{usbKeyId}
+		      </if>
+		     
+		</where>
+	</select>
+	
+</mapper>
+
+ 

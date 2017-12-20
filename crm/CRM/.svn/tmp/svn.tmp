@@ -1,0 +1,26 @@
+package com.crm.service.impl;
+import com.crm.model.Cst_customer_t;
+import org.springframework.stereotype.Service;
+
+import com.crm.service.ClientService;
+
+/**
+ * 
+类名称：ClientService   
+* 类描述：   客户信息、客户服务的业务层
+* 创建人：胡杰雄   
+* 创建时间：2014-9-4 下午5:06:22
+ */
+@Service("ClientService")
+public class ClientServiceImpl extends BaseServiceImpl implements ClientService {
+
+
+	@Override
+	public void saveClient(Cst_customer_t c) {
+		// TODO Auto-generated method stub
+		saveOrUpdate(c);
+	}
+	
+	
+
+}

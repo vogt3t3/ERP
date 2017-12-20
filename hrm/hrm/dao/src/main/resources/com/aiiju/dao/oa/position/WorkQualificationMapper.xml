@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.position.IWorkQualificationDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.position.WorkQualification" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="item_id" property="itemId" jdbcType="BIGINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="position_id" property="positionId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+      id,item_id,position_id, remark,company_id, create_date, update_date
+  </sql>
+  <!-- 通过id查询 -->
+  <select id="selectByUserId"  parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from oa_work_qualification
+    where position_id = #{positionId}
+  </select>
+  
+  <!-- 通过id删除 -->
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from oa_work_qualification
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <select id="selectByExample" parameterType="java.util.Map" resultMap="BaseResultMap">
+  select 
+    <include refid="Base_Column_List" />
+    from oa_work_qualification
+    <where>
+      <if test="companyId != null" >
+       and  company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="positionId != null" >
+       and  position_id = #{positionId,jdbcType=BIGINT}
+      </if>
+    </where>
+  </select>
+  
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.aiiju.bean.oa.position.WorkQualification"  keyProperty="id">
+    insert into oa_work_qualification
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      
+      <if test="itemId != null" >
+        item_id,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="positionId != null" >
+        position_id,
+      </if>
+      <if test="companyId != null" >
+        company_id,
+      </if>
+        update_date
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+     
+      <if test="itemId != null" >
+        #{itemId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="positionId != null" >
+        #{positionId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null" >
+        #{companyId,jdbcType=TIMESTAMP},
+      </if>
+      sysdate()
+    </trim>
+     <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  <update id="updateByExample" parameterType="com.aiiju.bean.oa.staff.ContractAgreement" >
+    update oa_work_qualification
+    <set >
+       <if test="itemId != null" >
+        item_id=#{itemId,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        remark=#{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="positionId != null" >
+       position_id= #{positionId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null" >
+       company_id= #{companyId,jdbcType=TIMESTAMP},
+      </if>
+      update_date=sysdate()
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+ 
+</mapper>

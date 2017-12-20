@@ -1,0 +1,44 @@
+package com.crm.service.impl;
+
+import org.hibernate.Query;
+
+import com.crm.model.Sal_chance_t;
+import com.crm.model.Sal_plan_t;
+import com.crm.service.SalService;
+/**
+ * 营销实现类
+ * @author yuduan
+ *
+ */
+public class SalServiceImpl extends BaseServiceImpl implements SalService {
+
+	/**
+	 * 营销计划-保存更新、删除
+	 * @param p 计划
+	 */
+	@Override
+	public void savePlan(Sal_plan_t p) {
+		// TODO Auto-generated method stub
+
+	}
+	@Override
+	public void delPlan(Sal_plan_t p) {
+		// TODO Auto-generated method stub
+
+	}
+	/**
+	 * 营销机会-保存更新、删除
+	 * @param c 机会
+	 */
+	@Override
+	public void saveChance(Sal_chance_t c) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void delChance(Sal_chance_t c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

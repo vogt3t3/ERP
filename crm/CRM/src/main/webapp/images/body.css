@@ -1,0 +1,64 @@
+@charset "gb2312";
+
+* {margin:0; padding:0;}
+
+body{	
+    font-size:12px;
+    margin:0px;
+	padding:0px;
+	text-align:center;
+	color:#676767;
+	font-family:Tahoma, Verdana; 
+	background: #fff;
+	}
+
+/*--- 字体链接样式定义 ---*/
+a{margin:0px; padding:0px; border:0px;}
+a:link,a:visited{text-decoration:none; color:blue;}
+a:hover{color: #F00; text-decoration: underline;}
+
+
+div,img,dl,dt,dd,ul,li{border:0; list-style:none; margin:0; padding:0;}
+h1,h2,h3,h4,h5,h6{font-size:30px; margin:0; padding:0;}
+
+/*--- 清除浮动 ---*/
+.clear{clear:both; height:0; overflow:hidden;}
+
+/*--- 网站总体 ---*/
+.main{width:1002px; height:500px; background:#fff; margin:85px auto 0;}
+
+
+
+.Menu{ width:410px; height:30px; line-height:30px;  margin:0 auto; overflow:hidden}
+.Menu ul{}
+.Menu ul li{ float:left; height:30px; padding-right:12px}
+.Menu ul li a{ font-size:14px; text-decoration: underline}
+.Menu ul li a#color{ color:#F00}
+
+.Search{ width:442px; margin:0 auto;}
+.Search ul{ padding-top:13px}
+.Search ul li{ float:left; padding: 0 10px}
+.Search ul li a{ color:#1E50A2}
+
+.index{ width:442px; height:308px; margin:10px auto 0; background:#F6F6F6; overflow:hidden}
+
+.index dl{ width:135px!important;/*FF*/ *+width:140px!important;/*IE7.0*/  *width:135px;/*IE6.0*/ float:left; height:auto;  padding-left:10px!important;/*FF*/ *+padding-left:0px!important;/*IE7.0*/  *padding-left:10px;/*IE6.0*/ }
+.index dl dd{ width:118px; height:87px; background:#666; margin-top:10px; border:1px #E3E3E3 solid; background:#fff}
+.index dl dd img{ width:110px; height:79px; padding:4px;}
+
+.index ul{ width:292px; float:left; margin:0 auto; text-align:left; padding:10px 0}
+.index ul li{width:285px; border-bottom:1px #e3e3e3 dotted; padding:6px 0 6px 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.index ul li strong{ font-size:14px; font-weight:400; color: #969696}
+.index ul li span{ padding-left:5px;}
+.index ul li span a{ font-size:14px; color:#1E50A2}
+.index ul li span a:hover{color: #F00; text-decoration: underline;}
+
+.footer{ width:442px; margin:10px auto 0; height:30px; line-height:30px; border-top:1px #E3E3E3 solid}
+.footer a{ color:#676767}
+
+.logo{ width:400px; height:365px; margin:20px auto}
+.logo .img404 { width:400px; BACKGROUND: url(404.png) no-repeat 10px 0px; height:365px;}
+.logo .img404 H2 { float:left; font-size:16px; padding-left:90px; height:80px;  line-height:45px!important;/*FF*/ *+line-height:20px!important;/*IE7.0*/  *line-height:20px;/*IE6.0*/}
+.logo .img404 H2 p{	 FONT-WEIGHT: normal; FONT-SIZE: 10px; COLOR: #ccc; LINE-HEIGHT: 10px; }
+
+

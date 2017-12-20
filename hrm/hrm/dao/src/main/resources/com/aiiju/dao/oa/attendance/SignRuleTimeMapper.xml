@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.attendance.ISignRuleTimeDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.attendance.SignRuleTime" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="company_id" property="companyId" jdbcType="INTEGER" />
+    <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
+    <result column="work_day" property="workDay" jdbcType="CHAR" />
+    <result column="sign_in_time" property="signInTime" jdbcType="VARCHAR" />
+    <result column="sign_out_time" property="signOutTime" jdbcType="VARCHAR" />
+    <result column="sign_in_time2" property="signInTime2" jdbcType="VARCHAR" />
+    <result column="sign_out_time2" property="signOutTime2" jdbcType="VARCHAR" />
+    <result column="sign_in_time3" property="signInTime3" jdbcType="VARCHAR" />
+    <result column="sign_out_time3" property="signOutTime3" jdbcType="VARCHAR" />
+    <result column="is_del" property="isDel" jdbcType="TINYINT" />
+    <result column="creator_id" property="creatorId" jdbcType="BIGINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, company_id, rule_id, work_day, sign_in_time, sign_out_time, sign_in_time2, sign_out_time2, 
+    sign_in_time3, sign_out_time3, is_del, creator_id, create_date, update_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from zds_rule_time
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from zds_rule_time
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.aiiju.bean.oa.attendance.SignRuleTime" >
+    insert into zds_rule_time (id, company_id, rule_id, 
+      work_day, sign_in_time, sign_out_time, 
+      sign_in_time2, sign_out_time2, sign_in_time3, 
+      sign_out_time3, is_del, creator_id, 
+      create_date, update_date)
+    values (#{id,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{ruleId,jdbcType=INTEGER}, 
+      #{workDay,jdbcType=CHAR}, #{signInTime,jdbcType=VARCHAR}, #{signOutTime,jdbcType=VARCHAR}, 
+      #{signInTime2,jdbcType=VARCHAR}, #{signOutTime2,jdbcType=VARCHAR}, #{signInTime3,jdbcType=VARCHAR}, 
+      #{signOutTime3,jdbcType=VARCHAR}, #{isDel,jdbcType=TINYINT}, #{creatorId,jdbcType=BIGINT}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.aiiju.bean.oa.attendance.SignRuleTime" >
+    insert into zds_rule_time
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="ruleId != null" >
+        rule_id,
+      </if>
+      <if test="workDay != null" >
+        work_day,
+      </if>
+      <if test="signInTime != null" >
+        sign_in_time,
+      </if>
+      <if test="signOutTime != null" >
+        sign_out_time,
+      </if>
+      <if test="signInTime2 != null" >
+        sign_in_time2,
+      </if>
+      <if test="signOutTime2 != null" >
+        sign_out_time2,
+      </if>
+      <if test="signInTime3 != null" >
+        sign_in_time3,
+      </if>
+      <if test="signOutTime3 != null" >
+        sign_out_time3,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="creatorId != null" >
+        creator_id,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="companyId != null" >
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="ruleId != null" >
+        #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="workDay != null" >
+        #{workDay,jdbcType=CHAR},
+      </if>
+      <if test="signInTime != null" >
+        #{signInTime,jdbcType=VARCHAR},
+      </if>
+      <if test="signOutTime != null" >
+        #{signOutTime,jdbcType=VARCHAR},
+      </if>
+      <if test="signInTime2 != null" >
+        #{signInTime2,jdbcType=VARCHAR},
+      </if>
+      <if test="signOutTime2 != null" >
+        #{signOutTime2,jdbcType=VARCHAR},
+      </if>
+      <if test="signInTime3 != null" >
+        #{signInTime3,jdbcType=VARCHAR},
+      </if>
+      <if test="signOutTime3 != null" >
+        #{signOutTime3,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="creatorId != null" >
+        #{creatorId,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.aiiju.bean.oa.attendance.SignRuleTime" >
+    update zds_rule_time
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="ruleId != null" >
+        rule_id = #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="workDay != null" >
+        work_day = #{workDay,jdbcType=CHAR},
+      </if>
+      <if test="signInTime != null" >
+        sign_in_time = #{signInTime,jdbcType=VARCHAR},
+      </if>
+      <if test="signOutTime != null" >
+        sign_out_time = #{signOutTime,jdbcType=VARCHAR},
+      </if>
+      <if test="signInTime2 != null" >
+        sign_in_time2 = #{signInTime2,jdbcType=VARCHAR},
+      </if>
+      <if test="signOutTime2 != null" >
+        sign_out_time2 = #{signOutTime2,jdbcType=VARCHAR},
+      </if>
+      <if test="signInTime3 != null" >
+        sign_in_time3 = #{signInTime3,jdbcType=VARCHAR},
+      </if>
+      <if test="signOutTime3 != null" >
+        sign_out_time3 = #{signOutTime3,jdbcType=VARCHAR},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+      <if test="creatorId != null" >
+        creator_id = #{creatorId,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null" >
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.aiiju.bean.oa.attendance.SignRuleTime" >
+    update zds_rule_time
+    set company_id = #{companyId,jdbcType=INTEGER},
+      rule_id = #{ruleId,jdbcType=INTEGER},
+      work_day = #{workDay,jdbcType=CHAR},
+      sign_in_time = #{signInTime,jdbcType=VARCHAR},
+      sign_out_time = #{signOutTime,jdbcType=VARCHAR},
+      sign_in_time2 = #{signInTime2,jdbcType=VARCHAR},
+      sign_out_time2 = #{signOutTime2,jdbcType=VARCHAR},
+      sign_in_time3 = #{signInTime3,jdbcType=VARCHAR},
+      sign_out_time3 = #{signOutTime3,jdbcType=VARCHAR},
+      is_del = #{isDel,jdbcType=TINYINT},
+      creator_id = #{creatorId,jdbcType=BIGINT},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <!-- 根据公司id和考勤规则id删除记录 -->
+  <delete id="deleteByCompanyIdAndRuleId" parameterType="java.util.Map">
+    delete from zds_rule_time
+    where company_id = #{companyId} and rule_id = #{ruleId}
+  </delete>
+  <select id="selectListByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+   SELECT <include refid="Base_Column_List" />
+   FROM zds_rule_time
+   <where>
+    	<if test="companyId != null">
+    		and company_id = #{companyId}
+    	</if>
+    	<if test="ruleId != null">
+	  		and rule_id = #{ruleId}
+	  	</if>
+   		<if test="workDay != null">
+  			and work_day LIKE #{workDay}
+	  	</if>
+	  	<if test="isDel != null">
+    		and is_del = #{isDel}
+    	</if>
+    </where>
+    ORDER BY update_date DESC
+  </select>
+  <!-- 通过参数修改 -->
+  <update id="updateByMap" parameterType="java.util.Map">
+  	 update zds_rule_time
+    <set>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=TINYINT}
+      </if>
+      <if test="updateDate != null" >
+         update_date = #{updateDate}
+      </if>
+    </set>
+    <where>
+    	<if test="companyId != null">
+    		and company_id = #{companyId}
+    	</if>
+    	<if test="ruleId != null">
+	  		and rule_id = #{ruleId}
+	  	</if>
+    </where>
+  </update>
+</mapper>

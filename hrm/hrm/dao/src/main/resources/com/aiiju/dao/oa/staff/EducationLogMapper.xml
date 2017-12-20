@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.staff.IEducationLogDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.staff.EducationLog">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="school" jdbcType="VARCHAR" property="school" />
+    <result column="profession" jdbcType="VARCHAR" property="profession" />
+    <result column="education_level" jdbcType="TINYINT" property="educationLevel" />
+    <result column="degree" jdbcType="VARCHAR" property="degree" />
+    <result column="education_type" jdbcType="TINYINT" property="educationType" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+  id,start_date,end_date,school,profession,education_level,degree,education_type,user_id,company_id,create_date,update_date
+  </sql>
+  <!-- 通过id查询 -->
+  <select id="selectByUserId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List"/>
+    from oa_education_log
+    where id = #{id} 
+  </select>
+  
+  
+  <!-- 按条件查询 -->
+  <select id="selectByExample" parameterType="java.util.Map" resultMap="BaseResultMap">
+  select 
+    <include refid="Base_Column_List"/>
+    from oa_education_log
+    <where>
+    <if test="startDate != null">
+        start_date=#{startDate}
+      </if>
+      <if test="endDate != null">
+      and   end_date=#{endDate}
+      </if>
+      <if test="school != null">
+       and  school=#{school}
+      </if>
+      <if test="profession != null">
+       and  profession=#{profession}
+      </if>
+      <if test="educationLevel != null">
+       and  education_level=#{educationLevel}
+      </if>
+      <if test="degree != null">
+       and  degree=#{degree}
+      </if>
+      <if test="educationType != null">
+      and   education_type=#{educationType}
+      </if>
+      <if test="companyId != null">
+      and   company_id=#{companyId}
+      </if>
+      <if test="createDate != null">
+       and  create_date=#{createDate}
+      </if>
+      <if test="updateDate != null">
+       and  update_date=#{updateDate}
+      </if>
+      <if test="empId != null">
+      and   user_id=#{empId}
+      </if>
+   	<if test="startPos != null">
+      limit #{startPos} , #{pageSize}
+    </if>
+    </where>
+  </select>
+  
+  <!-- 通过id删除 -->
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from oa_education_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByUserId" parameterType="java.util.Map">
+    delete from oa_education_log
+    where user_id in
+       <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+      #{item}  
+    </foreach>
+  </delete>
+  
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.aiiju.bean.oa.staff.EducationLog">
+    insert into oa_education_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="startDate != null">
+        start_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+      <if test="school != null">
+        school,
+      </if>
+      <if test="profession != null">
+        profession,
+      </if>
+      <if test="educationLevel != null">
+        education_level,
+      </if>
+      <if test="degree != null">
+        degree,
+      </if>
+      <if test="educationType != null">
+        education_type,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="startDate != null">
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="school != null">
+        #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="profession != null">
+        #{profession,jdbcType=VARCHAR},
+      </if>
+      <if test="educationLevel != null">
+        #{educationLevel,jdbcType=TINYINT},
+      </if>
+      <if test="degree != null">
+        #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="educationType != null">
+        #{educationType,jdbcType=TINYINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <!-- 按参数更新 通过userId -->
+  <update id="updateByExample" parameterType="com.aiiju.bean.oa.staff.EducationLog">
+    update oa_education_log
+    <set>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="school != null">
+        school = #{school,jdbcType=VARCHAR},
+      </if>
+      <if test="profession != null">
+        profession = #{profession,jdbcType=VARCHAR},
+      </if>
+      <if test="educationLevel != null">
+        education_level = #{educationLevel,jdbcType=TINYINT},
+      </if>
+      <if test="degree != null">
+        degree = #{degree,jdbcType=VARCHAR},
+      </if>
+      <if test="educationType != null">
+        education_type = #{educationType,jdbcType=TINYINT},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+</mapper>

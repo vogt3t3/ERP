@@ -1,0 +1,206 @@
+package com.crm.service.impl;
+
+import java.awt.Font;
+import java.text.NumberFormat;
+import java.util.List;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PiePlot3D;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.util.Rotation;
+import org.springframework.stereotype.Service;
+
+import com.crm.model.Cst_customer_t;
+import com.crm.model.Cst_indent_t;
+import com.crm.model.Cst_lst_t;
+import com.crm.model.Cst_service_t;
+import com.crm.service.StatService;
+
+@Service("StatService")
+public class StatServiceImpl extends BaseServiceImpl implements StatService {
+
+	/**
+	 * 客户贡献度分析
+	 * 根据客户订单总金额进行统计
+	 */
+	@Override
+	public JFreeChart offerAnalysis(String year) {
+		// TODO Auto-generated method stub
+		String subTitle="";
+		List<Cst_indent_t> list;
+		if(year.equals("all"))
+		{	list=getQuery("from Cst_indent_t c order by c.cst_customer_t.cst_id").list();subTitle="所有年度";}
+		else 
+		{   list=getQuery("from Cst_indent_t c where c.indent_date like '"+year+"%' order by c.cst_customer_t.cst_id").list();subTitle=year+"年度";}
+		
+		//设置饼图数据集  
+		DefaultPieDataset dataset = new DefaultPieDataset();  
+		if(list!=null&&list.size()>0)
+		{
+		String customer_id=list.get(0).getCst_customer_t().getCst_name();
+		double sum=list.get(0).getIndent_sum();
+		for(int i=1;i<list.size();i++)
+		{
+			if(customer_id.equals(list.get(i).getCst_customer_t().getCst_name()))
+				sum+=list.get(i).getIndent_sum();
+			else
+			{
+				dataset.setValue(list.get(i).getCst_customer_t().getCst_name(), sum);
+				sum=list.get(i).getIndent_sum();
+				customer_id=list.get(i).getCst_customer_t().getCst_name();
+			}
+			
+		}
+		dataset.setValue(list.get(list.size()-1).getCst_customer_t().getCst_name(), sum);  
+		}
+		
+		//通过工厂类生成JFreeChart对象  
+		JFreeChart chart = ChartFactory.createPieChart3D("客户贡献度", dataset, true, true, false);  
+		chart.addSubtitle(new TextTitle(subTitle));  
+		PiePlot pieplot = (PiePlot) chart.getPlot();  
+		pieplot.setLabelFont(new Font("宋体", 0, 11));  
+		StandardPieSectionLabelGenerator standarPieIG = new StandardPieSectionLabelGenerator("{0}:({1},{2})", NumberFormat.getNumberInstance(), NumberFormat.getPercentInstance());  
+		pieplot.setLabelGenerator(standarPieIG);  
+		  
+		//没有数据的时候显示的内容  
+		pieplot.setNoDataMessage("无数据显示");  
+		pieplot.setLabelGap(0.02D);  
+		  
+		PiePlot3D pieplot3d = (PiePlot3D)chart.getPlot();  
+		//设置开始角度  
+		pieplot3d.setStartAngle(120D);  
+		//设置方向为”顺时针方向“  
+		pieplot3d.setDirection(Rotation.CLOCKWISE);  
+		//设置透明度，0.5F为半透明，1为不透明，0为全透明  
+		pieplot3d.setForegroundAlpha(0.7F);  
+		return chart;
+	}
+
+
+	
+	/**
+	 * 客户构成分析
+	 * 了解各种类型客户所占比例
+	 */
+	@Override
+	public JFreeChart formAnalysis() {
+		// TODO Auto-generated method stub
+		String subTitle="";
+		List<Cst_customer_t> list;
+		list=getQuery("from Cst_customer_t c order by c.cst_level").list();
+		
+		//设置饼图数据集  
+		DefaultPieDataset dataset = new DefaultPieDataset();  
+		
+		if(list!=null&&list.size()>0)
+		{
+		int level=list.get(0).getCst_level();
+		int sum=1;
+		for(int i=1;i<list.size();i++)
+		{
+			if(level==list.get(i).getCst_level())
+				sum++;
+			else
+			{
+				dataset.setValue(list.get(i-1).getCst_level_label(), sum);
+				sum=1;
+				level=list.get(i).getCst_level();
+			}
+		}
+		dataset.setValue(list.get(list.size()-1).getCst_level_label(), sum);  
+		}
+		
+		//通过工厂类生成JFreeChart对象  
+		JFreeChart chart = ChartFactory.createPieChart3D("客户构成分析", dataset, true, true, false);    
+		PiePlot pieplot = (PiePlot) chart.getPlot();  
+		pieplot.setLabelFont(new Font("宋体", 0, 11));  
+		StandardPieSectionLabelGenerator standarPieIG = new StandardPieSectionLabelGenerator("{0}:({1},{2})", NumberFormat.getNumberInstance(), NumberFormat.getPercentInstance());  
+		pieplot.setLabelGenerator(standarPieIG);  
+		  
+		//没有数据的时候显示的内容  
+		pieplot.setNoDataMessage("无数据显示");  
+		pieplot.setLabelGap(0.02D);  
+		  
+		PiePlot3D pieplot3d = (PiePlot3D)chart.getPlot();  
+		//设置开始角度  
+		pieplot3d.setStartAngle(120D);  
+		//设置方向为”顺时针方向“  
+		pieplot3d.setDirection(Rotation.CLOCKWISE);  
+		//设置透明度，0.5F为半透明，1为不透明，0为全透明  
+		pieplot3d.setForegroundAlpha(0.7F);  
+		return chart;
+	}
+
+	/**
+	 * 客户服务分析
+	 * 根据服务类型对服务进行统计
+	 */
+		
+	@Override
+	public JFreeChart serviceAnalysis(String year) {
+		// TODO Auto-generated method stub
+		String subTitle="";
+		List<Cst_service_t> list;
+		if(year.equals("all"))
+		{	list=getQuery("from Cst_service_t c order by c.svc_type").list();subTitle="所有年度";}
+		else 
+		{   list=getQuery("from Cst_service_t c where c.svc_due_date like '"+year+"%' order by c.svc_type").list();subTitle=year+"年度";}
+		
+		//设置饼图数据集  
+		DefaultPieDataset dataset = new DefaultPieDataset();  
+		if(list!=null&&list.size()>0)
+		{
+		String type=list.get(0).getSvc_type();
+		double sum=1;
+		for(int i=1;i<list.size();i++)
+		{
+			if(type.equals(list.get(i).getSvc_type()))
+				sum++;
+			else
+			{
+				dataset.setValue(list.get(i-1).getSvc_type(), sum);
+				sum=1;
+				type=list.get(i).getSvc_type();
+			}
+		}
+		dataset.setValue(list.get(list.size()-1).getSvc_type(), sum);  
+		}
+		
+		//通过工厂类生成JFreeChart对象  
+		JFreeChart chart = ChartFactory.createPieChart3D("客户服务", dataset, true, true, false);  
+		chart.addSubtitle(new TextTitle(subTitle));  
+		PiePlot pieplot = (PiePlot) chart.getPlot();  
+		pieplot.setLabelFont(new Font("宋体", 0, 11));  
+		StandardPieSectionLabelGenerator standarPieIG = new StandardPieSectionLabelGenerator("{0}:({1},{2})", NumberFormat.getNumberInstance(), NumberFormat.getPercentInstance());  
+		pieplot.setLabelGenerator(standarPieIG);  
+		  
+		//没有数据的时候显示的内容  
+		pieplot.setNoDataMessage("无数据显示");  
+		pieplot.setLabelGap(0.02D);  
+		  
+		PiePlot3D pieplot3d = (PiePlot3D)chart.getPlot();  
+		//设置开始角度  
+		pieplot3d.setStartAngle(120D);  
+		//设置方向为”顺时针方向“  
+		pieplot3d.setDirection(Rotation.CLOCKWISE);  
+		//设置透明度，0.5F为半透明，1为不透明，0为全透明  
+		pieplot3d.setForegroundAlpha(0.7F);  
+		return chart;
+	}
+	
+
+	/**
+	 * 客户流失分析
+	 * 统计流失客户的流失记录
+	 */
+	@Override
+	public List<Cst_lst_t> lstAnalysis() {
+		// TODO Auto-generated method stub
+		
+		return getQuery("from Cst_lst_t c order by c.lst_last_order_date").list();
+	}
+}

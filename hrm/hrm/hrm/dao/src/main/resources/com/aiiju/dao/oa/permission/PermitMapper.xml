@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.permission.IPermitDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.permission.Permit" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="origin_name" property="originName" jdbcType="VARCHAR" />
+    <result column="only" property="only" jdbcType="VARCHAR" />
+    <result column="perm_except" property="permExcept" jdbcType="VARCHAR" />
+    <result column="permit_actions" property="permitActions" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="TreeMap" type="com.aiiju.bean.oa.permission.PermitTree" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="origin_name" property="originName" jdbcType="VARCHAR" />
+    <result column="only" property="only" jdbcType="VARCHAR" />
+    <result column="perm_except" property="permExcept" jdbcType="VARCHAR" />
+    <result column="permit_actions" property="permitActions" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+  	id,parent_id,name,origin_name,only,perm_except,permit_actions
+  </sql>
+  
+  <!-- 获取用户权限 -->
+  <select id="getUserPermission" parameterType="map" resultMap="BaseResultMap">
+  		SELECT
+			pp.id,
+			pp.parent_id,
+			pp.name,
+			pp.origin_name,
+			pp.only,
+			pp.perm_except,
+			pp.permit_actions
+		FROM
+			perm_permit pp
+		LEFT JOIN (
+			SELECT
+				p.permit_id
+			FROM
+				perm_role_user u,
+				perm_permit_role p
+			WHERE
+				u.role_id = p.role_id
+			AND u.user_id = #{userId}
+		) a ON pp.id = a.permit_id
+  </select>
+  
+  <!-- 获取权限树所有节点 -->
+  <select id="getAllPermission" parameterType="map" resultMap="TreeMap">
+  		SELECT
+			pp.id,
+			pp.parent_id,
+			pp.name,
+			pp.origin_name,
+			pp.only,
+			pp.perm_except,
+			pp.permit_actions
+		FROM
+			perm_permit pp
+		where 1 = 1
+		<if test="only != null">
+			and pp.only like '%${only}%'
+		</if>
+		<if test="permExcept != null">
+			and pp.perm_except like '%${permExcept}%'
+		</if>
+  </select>
+  
+  <!-- 判断某操作是否有权限 -->
+  <select id="judgePermission" parameterType="map" resultType="int">
+  		SELECT
+			count(p.id)
+		FROM
+			perm_permit p,
+			perm_permit_role pr,
+			perm_role_user ur
+		WHERE
+			pr.role_id = ur.role_id
+		AND pr.permit_id = p.id
+		AND ur.user_id = #{userId}
+		AND FIND_IN_SET(#{permitAction}, p.permit_actions)
+  </select>
+</mapper>

@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.salary.ISpwSalaryChangeDao">
+	<!-- 基本工资调整记录 -->
+	<resultMap id="LogResultMap" type="com.aiiju.bean.oa.salary.SpwSalaryBasicLog">
+        <result column="id" jdbcType="BIGINT" property="id" />
+        <result column="company_id" jdbcType="BIGINT" property="companyId" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="user_no" jdbcType="VARCHAR" property="empNo" />
+        <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+        <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="before_basic_pay" jdbcType="VARCHAR" property="beforeBasicPay" />
+        <result column="after_basic_pay" jdbcType="VARCHAR" property="afterBasicPay" />
+        <result column="adjust_range" jdbcType="DOUBLE" property="adjustRange" />
+        <result column="force_time" jdbcType="VARCHAR" property="forceTime" />
+        <result column="adjust_reason" jdbcType="VARCHAR" property="adjustReason" />
+        <result column="operate_user_id" jdbcType="VARCHAR" property="operateUserId" />
+        <result column="operate_user_name" jdbcType="VARCHAR" property="operateUserName" />
+        <result column="is_init" jdbcType="VARCHAR" property="isInit" />
+        <result column="create_date" jdbcType="VARCHAR" property="createTime" />
+    </resultMap>
+    
+    <!-- 基本工资 -->
+	<resultMap id="SalaryResultMap" type="com.aiiju.bean.oa.salary.SpwSalaryBasic">
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="company_id" jdbcType="BIGINT" property="companyId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="user_no" jdbcType="VARCHAR" property="empNo" />
+    	<result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="user_draw" jdbcType="VARCHAR" property="userDraw" />
+        <result column="join_date" jdbcType="VARCHAR" property="joinDate" />
+        <result column="basic_pay" jdbcType="VARCHAR" property="basicPay" />
+        <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+        <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+        <result column="create_date" jdbcType="VARCHAR" property="createTime" />
+        <result column="update_date" jdbcType="VARCHAR" property="updateTime" />
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+		<if test=" pswKey != null">
+			IFNULL(AES_DECRYPT(before_basic_pay,#{pswKey}),0) beforeBasicPay,
+			IFNULL(AES_DECRYPT(after_basic_pay,#{pswKey}),0) afterBasicPay,
+		</if>
+		user_id,adjust_range,adjust_reason,operate_user_id,is_init,
+		date_format(force_time,'%Y-%m-%d') forceTime
+	</sql>
+	
+	<!-- 判断是否已经设置过初始薪资 -->
+	<select id="checkIsInit" parameterType="map" resultType="int">
+		SELECT
+			count(id)
+		FROM
+			spw_basic_salary
+		WHERE
+			company_id = #{companyId}
+		AND user_id = #{setUserId}
+	</select>
+	
+	<!-- 工资管理，根据条件查询员工信息与薪资情况  -->
+	<select id="getCurMonthSalaryInfo" parameterType="map" resultMap="SalaryResultMap">
+		SELECT
+			ou.id user_id,
+			ou.name user_name,
+			ou.user_no,
+			ou.dept_id,
+			od.name dept_name,
+			ou.phone,
+			ou.email,
+			ou.user_draw,
+			date_format(ou.join_date, '%Y-%m-%d') join_date,
+			IFNULL(AES_DECRYPT(sb.basic_pay,#{pswKey}), -1) basic_pay
+		FROM
+			oa_user ou
+		LEFT JOIN (
+			SELECT
+				user_id,
+				basic_pay
+			FROM
+				spw_basic_salary
+			WHERE
+				company_id = #{companyId}
+		) sb ON ou.id = sb.user_id
+		LEFT JOIN oa_department od ON ou.dept_id = od.id
+		WHERE
+			ou.company_id = #{companyId}
+		and ou.dept_id IN
+		<foreach collection="deptIds" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+		</foreach>
+		<if test="userDraw != 0">
+			and ou.user_draw = #{userDraw}
+		</if>
+		<!-- 条件查询-未定薪 1，已定薪2 -->
+		<if test="isConfirm == 1">
+			and not exists(select * from spw_basic_salary a where a.user_id = ou.id)
+		</if>
+		<if test="isConfirm == 2">
+			and exists(select * from spw_basic_salary a where a.user_id = ou.id)
+		</if>
+		order by ou.id
+		<if test="pageSize != null">
+	    	limit #{startRow},#{pageSize}
+	  	</if>
+	</select>
+	
+	<select id="getCurMonthSalaryInfoCount" parameterType="map" resultType="int">
+		SELECT
+			count(ou.id) num
+		FROM
+			oa_user ou
+		LEFT JOIN (
+			SELECT
+				user_id
+			FROM
+				spw_basic_salary
+			WHERE
+				company_id = #{companyId}
+		) sb ON ou.id = sb.user_id
+		LEFT JOIN oa_department od ON ou.dept_id = od.id
+		WHERE
+			ou.company_id = #{companyId}
+		and ou.dept_id IN
+		<foreach collection="deptIds" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+		</foreach>
+		<if test="userDraw != 0">
+			and ou.user_draw = #{userDraw}
+		</if>
+		<!-- 条件查询-全部0，未定薪 1，已定薪2 -->
+		<if test="isConfirm == 1">
+			and not exists(select * from spw_basic_salary a where a.user_id = ou.id)
+		</if>
+		<if test="isConfirm == 2">
+			and exists(select * from spw_basic_salary a where a.user_id = ou.id)
+		</if>
+	</select>
+	
+	<!-- 添加调薪记录 -->
+	<insert id="addSalaryLog" parameterType="map">
+		INSERT INTO spw_basic_pay_log (
+				user_id,
+				before_basic_pay,
+				after_basic_pay,
+				adjust_range,
+				force_time,
+				adjust_reason,
+				company_id,
+				operate_user_id,
+				is_init
+			)
+			VALUES
+				(
+					#{setUserId},
+					AES_ENCRYPT(#{beforeBasicPay},#{pswKey}),
+					AES_ENCRYPT(#{afterBasicPay},#{pswKey}),
+					#{adjustRange},
+					str_to_date(#{forceTime}, '%Y-%m-%d'),
+					#{adjustReason},
+					#{companyId},
+					#{operateUserId},
+					#{isInit}
+				)
+	</insert>
+	
+	<!-- 添加薪资-设置初始薪资 使用 -->
+	<insert id="addSalary" parameterType="map">
+		INSERT INTO spw_basic_salary (
+				user_id,
+				basic_pay,
+				company_id
+			)
+			VALUES
+				(
+					#{setUserId},
+					AES_ENCRYPT(#{basicPay},#{pswKey}),
+					#{companyId}
+				)
+	</insert>
+	
+	<!-- 查询调薪记录  - 调薪页面时右侧的调薪记录-->
+	<select id="getAdjustSalaryLog" parameterType="java.util.Map" resultMap="LogResultMap" >
+		SELECT
+			t.id,
+			date_format(t.force_time,'%Y-%m-%d') force_time,
+			IFNULL(AES_DECRYPT(t.before_basic_pay,#{pswKey}),0) beforeBasicPay,
+			IFNULL(AES_DECRYPT(t.after_basic_pay,#{pswKey}),0) afterBasicPay,
+			t.adjust_reason,
+			t.adjust_range,
+			t.is_init
+		FROM
+			spw_basic_pay_log t
+		WHERE
+			t.company_id = #{companyId}
+		AND t.user_id = #{setUserId}
+		order by t.force_time
+	</select>
+	
+	<!-- 获取当前月份调薪操作记录列表总数 -->
+	<select id="getCurMonthBasicPayLogListCount" parameterType="java.util.Map" resultType="int">
+		SELECT count(*)
+		FROM spw_basic_pay_log t
+		LEFT JOIN oa_user u ON u.id=t.user_id
+		WHERE u.company_id=#{companyId}
+		<if test="deptIds != null">
+			AND u.dept_id IN
+			<foreach collection="deptIds" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		</if>
+		AND date_format(t.create_date,'%Y-%m')=date_format(now(),'%Y-%m')
+		AND t.is_init=0
+	</select>
+	
+	<!-- 获取当前月份调薪操作记录列表 -->
+	<select id="getCurMonthBasicPayLogList" parameterType="java.util.Map" resultMap="LogResultMap">
+		SELECT
+		<include refid="Base_Column_List" />,
+		t.company_id,
+		date_format(t.create_date,'%Y-%m-%d %H:%i:%s') createTime,
+		(SELECT name FROM oa_user WHERE id=user_id) as userName,
+		(SELECT user_no FROM oa_user WHERE id=user_id) as empNO,
+		(SELECT join_date FROM oa_user WHERE id=user_id) as joinDate,
+		(SELECT name FROM oa_user WHERE id=operate_user_id) as operateUserName,
+		(SELECT dept_id FROM oa_user WHERE id=user_id) as deptId,
+		(SELECT name FROM oa_department WHERE id=deptId) as deptName
+		FROM spw_basic_pay_log t
+		LEFT JOIN oa_user u ON u.id=t.user_id
+		WHERE u.company_id=#{companyId}
+		<if test="deptIds != null">
+			AND u.dept_id IN
+			<foreach collection="deptIds" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		</if>
+		AND date_format(t.create_date,'%Y-%m')=date_format(now(),'%Y-%m')
+		AND t.is_init=0
+		ORDER BY t.create_date desc
+		limit ${startPos}, ${pageSize}
+	</select>
+	
+	<!-- 获取调薪记录列表（用于调薪统计，请求参数：companyId,deptIds,生效时间） -->
+	<select id="getSalaryBasicLogList" parameterType="java.util.Map" resultMap="LogResultMap">
+		SELECT
+		<include refid="Base_Column_List" />,
+		(SELECT name FROM oa_user WHERE id=user_id) as userName,
+		(SELECT user_no FROM oa_user WHERE id=user_id) as empNo,
+		(SELECT date_format(join_date,'%Y-%m-%d') FROM oa_user WHERE id=user_id) as joinDate,
+		(SELECT name FROM oa_user WHERE id=operate_user_id) as operateUserName,
+		(SELECT dept_id FROM oa_user WHERE id=user_id) as deptId,
+		(SELECT name FROM oa_department WHERE id=deptId) as deptName,
+		date_format(spw_basic_pay_log.create_date,'%Y-%m-%d %H:%i:%s') createTime
+		FROM spw_basic_pay_log
+		WHERE company_id=#{companyId}
+		<if test="deptIds != null">
+			AND user_id in (SELECT user_id FROM oa_user 
+			WHERE dept_id IN
+			<foreach collection="deptIds" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+			AND company_id=#{companyId})
+		</if>
+		AND date_format(force_time,'%Y-%m-%d') &gt;= #{startDate}
+		AND date_format(force_time,'%Y-%m-%d') &lt;= #{endDate}
+		AND is_init=#{isInit}
+		ORDER BY create_date desc
+		<if test="pageSize != null">
+	  	LIMIT ${startPos}, ${pageSize}
+	  	</if>
+	</select>
+	
+	<!-- 获取调薪记录列表总数（用于调薪统计，请求参数：companyId,deptId(为空时代表查询全公司),生效时间） -->
+	<select id="getSalaryBasicLogListCount" parameterType="java.util.Map" resultType="int">
+		SELECT
+		count(*)
+		FROM spw_basic_pay_log
+		WHERE company_id=#{companyId}
+		<if test="deptIds != null">
+			AND user_id in (SELECT user_id FROM oa_user 
+			WHERE dept_id IN
+			<foreach collection="deptIds" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+			AND company_id=#{companyId})
+		</if>
+		AND date_format(force_time,'%Y-%m-%d') &gt;= #{startDate}
+		AND date_format(force_time,'%Y-%m-%d') &lt;= #{endDate}
+		AND is_init=#{isInit}
+	</select>
+	
+	<!-- 获取生效时间为近三天的“最新”薪资调整数据   用作定时器刷新时使用。 -->
+	<select id="getRecentSalaryInfo" parameterType="java.util.Map" resultMap="SalaryResultMap">
+		SELECT
+			t.company_id,
+			t.user_id,
+			substring_index(group_concat(CAST(t.abp AS CHAR)),',',-1) basic_pay
+		FROM
+			(
+				SELECT
+					sb.user_id,
+					sb.company_id,
+					IFNULL(AES_DECRYPT(sb.after_basic_pay,#{pswKey}),0) abp,
+					sb.force_time,
+					sb.create_date
+				FROM
+					spw_basic_pay_log sb
+				WHERE
+					sb.force_time &lt;= CURDATE()
+				AND sb.force_time >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+			) t
+		GROUP BY
+			t.company_id,
+			t.user_id
+	</select>
+	
+	<!-- 定时器刷新工资 -->
+	<update id="updateSalaryInfo" parameterType="java.util.Map">
+		UPDATE spw_basic_salary
+		SET basic_pay = AES_ENCRYPT(#{basicPay},#{pswKey}),
+		where user_id = #{userId}
+		and company_id = #{companyId}
+	</update>
+  
+  	<!-- 删除调薪记录 -->
+  	<delete id="deleteSalaryLog" parameterType="java.util.Map">
+  		delete from spw_basic_pay_log where id = #{id}
+  	</delete>
+</mapper>

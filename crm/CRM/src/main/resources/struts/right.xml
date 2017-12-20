@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="right" extends="base"  namespace="/right">
+		<action name="*_*" class="com.crm.action.RightAction" method="{1}{2}">
+			<result name="role">/WEB-INF/Template/role/role.jsp</result>
+			<result name="roleRight">/WEB-INF/Template/role/role_right.jsp</result>
+			<result name="checkHasRight">/WEB-INF/Template/role/role_right_has.jsp</result>
+			
+			<result name="right">/WEB-INF/Template/role/sys_right.jsp</result>
+			<result name="rightEdit">/WEB-INF/Template/role/sys_right_edit.jsp</result>
+			
+			<result name="moduser">/WEB-INF/Template/role/moduser.jsp</result>
+			<result name="users">/WEB-INF/Template/role/user.jsp</result>
+			<result name="userRole">/WEB-INF/Template/role/user_role.jsp</result>
+			
+			
+		</action>
+		
+	</package>
+	
+	
+</struts>    

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="service" extends="base"  namespace="/service">
+		<action name="*_*" class="com.crm.action.ServiceAction" method="{1}{2}">
+			
+		
+			<result name="serviceUpdate">/WEB-INF/Template/servicemanagement/serviceset.jsp</result>
+			<result name="serviceDetail">/WEB-INF/Template/servicemanagement/serviceset.jsp</result>
+			<result name="serviceAssign">/WEB-INF/Template/servicemanagement/serviceassign.jsp</result>
+			
+		</action>
+		
+	</package>
+	
+	
+</struts>    

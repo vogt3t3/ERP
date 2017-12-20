@@ -1,0 +1,28 @@
+package com.crm.service.impl;
+
+import com.crm.model.Bas_dict_t;
+import com.crm.service.DictService;
+/**
+ * 数据字典实现类
+ * @author yuduan
+ *
+ */
+public class DictServiceImpl extends BaseServiceImpl implements DictService {
+
+	/**
+	 * 基础数据字典-保存更新、删除
+	 * @param b 基础数据字典
+	 */
+	@Override
+	public void saveDict(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void delDict(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+}

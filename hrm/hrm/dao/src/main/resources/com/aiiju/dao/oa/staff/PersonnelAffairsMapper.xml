@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.staff.IPersonnelAffairsDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.staff.PersonnelAffairs">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="abstract_date" jdbcType="TIMESTAMP" property="abstractDate" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="remark" jdbcType="LONGVARCHAR" property="remark" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+      id, type, user_id, dept_id, status, abstract_date, company_id,remark, create_date, update_date
+  </sql>
+  
+  <!-- 通过userid查询 -->
+  <select id="selectByUserId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from oa_personnel_affairs
+    where id = #{id} 
+  </select>
+  
+      <!-- 按条件查询 -->
+  <select id="selectByExample" parameterType="java.util.Map" resultMap="BaseResultMap">
+  select 
+    <include refid="Base_Column_List"/>
+     from oa_personnel_affairs
+    <where>
+      <if test="type != null">
+       and  type = #{type,jdbcType=TINYINT}
+      </if>
+      <if test="empId != null">
+       and  user_id = #{empId}
+      </if>
+      <if test="deptId != null">
+       and  dept_id = #{deptId,jdbcType=BIGINT}
+      </if>
+      <if test="status != null">
+       and  status = #{status,jdbcType=TINYINT}
+      </if>
+      <if test="abstractDate != null">
+       and  abstract_date = #{abstractDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="companyId != null">
+       and  company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="createDate != null">
+       and  update_date = #{createDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateDate != null">
+       and  create_date = #{updateDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="remark != null">
+       and  remark = #{remark,jdbcType=LONGVARCHAR}
+      </if>
+   	<if test="startPos != null">
+      limit #{startPos} , #{pageSize}
+    </if>
+    </where>
+  </select>
+  
+  <!-- 通过id删除 -->
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from oa_personnel_affairs
+    where id = #{id}
+  </delete>
+  
+    <select id="countWork" parameterType="java.util.Map" resultType="java.lang.Integer">
+ 	select count(*) from oa_personnel_affairs 
+ 	where company_id=#{companyId} 
+ 	and type=#{type} 
+ 	and (create_date BETWEEN CONCAT(DATE_FORMAT(LAST_DAY(now()),'%Y-%m-'),'01') and now())
+  </select>
+  
+  <delete id="deleteByUserId" parameterType="java.util.Map">
+    delete from oa_personnel_affairs
+    where user_id in
+       <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+      #{item}  
+    </foreach>
+  </delete>
+  
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.aiiju.bean.oa.staff.PersonnelAffairs">
+    insert into oa_personnel_affairs
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="type != null">
+        type,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="deptId != null">
+        dept_id,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="abstractDate != null">
+        abstract_date,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="deptId != null">
+        #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="abstractDate != null">
+        #{abstractDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+ 
+	<!-- 按条件更新 -->
+  <update id="updateByExample" parameterType="com.aiiju.bean.oa.staff.PersonnelAffairs">
+    update oa_personnel_affairs
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="deptId != null">
+        dept_id = #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="abstractDate != null">
+        abstract_date = #{abstractDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+</mapper>

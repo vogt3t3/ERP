@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.salary.ISpwSalaryPayDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.salary.SpwSalaryPay">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="staff_no" jdbcType="VARCHAR" property="staffNo" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="dept_name" jdbcType="VARCHAR" property="deptName" />
+    <result column="release_time" jdbcType="VARCHAR" property="releaseTime" />
+    <result column="basic_pay" jdbcType="VARCHAR" property="basicPay" />
+    <result column="percentage" jdbcType="VARCHAR" property="percentage" />
+    <result column="year_end_bonuses" jdbcType="VARCHAR" property="yearEndBonuses" />
+    <result column="leave_days" jdbcType="VARCHAR" property="leaveDays" />
+    <result column="leave_deduct_money" jdbcType="VARCHAR" property="leaveDeductMoney" />
+    <result column="overtime_pay" jdbcType="VARCHAR" property="overtimePay" />
+    <result column="attendance_deduct" jdbcType="VARCHAR" property="attendanceDeduct" />
+    <result column="bonus" jdbcType="VARCHAR" property="bonus" />
+    <result column="welfare" jdbcType="VARCHAR" property="welfare" />
+    <result column="total_deduct" jdbcType="VARCHAR" property="totalDeduct" />
+    <result column="social_security_pays" jdbcType="VARCHAR" property="socialSecurityPays" />
+    <result column="provident_fund_pay" jdbcType="VARCHAR" property="providentFundPay" />
+    <result column="withholding_tax" jdbcType="VARCHAR" property="withholdingTax" />
+    <result column="need_payment" jdbcType="VARCHAR" property="needPayment" />
+    <result column="two_level_pwd" jdbcType="VARCHAR" property="twoLevelPwd" />
+    <result column="is_del" jdbcType="VARCHAR" property="isDel" />
+    <result column="is_withdraw" jdbcType="VARCHAR" property="isWithdraw" />
+    <result column="pid" jdbcType="BIGINT" property="pid" />
+    <result column="is_send" jdbcType="VARCHAR" property="isSend" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+  	<if test=" pswKey != null">
+	  	IFNULL(AES_DECRYPT(basic_pay,#{pswKey}),0) basic_pay,
+	  	IFNULL(AES_DECRYPT(percentage,#{pswKey}),0) percentage,
+	  	IFNULL(AES_DECRYPT(year_end_bonuses,#{pswKey}),0) year_end_bonuses,
+	  	IFNULL(AES_DECRYPT(leave_deduct_money,#{pswKey}),0) leave_deduct_money,
+	  	IFNULL(AES_DECRYPT(overtime_pay,#{pswKey}),0) overtime_pay,
+	  	IFNULL(AES_DECRYPT(attendance_deduct,#{pswKey}),0) attendance_deduct,
+	  	IFNULL(AES_DECRYPT(bonus,#{pswKey}),0) bonus,
+	  	IFNULL(AES_DECRYPT(welfare,#{pswKey}),0) welfare,
+	  	IFNULL(AES_DECRYPT(total_deduct,#{pswKey}),0) total_deduct,
+	  	IFNULL(AES_DECRYPT(social_security_pays,#{pswKey}),0) social_security_pays,
+	  	IFNULL(AES_DECRYPT(provident_fund_pay,#{pswKey}),0) provident_fund_pay,
+	  	IFNULL(AES_DECRYPT(withholding_tax,#{pswKey}),0) withholding_tax,
+	  	IFNULL(AES_DECRYPT(need_payment,#{pswKey}),0) need_payment,
+  	</if>
+  	id,company_id,staff_no,name,email,phone,dept_name,release_time,
+  	leave_days,
+  	is_del,is_withdraw,
+  	pid,is_send,create_time,update_time
+  </sql>
+  
+  
+  
+  <delete id="deleteById" parameterType="java.lang.Long">
+      delete from spw_salary_pay
+    where pid = #{pid}
+  </delete>
+  
+  <insert id="inserts" parameterType="java.util.List">
+  	insert into spw_salary_pay 
+  	<trim prefix="(" suffix=")" suffixOverrides="," >
+        company_id,
+        staff_no,
+        name,
+        email,
+        phone,
+        dept_name,
+        release_time,
+        basic_pay,
+        percentage,
+        year_end_bonuses,
+        leave_days,
+        leave_deduct_money,
+        overtime_pay,
+        attendance_deduct,
+        bonus,
+        welfare,
+        total_deduct,
+        social_security_pays,
+        provident_fund_pay,
+        withholding_tax,
+        need_payment,
+        is_del,
+        is_withdraw,
+        pid,
+        is_send
+    </trim>
+  	values
+   <foreach collection ="list" item="item" index= "index" separator ="," >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        #{item.companyId},
+        #{item.staffNo},
+        #{item.name},
+        #{item.email},
+        #{item.phone},
+        #{item.deptName},
+        #{item.releaseTime},
+        AES_ENCRYPT(#{item.basicPay},#{item.pswKey}),
+      	AES_ENCRYPT(#{item.percentage},#{item.pswKey}),
+        AES_ENCRYPT(#{item.yearEndBonuses},#{item.pswKey}),
+        #{item.leaveDays},
+        AES_ENCRYPT(#{item.leaveDeductMoney},#{item.pswKey}),
+        AES_ENCRYPT(#{item.overtimePay},#{item.pswKey}),
+        AES_ENCRYPT(#{item.attendanceDeduct},#{item.pswKey}),
+        AES_ENCRYPT(#{item.bonus},#{item.pswKey}),
+        AES_ENCRYPT(#{item.welfare},#{item.pswKey}),
+        AES_ENCRYPT(#{item.totalDeduct},#{item.pswKey}),
+        AES_ENCRYPT(#{item.socialSecurityPays},#{item.pswKey}),
+        AES_ENCRYPT(#{item.providentFundPay},#{item.pswKey}),
+        AES_ENCRYPT(#{item.withholdingTax},#{item.pswKey}),
+        AES_ENCRYPT(#{item.needPayment},#{item.pswKey}),
+        #{item.isDel},
+        #{item.isWithdraw},
+        #{item.pid},
+        #{item.isSend},
+    </trim>
+   </foreach>
+  </insert>
+  
+  <select id="getSalaryInfoCountByParams" parameterType="java.util.Map" resultType="java.lang.Integer">
+	  select 
+	  count(id)
+	  from spw_salary_pay
+	  <where>
+	  	<if test="companyId != null" >
+	  	and company_id=#{companyId}
+	  	</if>
+	  	<if test="pid != null" >
+	  	and pid=#{pid}
+	  	</if>
+	  </where>
+  </select>
+  <!-- 根据条件（pid）获取薪酬列表 -->
+  <select id="selectSalaryInfoByPid" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"/> FROM spw_salary_pay WHERE pid=#{pid} and company_id = #{companyId}
+  	order by create_time DESC
+  	<if test="pageSize != null">
+    	limit #{startRow},#{pageSize}
+  	</if>
+  </select>
+  
+  <!-- 根据pid批量更新is_email_send字段和is_send字段 -->
+  <update id="updateStatusByPid">
+	update spw_salary_pay
+	<trim prefix="set" suffixOverrides=",">
+		<if test="smsSuccIds != null">
+		<trim prefix="is_send=case" suffix="end,">
+			<foreach collection="smsSuccIds" item="item" index="index">
+				when id=#{item} then 1
+			</foreach>
+		</trim>
+		</if>
+		<if test="mailSuccIds != null">
+		<trim prefix="is_email_send=case" suffix="end,">
+			<foreach collection="mailSuccIds" item="item" index="index">
+				when id=#{item} then 1
+			</foreach>
+		</trim>
+		</if>
+		<if test="isDel != null">
+			is_del = #{isDel}
+		</if>
+	</trim>
+	<where>
+	<if test="pid != null">
+		pid=#{pid}
+	</if>
+	<if test="id != null">
+		AND id=#{id}
+	</if>
+	</where>
+  </update>
+  
+  <!-- 根据Id和动态列名动态查询用户工资条数据 -->
+  <select id="selectSalaryPayInfoDynamics" resultMap="BaseResultMap" parameterType="java.util.Map" statementType="STATEMENT">
+    SELECT 
+        ${showFields}
+    FROM spw_salary_pay
+    WHERE id = ${id}
+  </select>
+  
+  <!-- 根据条件（id）获取薪酬 -->
+  <select id="getMySalaryPay" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	SELECT <include refid="Base_Column_List"/> FROM spw_salary_pay WHERE id=#{id} and is_withdraw = 0  <!-- and company_id = #{companyId} -->
+  </select>
+  
+  <!-- 查询二级密码 -->
+  <select id="getSecondPwd"  parameterType="java.util.Map" resultType="java.lang.String">
+  		select t.two_level_pwd from oa_user t 
+			where t.login_user_id = #{loginUserId}
+  </select>
+  
+  <!-- 根据PID更新薪酬明细表的撤回状态 -->
+  <update id="updatesalaryPayByPid" parameterType="java.util.Map">
+	    UPDATE spw_salary_pay
+	    <set>
+	        is_withdraw = #{isWithdraw},
+	        update_time=now()
+	    </set>
+	    WHERE pid=#{id}
+  </update>
+</mapper>

@@ -1,0 +1,171 @@
+package com.crm.action;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.interceptor.RequestAware;
+import org.apache.struts2.interceptor.SessionAware;
+
+import com.crm.model.Sal_chance_t;
+import com.crm.model.Sal_plan_t;
+import com.crm.service.SalService;
+public class SaleAction implements RequestAware,SessionAware{
+	
+	@Resource(name="SalService")
+	private SalService salService;
+	//潜在客户id
+	private  int cid;
+	//开发计划id
+	private int pid;
+	//客户
+	private Sal_chance_t sal_chance_t;
+	private Sal_plan_t sal_plan_t;
+	private Map request;
+	private	Map session;
+	/**
+	 * 添加销售机会
+	 * @return
+	 */
+	public String addChance(){
+		salService.saveOrUpdateChance(sal_chance_t);
+		request.put("sal_chance_t",sal_chance_t );
+		
+		return "chanceDetail";
+	}
+	/**
+	 * 营销机会表
+	 */
+	public String listChance(){
+
+		List<Sal_chance_t> list=salService.listchance();
+		System.out.println(list.get(0));
+		
+		request.put("chanceList", list);
+		return "chanceList";
+		}
+	/**
+	 * 营销机会详细信息
+	 * @return
+	 */
+	public String detailChance(){
+		Sal_chance_t c =salService.find(cid, Sal_chance_t.class);
+		request.put("sal_chance_t", c);
+		return "chanceDetail";
+	}
+	
+	/**
+	 * 打开创建销售机会界面
+	 */
+
+	public String openCreateChance(){
+		return "chanceDetail";}
+
+	
+	
+	/**
+	 * 更新销售机会信息
+	 * @return
+	 */
+	public String updateChance(){
+		salService.saveOrUpdate(sal_chance_t);
+		return "chanceUpdate";
+	}
+	
+	/**
+	 * 打开制定计划信息
+	 * @return
+	 */
+	public String detailPlan(){
+		Sal_chance_t c =salService.find(cid, Sal_chance_t.class);
+		List<Sal_plan_t> list=salService.listplan(cid);
+		request.put("sal_chance_t", c);
+		request.put("sal_plan_ts",list);
+		return "planDetail";
+	}
+	
+	/**
+	 * 更新制定开发计划
+	 * @return
+	 */
+	public String addPlan(){
+		sal_plan_t.setPlan_chc_id(cid);
+		salService.saveOrUpdatePlan(sal_plan_t);
+		
+		Sal_chance_t c =salService.find(cid, Sal_chance_t.class);
+		List<Sal_plan_t> list=salService.listplan(cid);
+		request.put("sal_chance_t", c);
+		request.put("sal_plan_ts",list);
+		
+        return "planDetail";
+	}
+	
+	 /**
+	   *  执行开发计划
+	   *  */
+	public String  executePlan(){
+		sal_plan_t.setPlan_chc_id(cid);
+		salService.saveOrUpdatePlan(sal_plan_t);
+		
+		Sal_chance_t c =salService.find(cid, Sal_chance_t.class);
+		List<Sal_plan_t> list=salService.listplan(cid);
+		request.put("sal_chance_t", c);
+		request.put("sal_plan_ts",list);
+		
+		/*Sal_chance_t c =salService.find(cid, Sal_chance_t.class);
+		List<Sal_plan_t> list=salService.listplan(cid);
+		request.put("sal_chance_t", c);
+		request.put("sal_plan_ts",list);*/
+		return "planExecute";
+		
+	}
+	public String  delPlan(){
+		salService.delPlan(sal_plan_t);
+		return "planDel";
+	}
+	
+	@Override
+	public void setSession(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		session=arg0;
+	}
+
+	@Override
+	public void setRequest(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		request=arg0;
+	}
+	public SalService getSalService() {
+		return salService;
+	}
+	public void setSalService(SalService salService) {
+		this.salService = salService;
+	}
+	public int getCid() {
+		return cid;
+	}
+	public void setCid(int cid) {
+		this.cid = cid;
+	}
+	public Sal_chance_t getSal_chance_t() {
+		return sal_chance_t;
+	}
+	public void setSal_chance_t(Sal_chance_t sal_chance_t) {
+		this.sal_chance_t = sal_chance_t;
+	}
+	public Sal_plan_t getSal_plan_t() {
+		return sal_plan_t;
+	}
+	public void setSal_plan_t(Sal_plan_t sal_plan_t) {
+		this.sal_plan_t = sal_plan_t;
+	}
+	public int getPid() {
+		return pid;
+	}
+	public void setPid(int pid) {
+		this.pid = pid;
+	}
+	
+
+}

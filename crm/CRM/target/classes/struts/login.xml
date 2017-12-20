@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="login" extends="base"  namespace="/">
+		<action name="login" class="com.crm.action.LoginAction" method="login">
+			<result name="success" type="redirectAction">index</result>
+			<result name="fail">/login.jsp</result>
+		</action>
+		
+		<action name="loginout" class="com.crm.action.LoginAction" method="loginout">
+			
+			<result>/login.jsp</result>
+		</action>
+		
+		<action name="index" >
+   			<result>/WEB-INF/Index.jsp</result>
+   		</action>
+		
+	</package>
+	
+	
+</struts>    

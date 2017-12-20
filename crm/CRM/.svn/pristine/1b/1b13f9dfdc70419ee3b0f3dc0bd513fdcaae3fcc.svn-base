@@ -1,0 +1,72 @@
+package com.crm.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Query;
+
+
+import com.crm.model.Cst_indent_t;
+import com.crm.model.Sal_chance_t;
+import com.crm.model.Sal_plan_t;
+
+import com.crm.service.IndentService;
+import com.crm.service.SalService;
+/**
+ * 订单实现类
+ * @author yuduan
+ *
+ *
+ */
+@Service("SalService")
+public class IndentServiceImpl extends BaseServiceImpl implements IndentService {
+
+	/**
+	 * 订单-保存、更新
+	 * @param p 
+	 */
+	@Override
+	public void saveOrUpdateIndent(Cst_indent_t i) {
+		// TODO Auto-generated method stub
+		saveOrUpdate(i);
+	}
+	/**
+	 * 订单-删除
+	 * @param i
+	 */
+	@Override
+	public void deleteIndent(Cst_indent_t i) {
+		// TODO Auto-generated method stub
+		delete(i);
+	}
+	/**
+	 * 订单-查询
+	 * @param i
+	 * @return
+	 */
+	@Override
+	public List<Cst_indent_t> showIndent(String iname, String cname) {
+		// TODO Auto-generated method stub
+		StringBuffer hql=new StringBuffer();
+		boolean isFirst=true;
+		hql.append("from Cst_indent_t d ");
+		if(StringUtils.isEmpty(iname))
+			if(isFirst)
+				{hql.append("where d.indent_id='"+iname+"'");isFirst=false;}
+			else hql.append("d.dict_type='"+iname+"'");
+		if(StringUtils.isEmpty(cname))
+			if(isFirst)
+			hql.append("where d.cst_customer_name='"+cname+"'");
+		else hql.append("d.cst_customer_name='"+cname+"'");
+		
+		System.out.println(hql.toString());
+		return getQuery(hql.toString()).list();
+	}
+
+
+	
+	
+}

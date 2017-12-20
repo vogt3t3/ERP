@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IHistoryLogDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.HistoryLog">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="scene_type" jdbcType="TINYINT" property="sceneType" />    
+    <result column="ref_id" jdbcType="INTEGER" property="refId" />
+    <result column="num" jdbcType="INTEGER" property="num" />
+    <result column="receive_uid" jdbcType="INTEGER" property="receiveUid" />
+	<result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="is_read" jdbcType="TINYINT" property="isRead" />
+    <result column="is_forward" jdbcType="TINYINT" property="isForward" />
+    <result column="forward" jdbcType="VARCHAR" property="forward" />
+	<result column="create_date" jdbcType="VARCHAR" property="createDate" />
+	 <association property="userName" column="receive_uid" select="selectName"/>
+	 <association property="receiveLogo" column="receive_uid" select="selectReceiveLogo"/>
+	 <association property="receiveLoginUserID" column="receive_uid" select="selectReceiveLoginUserID"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+  id,company_id,scene_type,ref_id,receive_uid,is_del,is_read,is_forward,DATE_FORMAT(create_date,'%Y-%m-%d %H:%i:%s') create_date
+  </sql>
+  
+        <select id="selectName" resultType="java.lang.String">
+  select name from oa_user where id = #{receiveUid} 
+  </select>
+        <select id="selectReceiveLoginUserID" resultType="java.lang.Long">
+  	select login_user_id from oa_user where id = #{receiveUid} 
+  </select>
+  
+       <select id="selectReceiveLogo" resultType="java.lang.String">
+	  		select url from oa_file where fid = #{receiveUid} and business_id =5
+	  </select>
+  
+  <insert id="addHistoryLog" parameterType="com.aiiju.bean.oa.workStage.HistoryLog" >
+   insert into zds_history_log(company_id,scene_type,ref_id,receive_uid)values
+     <foreach collection="list" item="item" index="index" separator=",">
+          (#{item.companyId},#{item.sceneType},#{item.refId},#{item.receiveUid})
+     </foreach>
+  </insert>
+  
+  <update id="updateHistoryLog" parameterType="com.aiiju.bean.oa.workStage.HistoryLog" >
+	  update zds_history_log 
+	  <set>
+	   <if test="isDel!=null">
+	    is_del=#{isDel},
+	   </if>
+	   <if test="isRead!=null">
+	    is_read=#{isRead},
+	   </if>
+	   <if test="isForward!=null">
+	    is_forward=#{isForward},
+	   </if>
+	  </set>
+	  where ref_id=#{refId}  and company_id=#{companyId} 
+	  
+	   <if test="sceneType!=null">
+	     and scene_type=#{sceneType}
+	   </if>
+	   <if test="id !=null">
+	     and id=#{id}
+	   </if>
+	   <if test="receiveUid!=null">
+	     and receive_uid = #{receiveUid}
+	   </if>
+	 
+  </update>
+  
+   <select id="getHistoryLogs" parameterType="java.util.Map" resultMap="BaseResultMap">
+	   select   
+	   <include refid="Base_Column_List"/>
+	   from zds_history_log 
+	   <where>
+	   <if test="sceneType!=null">
+	   and scene_type=#{sceneType}
+	   </if>
+	   <if test="refId!=null">
+	   and ref_id=#{refId}
+	   </if>
+	    <if test="companyId!=null">
+	   and company_id=#{companyId}
+	   </if>
+	   <if test="isDel!=null">
+	   and is_del=#{isDel}
+	   </if>
+	   <if test="isRead!=null">
+	   and is_read=#{isRead}
+	   </if>
+	   <if test="isForward!=null">
+	   and is_forward=#{isForward}
+	   </if>
+	   <if test="order!=null">
+	   order by create_date ${order} 
+	   </if>
+	   </where>
+  </select>
+  <select id="countHistoryLog" parameterType="java.util.Map" resultType="java.lang.Integer">
+  	   select  count(*) from zds_history_log 
+	   <where>
+	   <if test="sceneType!=null">
+	   and scene_type=#{sceneType}
+	   </if>
+	   <if test="refId!=null">
+	   and ref_id=#{refId}
+	   </if>
+	    <if test="companyId!=null">
+	   and company_id=#{companyId}
+	   </if>
+	   <if test="isDel!=null">
+	   and is_del=#{isDel}
+	   </if>
+	   <if test="isRead!=null">
+	   and is_read=#{isRead}
+	   </if>
+	   <if test="isForward!=null">
+	   and is_forward=#{isForward}
+	   </if>
+	   order by create_date 
+	   </where>
+  
+  </select>
+  <!-- 一次插入一条历史记录 -->
+  <insert id="insertHistorySeclective" parameterType="com.aiiju.bean.oa.workStage.HistoryLog" keyProperty="id">
+    insert into zds_history_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="sceneType != null" >
+        scene_type,
+      </if>
+      <if test="refId != null" >
+        ref_id,
+      </if>
+      <if test="receiveUid != null" >
+        receive_uid,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="isRead != null" >
+        is_read,
+      </if>
+      <if test="isForward != null" >
+        is_forward,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        #{companyId},
+      </if>
+      <if test="sceneType != null" >
+        #{sceneType},
+      </if>
+      <if test="refId != null" >
+        #{refId},
+      </if>
+      <if test="receiveUid != null" >
+        #{receiveUid},
+      </if>
+      <if test="createDate != null" >
+        #{createDate},
+      </if>
+      <if test="isDel != null" >
+        #{isDel},
+      </if>
+      <if test="isRead != null" >
+        #{isRead},
+      </if>
+      <if test="isForward != null" >
+        #{isForward},
+      </if>
+    </trim>
+    </insert>
+	<!-- 根据条件修改任务的历史记录 -->
+	<update id="updateTaskHistoryByMap" parameterType="java.util.Map" >
+	  update zds_history_log 
+	  <set>
+	      <if test="isDel != null" >
+	        is_del=#{isDel},
+	      </if>
+	      <if test="isRead != null" >
+	        is_read=#{isRead},
+	      </if>
+	      <if test="isForward != null" >
+	         is_forward=#{isForward}
+	      </if>
+	  </set>
+	  <where>
+	  	   <if test="companyId!=null">
+	       and  company_id = #{companyId}
+		   </if>
+		   <if test="refId">
+		     and ref_id = #{refId}
+		   </if>
+		   <if test="sceneType!=null">
+		     and scene_type = #{sceneType}
+		   </if>
+		   <if test="receiveUid!=null">
+		     and receive_uid = #{receiveUid}
+		   </if>
+		   <if test="isForwardCon!=null">
+		     and is_forward = #{isForwardCon}
+		   </if>
+	  </where>
+  </update>
+  
+  <!-- 批量操作历史记录为已读 -->
+  <update id="batchUpdateHistoryLog" parameterType="java.util.Map" >
+  		update zds_history_log 
+  		Set is_read=1
+	  <where>
+		 and  is_read = 0
+		   <if test="sceneType!=null">
+		     and scene_type = #{sceneType}
+		   </if>
+	  	   <if test="companyId!=null">
+	        and company_id = #{companyId}
+		   </if>
+		   <if test="userId">
+		     and receive_uid = #{userId}
+		   </if>
+		
+	  </where>
+	 
+  </update>
+  
+  
+  <select id="getIncidentNum" parameterType="java.util.Map"  resultType="java.util.Map" >
+		SELECT  (
+					(SELECT COUNT(t.id) from zds_task_info t LEFT JOIN zds_history_log h on t.id = h.ref_id  and t.company_id=#{companyId} and h.receive_uid =#{userId}  and h.scene_type =2
+						where t.send_to_person = #{userId} and (t.step =0 or t.step =1)  
+						<![CDATA[
+							and	t.expire_date > now()
+						]]>
+						 and h.is_read =0)+
+					(SELECT COUNT(f.id) from zds_flow_info f LEFT JOIN zds_history_log l ON f.id = l.ref_id and l.receive_uid =#{userId} and f.company_id=#{companyId}  and l.scene_type =3
+						where  l.is_read =0 and (f.step = 0 or f.step=1))) pendingNum,
+				(SELECT COUNT(w.id) from zds_work_log w LEFT JOIN zds_history_log z on w.id =z.ref_id and w.company_id=#{companyId} and z.receive_uid =#{userId}   and scene_type =1 
+				WHERE is_read =0 and w.is_withdraw =0  ) workReportNum  
+		from dual
+  
+
+  </select>
+  
+  
+  
+  
+  <select id="getScenesNum" parameterType="java.util.Map"  resultType="java.util.Map" >
+		SELECT  
+				(SELECT COUNT(t.id) from zds_task_info t LEFT JOIN zds_history_log h on t.id = h.ref_id  and t.company_id=#{companyId} and h.receive_uid =#{userId}  and h.scene_type =2
+					where t.send_to_person = #{userId} and (t.step =0 or t.step =1)
+					
+					<![CDATA[
+						and t.expire_date > now()
+						]]>
+					
+					 and h.is_read =0)taskInfoNum,
+				(SELECT COUNT(f.id) from zds_flow_info f LEFT JOIN zds_history_log l ON f.id = l.ref_id and l.receive_uid =#{userId} and f.company_id=#{companyId}  and l.scene_type =3
+					where  l.is_read =0 and (f.step = 0 or f.step=1)) flowInfoNum,
+				(SELECT COUNT(w.id) from zds_work_log w LEFT JOIN zds_history_log z on w.id =z.ref_id and w.company_id=#{companyId} and z.receive_uid =#{userId}   and scene_type =1 
+				WHERE is_read =0 and w.is_withdraw =0  ) workReportNum  
+		from dual
+  
+
+  </select>
+  
+  </mapper>

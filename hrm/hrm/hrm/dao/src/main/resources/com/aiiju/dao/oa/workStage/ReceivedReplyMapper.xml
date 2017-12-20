@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IReceivedReplyDao">
+	<resultMap id="ReceivedReplyMap" type="com.aiiju.bean.oa.workStage.ReceivedReply">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="scene_type" jdbcType="TINYINT" property="sceneType" />
+		<result column="is_read" jdbcType="TINYINT" property="isRead" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+		<result column="reply_con" jdbcType="VARCHAR" property="replyCon" />
+		 <result  property="sceneId" jdbcType="BIGINT" column="pid"/>
+		    <association property="sceneInfo" javaType="com.aiiju.bean.oa.workStage.Msg" >
+	 		<id  property="sceneId" jdbcType="BIGINT" column="pid"/>
+			 	<result  property="subType" jdbcType="TINYINT" column="subtype"/>
+			<result  property="authorId" jdbcType="BIGINT" column="pid_uid"/>
+			<result  property="userName" jdbcType="VARCHAR" column="pid_name"/>
+			<result  property="content" jdbcType="VARCHAR" column="content"/>
+			<result  property="authorloginUserId" jdbcType="VARCHAR" column="pid_login_user_id"/> 
+		</association>
+		
+		<association property="beReplyInfo" javaType="com.aiiju.bean.oa.workStage.Reply">
+			<id column="reply_pid" jdbcType="BIGINT" property="id"/>
+			<result column="receive_uid" jdbcType="BIGINT" property="userId"/>
+			<result column="be_reply_name" jdbcType="VARCHAR" property="userName" />
+			<result column="be_reply_con" jdbcType="VARCHAR" property="replyCon" />
+			
+		</association>
+		<association property="userInfo" javaType="com.aiiju.bean.oa.staff.User">
+			<id column="user_id" jdbcType="BIGINT" property="id"/>
+			<result column="login_user_id" jdbcType="BIGINT" property="loginUserId"/>
+			<result column="name" jdbcType="VARCHAR" property="name" />
+			<result column="url" jdbcType="VARCHAR" property="userHeadImg" />
+		</association>
+	</resultMap>
+	
+
+
+
+
+
+
+	<select id="getReceivedReplyList" resultMap="ReceivedReplyMap"  parameterType="java.util.Map">
+		SELECT r.id,r.scene_type,r.user_id,r.reply_pid,r.pid, r.pid_uid,r.receive_uid,r.reply_con,l.is_read,
+			DATE_FORMAT(r.create_time,'%Y-%m-%d %H:%i:%s') create_time ,
+			 reply_u.name ,reply_u.login_user_id,reply_f.url,
+			sender_u.name pid_name, be_reply.reply_con be_reply_con,sender_u.login_user_id pid_login_user_id,
+			be_reply_u.name be_reply_name,
+			be_reply_u.login_user_id be_reply_login_user_id,
+			 CASE r.scene_type
+				WHEN 1 THEN (SELECT w.content from zds_work_log w where w.id= r.pid)
+				WHEN 2 THEN (SELECT t.content from zds_task_info t where t.id= r.pid)
+				ELSE (SELECT f.content from zds_flow_info f where f.id= r.pid)
+				END content,
+			 CASE r.scene_type
+				WHEN 1 THEN (SELECT w.work_log_type from zds_work_log w where w.id= r.pid)
+				WHEN 3 THEN (SELECT f.flow_type from zds_flow_info f where f.id= r.pid)
+				ELSE NULL
+				END subtype
+			
+			
+			
+			FROM zds_reply r left join zds_reply_log  l on r.id =  l.reply_id
+			left join oa_user reply_u  on reply_u.id  = r.user_id 
+			LEFT JOIN oa_file reply_f    on reply_f.fId  = r.user_id      and reply_f.business_id = 5
+			left join oa_user sender_u   on sender_u.id  = r.pid_uid
+			left join zds_reply be_reply on r.reply_pid = be_reply.id     and r.reply_pid > 0
+			left join oa_user be_reply_u   on be_reply_u.id  = r.receive_uid  and r.receive_uid > 0
+
+		where 
+			<![CDATA[  		  r.user_id <> #{userId} ]]>
+			
+		
+		
+		 and l.is_del = 0 and l.is_withdraw =0 and l.receive_uid  = #{userId} 
+		order by create_time desc
+		<if test="startRow !=null and pageSize !=null">
+			LIMIT ${startRow},${pageSize}
+		</if>
+	</select>
+	
+	
+	
+	<select id="getReceivedReplyListCount" resultType="int"  parameterType="java.util.Map">
+		SELECT count(r.id)
+			
+			FROM zds_reply r left join zds_reply_log  l on r.id =  l.reply_id
+		
+		where 
+		
+		<![CDATA[  		  r.user_id <> #{userId} ]]>
+		and  l.is_del = 0 and l.is_withdraw =0 and l.receive_uid  = #{userId} 		
+	</select>
+	
+
+	
+	
+</mapper>

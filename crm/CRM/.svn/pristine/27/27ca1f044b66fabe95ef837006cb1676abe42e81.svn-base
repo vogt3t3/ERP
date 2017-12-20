@@ -1,0 +1,47 @@
+package com.crm.service.impl;
+
+import java.util.List;
+
+import org.hibernate.Query;
+
+import com.crm.model.Cst_activity_t;
+import com.crm.model.Sys_user_t;
+import com.crm.service.UsersService;
+/**
+ * 系统用户信息实现类
+ * @author yuduan
+ *
+ */
+public class UsersServiceImpl extends BaseServiceImpl implements UsersService {
+
+	/**
+	 * 系统用户-保存更新
+	 * @param u 用户
+	 */
+	@Override
+	public void saveUser(Sys_user_t u) {
+		// TODO Auto-generated method stub
+
+		saveOrUpdate(u);
+	}	
+	/**
+	 * 系统用户-删除
+	 * @param u 用户
+	 */
+	@Override
+	public void delUser(Sys_user_t u) {
+		// TODO Auto-generated method stub
+		delete(u);
+	}
+	/**
+	 * 系统用户-查询
+	 */
+	@Override
+	public List<Sys_user_t> showUser(int id) {
+		// TODO Auto-generated method stub
+		Query query = getQuery("from Sys_user_t u where u.user_id="+id);
+		return query.list();
+	}
+	
+
+}

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.permission.IMenuDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.permission.Menu" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="menu_name" property="menuName" jdbcType="VARCHAR" />
+    <result column="menu_origin_name" property="menuOriginName" jdbcType="VARCHAR" />
+    <result column="build_path" property="buildPath" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="menu_order" property="menuOrder" jdbcType="INTEGER" />
+    <result column="ext" property="ext" jdbcType="VARCHAR" />
+    <result column="menu_target" property="menuTarget" jdbcType="VARCHAR" />
+  </resultMap>
+  <!-- 菜单树结构 -->
+  <resultMap id="TreeMap" type="com.aiiju.bean.oa.permission.MenuTree" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="menu_name" property="menuName" jdbcType="VARCHAR" />
+    <result column="menu_origin_name" property="menuOriginName" jdbcType="VARCHAR" />
+    <result column="build_path" property="buildPath" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="menu_order" property="menuOrder" jdbcType="INTEGER" />
+    <result column="ext" property="ext" jdbcType="VARCHAR" />
+    <result column="menu_target" property="menuTarget" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List">
+  	id,menu_name,menu_origin_name,build_path,parent_id,url,menu_order,ext,menu_target
+  </sql>
+  
+  <!-- 根据roleId获取菜单 -->
+  <select id="getMenusByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    m.id,m.menu_name,m.menu_no,m.parent_id,m.type,m.create_date,m.update_date
+    from oa_menu m left join oa_menu_role_relation r on m.id=r.menu_id
+    where r.role_id = #{roleId}
+  </select>
+  
+  <!-- 获取全部菜单 -->
+  <select id="getAllMenu" parameterType="map" resultMap="TreeMap">
+  		SELECT
+			m.id,
+			m.menu_name,
+			m.menu_origin_name,
+			m.build_path,
+			m.parent_id,
+			m.url,
+			m.menu_order,
+			m.ext,
+			m.menu_target
+		FROM
+			perm_menu m,
+			perm_permit_menu pm,
+			perm_permit_role pr,
+			perm_role_user ru
+		WHERE
+			ru.user_id = #{userId}
+		AND ru.role_id = pr.role_id
+		AND pr.permit_id = pm.permit_id
+		AND pm.menu_id = m.id
+  </select>
+  
+</mapper>

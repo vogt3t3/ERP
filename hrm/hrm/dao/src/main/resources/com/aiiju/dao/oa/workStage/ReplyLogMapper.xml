@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IReplyLogDao">
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.ReplyLog">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="company_id" jdbcType="BIGINT" property="companyId" />
+		<result column="scene_type" jdbcType="TINYINT" property="sceneType" />
+		<result column="reply_id" jdbcType="BIGINT" property="replyId" />
+		<result column="receive_uid" jdbcType="BIGINT" property="receiveUid" />
+		<result column="is_del" jdbcType="TINYINT" property="isDel" />
+		<result column="is_read" jdbcType="TINYINT" property="isRead" />
+		<result column="is_withdraw" jdbcType="TINYINT" property="isWithdraw" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,company_id,scene_type,reply_id,receive_uid,is_del,is_read,is_withdraw,DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') createTime
+	</sql>
+
+	<!-- 获取用户收到的回复列表总数 -->
+	<select id="getReplyListCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(id)
+		FROM zds_reply_log
+		WHERE company_id=#{companyId}
+		AND receive_uid=#{userId}
+	</select>
+
+	<!-- 获取未读回复的数量（收到的回复右上角角标） -->
+	<select id="getUnreadReplyCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(id)
+		FROM zds_reply_log
+		WHERE company_id=#{companyId}
+		AND receive_uid=#{userId}
+		AND is_read=0
+	</select>
+
+	<!-- 更新回复日志记录的状态（已读，撤回，删除）,请求参数：companyId,userId -->
+	<update id="updateReplyLogStatus" parameterType="java.util.Map">
+		UPDATE zds_reply_log
+	    <set >
+	      <if test="isDel != null" >
+	        is_del = #{isDel},
+	      </if>
+	      <if test="isRead != null" >
+	        is_read = #{isRead},
+	      </if>
+	      <if test="isWithdraw != null" >
+	        is_withdraw = #{isWithdraw},
+	      </if>
+	    </set>
+	    WHERE company_id=#{companyId}
+		AND receive_uid=#{userId}
+    </update>
+    
+    <!-- 获取未读回复列表 -->
+	<select id="getReplyLogList" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM zds_reply_log
+		WHERE company_id=#{companyId}
+		AND receive_uid=#{userId}
+		<if test=" isRead != null">
+			AND is_read=#{isRead}
+		</if>
+						
+	</select>
+	
+	<!-- 更新回复日志记录的状态（已读，撤回，删除）,请求参数：companyId,replyId -->
+	<update id="updateReplyLogStatusByReplyId" parameterType="java.util.Map">
+		UPDATE zds_reply_log
+	    <set >
+	      <if test="isDel != null" >
+	        is_del = #{isDel},
+	      </if>
+	      <if test="isRead != null" >
+	        is_read = #{isRead},
+	      </if>
+	      <if test="isWithdraw != null" >
+	        is_withdraw = #{isWithdraw},
+	      </if>
+	    </set>
+	    WHERE company_id=#{companyId}
+		AND reply_id=#{replyId}
+    </update>
+    
+    <!-- 批量新增回复日志记录 -->
+    <insert id="batchAddReplyLogInfo" parameterType="java.util.Map">
+		INSERT INTO zds_reply_log
+		(company_id, scene_type, reply_id, receive_uid, create_time)
+		VALUES
+		<foreach collection="receiveIds" item="item" index="index"
+			separator=",">
+			(#{companyId}, #{sceneType}, #{replyId}, #{item}, now())
+		</foreach>
+	</insert>
+	
+	<!-- 批量更新消息的状态1.已读   2.删除  3.撤回  -->
+	<update id="batchUpdateReplyLogStatus" parameterType="java.util.Map">
+			UPDATE zds_reply_log
+			<set>
+					<if test="replyStatus ==1">
+					is_read = 1,
+				</if>
+				<if test="replyStatus == 2">
+					is_del = 1,
+				</if>
+				<if test="replyStatus ==3">
+					is_withdraw = 1,
+				</if>
+			</set>
+			WHERE company_id = #{companyId}
+						AND receive_uid = #{userId}
+			<if test="replyIds != null">
+				AND reply_id in
+				<foreach collection="replyIds" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+				</foreach>
+			</if>
+				<if test="replyStatus ==1">
+					and is_read = 0
+				</if>
+				<if test="replyStatus == 2">
+					and is_del = 0
+				</if>
+				<if test="replyStatus ==3">
+					and is_withdraw = 0
+				</if>
+	</update>
+	
+
+	
+	
+</mapper>

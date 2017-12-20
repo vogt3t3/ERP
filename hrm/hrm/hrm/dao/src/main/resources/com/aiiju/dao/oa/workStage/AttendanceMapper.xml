@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.aiiju.dao.oa.workStage.IAttendanceDao">
+	<!-- 规则列表map -->
+	<resultMap id="RuleResultMap" type="com.aiiju.bean.oa.workStage.AttendanceRuleForStat" >
+		<result column="rule_id" property="ruleId" jdbcType="BIGINT" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" />
+		<result column="week_day" property="weekDays" jdbcType="VARCHAR" />
+		<result column="create_date" property="createDate" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 统计数据map -->
+	<resultMap id="StatResultMap" type="com.aiiju.bean.oa.workStage.AttendanceStat" >
+		<result column="userId" property="userId" jdbcType="BIGINT" />
+		<result column="empNo" property="empNo" jdbcType="VARCHAR" />
+		<result column="userName" property="userName" jdbcType="VARCHAR" />
+		<result column="deptId" property="deptId" jdbcType="BIGINT" />
+		<result column="deptName" property="deptName" jdbcType="VARCHAR" />
+		<result column="lateDays" property="lateDays" jdbcType="INTEGER" />
+		<result column="leftDays" property="leftDays" jdbcType="INTEGER" />
+		<result column="overDays" property="overDays" jdbcType="INTEGER" />
+		<result column="offDutyForgetDays" property="offDutyForgetDays" jdbcType="INTEGER" />
+		<result column="onDutyDays" property="onDutyDays" jdbcType="INTEGER" />
+		<result column="normalDays" property="normalDays" jdbcType="INTEGER" />
+	</resultMap>
+  
+	<!-- 根据用户和部门ID获取规则 -->
+	<select id="getUserRuleList" parameterType = "java.util.Map" resultMap = "RuleResultMap">
+	 	SELECT
+			ru.user_id,
+			ru.rule_id,
+			r.week_day,
+			ru.create_date
+		FROM
+			zds_sign_in_rule_user ru,
+			zds_sign_in_rule r,
+			(
+				SELECT
+					u.id userId
+				FROM
+					oa_department d,
+					oa_user u
+				WHERE
+					d.company_id = #{companyId}
+				AND d.company_id = u.company_id
+				AND d.id = u.dept_id
+				AND (d.dept_id in
+						<foreach collection="deptIds" item="item" index="index" open="(" separator="," close=")">
+							#{item}
+						</foreach>
+						OR u.id in
+						<foreach collection="userIds" item="item" index="index" open="(" separator="," close=")">
+							#{item}
+						</foreach>
+						)
+			) ud
+		WHERE
+			ru.company_id = #{companyId}
+		AND ru.company_id = r.company_id
+		AND ru.user_id = ud.userId
+		AND ru.rule_id = r.id
+		AND ru.create_date &lt;= #{startDate}
+		AND ru.create_date >= #{endDate}
+		ORDER BY
+			ru.userId,ru.create_date
+	</select>
+	
+	<!-- 获取统计数据总数 -->
+	<select id="getAttendanceStatCount" parameterType = "java.util.Map" resultType = "java.lang.Integer">
+		SELECT
+			count(u.id)
+		FROM
+			oa_department d,
+			oa_user u
+		WHERE
+			d.company_id = #{companyId}
+		AND d.company_id = u.company_id
+		AND d.id = u.dept_id
+		AND (d.dept_id in
+				<foreach collection="deptIds" item="item" index="index" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				OR u.id in
+				<foreach collection="userIds" item="item" index="index" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				)
+	</select>
+	<!-- 获取考勤统计数据 -->
+	<select id="getAttendanceStat" parameterType = "java.util.Map" resultMap = "RuleResultMap">
+		SELECT
+			oau.id userId,
+			oau.user_no empNo,
+			oau. NAME userName,
+			oau.dept_id deptId,
+			odt. NAME deptName,
+			late.days lateDays,
+			leftGo.days leftDays,
+			over.days overDays,
+			offDuty.days offDutyForgetDays,
+			onDuty.days onDutyDays,
+			normal.days normalDays
+		FROM
+			(
+				SELECT
+					u.id,
+					u.name,
+					u.user_no,
+					u.dept_id
+				FROM
+					oa_department d,
+					oa_user u
+				WHERE
+					d.company_id = #{companyId}
+				AND d.company_id = u.company_id
+				AND d.id = u.dept_id
+				AND (d.dept_id in
+						<foreach collection="deptIds" item="item" index="index" open="(" separator="," close=")">
+							#{item}
+						</foreach>
+						OR u.id in
+						<foreach collection="userIds" item="item" index="index" open="(" separator="," close=")">
+							#{item}
+						</foreach>
+						)
+			) oau
+		LEFT JOIN (
+			SELECT
+				id,
+				NAME
+			FROM
+				oa_department
+			WHERE
+				company_id = #{companyId}
+		) odt ON oau.dept_id = odt.id
+		LEFT JOIN (
+			<!-- 迟到 -->
+			SELECT
+				t.user_id userId,
+				count(t.id) days
+			FROM
+				zds_sign_in_record t
+			WHERE
+				t.company_id = #{companyId}
+			AND t.signDate >= #{startDate}
+			AND t.signDate &lt; = #{endDate}
+			AND t.sign_type = 'in'
+			AND t.sign_status = 2
+			GROUP BY
+				t.user_id
+		) late ON oau.id = late.userId
+		LEFT JOIN (
+			<!-- 早退 -->
+			SELECT
+				t.user_id userId,
+				count(t.id) days
+			FROM
+				zds_sign_in_record t
+			WHERE
+				t.company_id = #{companyId}
+			AND t.signDate >= #{startDate}
+			AND t.signDate &lt; = #{endDate}
+			AND t.sign_type = 'out'
+			AND t.sign_status = 3
+			GROUP BY
+				t.user_id
+		) leftGo ON oau.id = leftGo.userId
+		LEFT JOIN (
+			<!-- 加班 -->
+			SELECT
+				t.user_id userId,
+				count(t.id) days
+			FROM
+				zds_sign_in_record t
+			WHERE
+				t.company_id = #{companyId}
+			AND t.signDate >= #{startDate}
+			AND t.signDate &lt; = #{endDate}
+			AND t.sign_type = 'in'
+			AND t.sign_status = 4
+			GROUP BY
+				t.user_id
+		) over ON oau.id = over.userId
+		LEFT JOIN (
+			<!-- 下班忘打卡 -->
+			SELECT
+				i.user_id userId,
+				i.offDays1 - IFNULL(o.offDays2, 0) days
+			FROM
+				(
+					SELECT
+						t.user_id,
+						count(t.id) offDays1
+					FROM
+						zds_sign_in_record t
+					WHERE
+						t.company_id = #{companyId}
+					AND t.sign_type = 'in'
+					AND t.sign_status &lt;> 4
+					AND t.signDate >= #{startDate}
+					AND t.signDate &lt;= #{endDate}
+					GROUP BY
+						t.user_id
+				) i
+			LEFT JOIN (
+				SELECT
+					a.user_id,
+					count(a.id) offDays2
+				FROM
+					zds_sign_in_record a
+				WHERE
+					a.company_id = #{companyId}
+				AND a.sign_type = 'out'
+				AND a.signDate >= #{startDate}
+				AND a.signDate &lt;= #{endDate}
+				GROUP BY
+					a.user_id
+			) o ON i.user_id = o.user_id
+		) offDuty ON oau.id = offDuty.userId
+		LEFT JOIN (
+			<!-- 正常考勤 -->
+			SELECT
+				i.user_id userId,
+				IFNULL(o.normalDays2, 0) days
+			FROM
+				(
+					SELECT
+						t.user_id,
+						count(t.id) normalDays1
+					FROM
+						zds_sign_in_record t
+					WHERE
+						t.company_id = #{companyId}
+					AND t.signDate >= #{startDate}
+					AND t.signDate &lt;= #{endDate}
+					AND t.sign_type = 'in'
+					AND t.sign_status = 1
+					GROUP BY
+						t.user_id
+				) i
+			LEFT JOIN (
+				SELECT
+					a.user_id,
+					count(a.id) normalDays2
+				FROM
+					zds_sign_in_record a
+				WHERE
+					a.company_id = #{companyId}
+				AND a.signDate >= #{startDate}
+				AND a.signDate &lt; = #{endDate}
+				AND a.sign_type = 'out'
+				AND a.sign_status = 1
+				GROUP BY
+					a.user_id
+			) o ON i.user_id = o.user_id
+		) normal ON oau.id = normal.userId
+		LEFT JOIN (
+			<!--上班打卡 -->
+			SELECT
+				a.userId,
+				IFNULL(a.days, 0) days
+			FROM
+				(
+					SELECT
+						t.user_id userId,
+						count(t.id) days
+					FROM
+						zds_sign_in_record t
+					WHERE
+						t.company_id = #{companyId}
+					AND t.sign_type = 'in'
+					AND t.signDate >= #{startDate}
+					AND t.signDate &lt; = #{endDate}
+					AND t.sign_status != 4
+					GROUP BY
+						t.user_id
+				) a
+		) onDuty ON oau.id = onDuty.userId
+		ORDER BY oau.id
+		<if test="pageSize != null">
+	    	limit #{startRow},#{pageSize}
+	  	</if>
+	</select>
+</mapper>  
+

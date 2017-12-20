@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IMemoryDao">
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.Memory">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="company_id" jdbcType="BIGINT" property="companyId" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="scene_type" jdbcType="TINYINT" property="sceneType" />
+		<result column="send_to_dept" jdbcType="VARCHAR" property="sendToDept" />
+		<result column="send_to_person" jdbcType="VARCHAR" property="sendToPerson" />
+		<result column="personnames" jdbcType="VARCHAR" property="personNames" />
+		<result column="deptnames" jdbcType="VARCHAR" property="deptNames" />
+		<result column="status" jdbcType="TINYINT" property="status" />
+		<result column="is_del" jdbcType="TINYINT" property="isDel" />
+		<result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,company_id,user_id,scene_type,send_to_dept,send_to_person,status,is_del,DATE_FORMAT(update_time, '%Y-%m-%d %H:%i:%s') createTime,personnames,deptnames
+	</sql>	
+
+	<!-- 查询用户行为数据总数（请求参数：companyId,userId,sceneType,sendToDept,sendToPerson） -->
+	<select id="getMemoryInfoCount" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(id)
+		FROM zds_memory
+		WHERE company_id=#{companyId}
+		AND user_id=#{userId}
+		AND scene_type=#{sceneType}
+		AND send_to_dept=#{sendToDept}
+		AND send_to_person=#{sendToPerson}
+		AND is_del=0
+	</select>
+	
+	<!-- 获取最近收件部门/人列表 -->
+	<select id="getMemoryInfoList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM zds_memory zm
+			LEFT JOIN
+			(SELECT
+				b.send_to_person person,
+				GROUP_CONCAT(a.name ORDER BY FIND_IN_SET(a.id, b.send_to_person)) AS personnames
+			FROM
+				oa_user a,
+				zds_memory b
+			WHERE
+				FIND_IN_SET(a.id, b.send_to_person) > 0
+			AND b.company_id=#{companyId}
+			<!-- 查询性能低的时候把下面的打开，暂时因为数据问题，关闭该条件 -->
+<!-- 			AND a.company_id = b.company_id -->
+			AND b.user_id=#{userId}
+			AND b.scene_type=#{sceneType}
+			AND b.is_del=0
+			GROUP BY
+				b.send_to_person) t
+			ON zm.send_to_person = t.person
+			LEFT JOIN
+			(SELECT
+				b.send_to_dept dept,
+				GROUP_CONCAT(a.name ORDER BY FIND_IN_SET(a.id, b.send_to_dept)) AS deptnames
+			FROM
+				oa_department a,
+				zds_memory b
+			WHERE
+				FIND_IN_SET(a.id, b.send_to_dept) > 0
+			AND b.company_id=#{companyId}
+			<!-- 查询性能低的时候把下面的打开，暂时因为数据问题，关闭该条件 -->
+<!-- 			AND a.company_id = b.company_id -->
+			AND b.user_id=#{userId}
+			AND b.scene_type=#{sceneType}
+			AND b.is_del=0
+			GROUP BY
+				b.send_to_dept) k
+			ON zm.send_to_dept = k.dept
+		WHERE company_id=#{companyId}
+		AND zm.user_id=#{userId}
+		AND zm.scene_type=#{sceneType}
+		AND zm.is_del=0
+		ORDER BY zm.status DESC, zm.update_time DESC
+		limit 5
+	</select>
+	
+	<!-- 获取当前status为1的用户行为记录 -->
+	<select id="getCurMemoryInfo" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM zds_memory zm
+			LEFT JOIN
+			(SELECT
+				b.send_to_person person,
+				GROUP_CONCAT(a.name ORDER BY FIND_IN_SET(a.id, b.send_to_person)) AS personnames
+			FROM
+				oa_user a,
+				zds_memory b
+			WHERE
+				FIND_IN_SET(a.id, b.send_to_person) > 0
+			AND b.company_id=#{companyId}
+			<!-- 查询性能低的时候把下面的打开，暂时因为数据问题，关闭该条件 -->
+<!-- 			AND a.company_id = b.company_id -->
+			AND b.user_id=#{userId}
+			AND b.scene_type=#{sceneType}
+			AND b.is_del=0
+			GROUP BY
+				b.send_to_person) t
+			ON zm.send_to_person = t.person
+			LEFT JOIN
+			(SELECT
+				b.send_to_dept dept,
+				GROUP_CONCAT(a.name ORDER BY FIND_IN_SET(a.id, b.send_to_dept)) AS deptnames
+			FROM
+				oa_department a,
+				zds_memory b
+			WHERE
+				FIND_IN_SET(a.id, b.send_to_dept) > 0
+			AND b.company_id=#{companyId}
+			<!-- 查询性能低的时候把下面的打开，暂时因为数据问题，关闭该条件 -->
+<!-- 			AND a.company_id = b.company_id -->
+			AND b.user_id=#{userId}
+			AND b.scene_type=#{sceneType}
+			AND b.is_del=0
+			GROUP BY
+				b.send_to_dept) k
+			ON zm.send_to_dept = k.dept
+		WHERE company_id=#{companyId}
+		AND zm.user_id=#{userId}
+		AND zm.scene_type=#{sceneType}
+		AND zm.is_del=0
+		AND zm.status=1
+	</select>
+	
+	<!-- 新增回复详细 -->
+	<insert id="addMemoryInfo" parameterType="java.util.Map"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO zds_memory(company_id, user_id, scene_type, send_to_dept, send_to_person, status)
+		VALUES(#{companyId},#{userId},#{sceneType},#{sendToDept},#{sendToPerson},1)
+	</insert>
+	
+	<!-- 更新用户行为记录的状态 -->
+	<update id="updateMemoryInfoStatus" parameterType="java.util.Map">
+		UPDATE zds_memory
+	    <set >
+	      <if test="isDel != null" >
+	        is_del = #{isDel},
+	      </if>
+	      <if test="status != null" >
+	        status = #{status},
+	      </if>
+	    </set>
+	    WHERE id=#{id}
+    </update>
+    
+    <!-- 根据ID删除用户行为记录 -->
+	<delete id="delMemoryInfoById" parameterType="java.util.Map">
+		DELETE FROM zds_memory WHERE id=#{id}
+	</delete>
+    
+</mapper>

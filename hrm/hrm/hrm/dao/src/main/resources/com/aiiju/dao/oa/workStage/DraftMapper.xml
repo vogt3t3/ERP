@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IDraftDao">
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.Draft">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="company_id" jdbcType="BIGINT" property="companyId" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="scene_type" jdbcType="INTEGER" property="sceneType" />
+		<result column="sub_type" jdbcType="INTEGER" property="subType" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="send_to_dept" jdbcType="VARCHAR" property="sendToDept" />
+		<result column="send_to_person" jdbcType="VARCHAR" property="sendToPerson" />
+		<result column="persons" jdbcType="VARCHAR" property="persons" />
+		<result column="depts" jdbcType="VARCHAR" property="depts" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+	</resultMap>
+
+	<!-- 更新草稿 -->
+	<update id="updateDraft" parameterType="java.util.Map">
+			UPDATE zds_draft
+			<set>
+				<if test="sendToDept != null">
+					send_to_dept = #{sendToDept},
+				</if>
+				<if test="sendToPerson != null">
+					send_to_person = #{sendToPerson},
+				</if>
+				<if test="content != null">
+					content = #{content},
+				</if>
+			</set>
+			WHERE id=#{id}
+	</update>
+	
+	<!-- 新增草稿 -->
+    <insert id="addDraft" parameterType="com.aiiju.bean.oa.workStage.Draft" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO zds_draft
+		(company_id, user_id, scene_type, sub_type, send_to_dept, send_to_person, content)
+		VALUES
+			(#{companyId}, #{userId}, #{sceneType}, #{subType}, #{sendToDept}, #{sendToPerson}, #{content})
+	</insert>
+	
+	<!-- 查询草稿 -->
+    <select id="getDraft" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select t.id, t.company_id, t.user_id, t.scene_type, t.sub_type, t.send_to_dept, 
+			t.send_to_person, t.content,
+			zs.depts,
+			zd.persons,
+			DATE_FORMAT(t.create_time, '%Y-%m-%d %H:%i:%s') createTime
+		from zds_draft t
+			LEFT JOIN
+			(SELECT
+				b.send_to_person person,
+				GROUP_CONCAT(a.name ORDER BY FIND_IN_SET(a.id, b.send_to_person)) AS persons
+			FROM
+				oa_user a,
+				zds_draft b
+			WHERE
+				FIND_IN_SET(a.id, b.send_to_person) > 0
+			AND b.company_id=#{companyId}
+			<!-- 查询性能低的时候把下面的打开，暂时因为数据问题，关闭该条件 -->
+		<!-- 	AND a.company_id = b.company_id -->
+			AND b.user_id=#{userId}
+			AND b.scene_type=#{sceneType}
+			AND b.sub_type=#{subType}
+			GROUP BY
+				b.send_to_person) zd
+			on zd.person = t.send_to_person
+			LEFT JOIN
+			(SELECT
+				b.send_to_dept dept,
+				GROUP_CONCAT(a.name ORDER BY FIND_IN_SET(a.id, b.send_to_dept)) AS depts
+			FROM
+				oa_department a,
+				zds_draft b
+			WHERE
+				FIND_IN_SET(a.id, b.send_to_dept) > 0
+			AND b.company_id=#{companyId}
+			<!-- 查询性能低的时候把下面的打开，暂时因为数据问题，关闭该条件 -->
+		<!-- 	AND a.company_id = b.company_id -->
+			AND b.user_id=#{userId}
+			AND b.scene_type=#{sceneType}
+			AND b.sub_type=#{subType}
+			GROUP BY
+				b.send_to_dept) zs
+			on zs.dept = t.send_to_dept
+		where t.company_id=#{companyId}
+		AND t.user_id=#{userId}
+		AND t.scene_type=#{sceneType}
+		AND t.sub_type=#{subType}
+	</select>
+	
+	<!-- 删除草稿 -->
+	<delete id="deleteDraft" parameterType="java.util.Map">
+		delete from zds_draft where id = #{id}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,83 @@
+package com.crm.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+/**
+ * 
+ * 系统权限表
+ * @author 洪学超
+ *
+ */
+@Entity
+public class Sys_right_t {
+	/*
+	 * 序号 
+	 */
+	@Id
+	@GeneratedValue
+	private int right_id;
+	
+	/*
+	 * 父权限id
+	 */
+	private int right_parent_id;
+	
+	/*
+	 * 权限类型
+	 */
+    private String right_type;
+    
+    /*
+	 * 权限描述
+	 */
+    private String right_text;
+    
+    /*
+	 * 权限对应的url
+	 */
+    private String rigth_url;
+    
+    /*
+	 * 权限简称
+	 */
+    private String right_tip;
+    
+	public int getRight_id() {
+		return right_id;
+	}
+	public void setRight_id(int right_id) {
+		this.right_id = right_id;
+	}
+	public int getRight_parent_id() {
+		return right_parent_id;
+	}
+	public void setRight_parent_id(int right_parent_id) {
+		this.right_parent_id = right_parent_id;
+	}
+	public String getRight_type() {
+		return right_type;
+	}
+	public void setRight_type(String right_type) {
+		this.right_type = right_type;
+	}
+	public String getRight_text() {
+		return right_text;
+	}
+	public void setRight_text(String right_text) {
+		this.right_text = right_text;
+	}
+	public String getRigth_url() {
+		return rigth_url;
+	}
+	public void setRigth_url(String rigth_url) {
+		this.rigth_url = rigth_url;
+	}
+	public String getRight_tip() {
+		return right_tip;
+	}
+	public void setRight_tip(String right_tip) {
+		this.right_tip = right_tip;
+	}
+}

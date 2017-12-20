@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="indent" extends="base"  namespace="/indent">
+		<action name="*_*" class="com.crm.action.IndentAction" method="{1}{2}">
+			<result name="indentList">/WEB-INF/Template/indentmanagement/indentlist.jsp</result>
+			<result name="indentDetail">/WEB-INF/Template/indentmanagement/indentinfo.jsp</result>
+			<result name="indentUpdate">/WEB-INF/Template/indentmanagement/indentinfo.jsp</result>
+		</action>
+	</package>
+	
+	
+	
+	
+</struts>    

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IAnnouncementReadLogsDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.AnnouncementReadLogs">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="is_read" property="isRead" jdbcType="TINYINT" />
+    <result column="recipient" property="recipient" jdbcType="BIGINT" />
+    <result column="announcement_id" property="announcementId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="is_top" property="isTop" jdbcType="TINYINT" />
+    <result column="nums" property="nums" jdbcType="INTEGER" />
+    <result column="isReads" property="isReads" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+  id,is_read,recipient,announcement_id,create_time,is_top
+  </sql>
+  
+  <delete id="deleteAnnouncementReadLogsId" parameterType="java.lang.Long" >
+    delete from zds_announcement_read_logs
+    where announcement_id = #{announcementId}
+  </delete>
+  
+  <insert id="addAnnouncementReadLogs" parameterType="com.aiiju.bean.oa.workStage.AnnouncementReadLogs" keyProperty="id">
+    insert into zds_announcement_read_logs
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="isRead != null" >
+        is_read,
+      </if>
+      <if test="recipient != null" >
+        recipient,
+      </if>
+      <if test="announcementId != null" >
+        announcement_id,
+      </if>
+      <if test="isTop != null" >
+        is_top,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="isRead != null" >
+        #{isRead},
+      </if>
+      <if test="recipient != null" >
+        #{recipient},
+      </if>
+      <if test="announcementId != null" >
+        #{announcementId},
+      </if>
+      <if test="isTop != null" >
+       #{isTop}
+      </if>
+    </trim>
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+  
+  <insert id="insertAnnouncementReadLogs" parameterType="java.util.List">
+    insert into zds_announcement_read_logs
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+      	recipient,
+      	announcement_id,
+      </trim>
+    values
+   <foreach collection ="list" item="item" index= "index" separator =",">
+   		<trim prefix="(" suffix=")" suffixOverrides=",">
+   			#{item.recipient},
+   			#{item.announcementId},
+   		</trim>
+   </foreach>
+  </insert>
+  
+  
+  <update id="isTopAndRead" parameterType="java.util.Map" >
+    update zds_announcement_read_logs 
+    <set>
+    	<if test="isRead!=null">
+    	is_read = #{isRead},
+    	</if>
+    	<if test="isTop != null" >
+    	  is_top=#{isTop}
+        </if>
+    </set>
+    <where>
+    	 <if test="recipient != null" >
+     	   recipient = #{recipient}
+      	</if>
+      	<if test="announcementId != null" >
+       and announcement_id = #{announcementId}
+      </if>
+    </where>
+  </update>
+  
+  <select id="selectAnnouncementReadLogsId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List"/>
+    from zds_announcement_read_logs
+    where id = #{id}
+  </select>
+  
+  <select id="countAnnouncementReadLogs" parameterType="java.lang.Long" resultType="Integer">
+  select count(*) from zds_announcement_read_logs
+	where  recipient = #{recipient}
+  </select>
+  
+  <select id="countIsRead" parameterType="java.lang.Long" resultType="Integer">
+  select count(*) nums,if(is_read=1,'read','unread') isReads 
+  from zds_announcement_read_logs 
+   where announcement_id=#{announcementId} 
+   group by is_read
+  </select>
+</mapper>

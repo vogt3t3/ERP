@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.aiiju.dao.oa.workStage.ISignInOutDao">
+	<resultMap id="deptResultMap" type="com.aiiju.bean.oa.dept.Department">
+        <result column="dept_id" property="id" jdbcType="INTEGER" />
+        <result column="visit_id" property="companyId" jdbcType="INTEGER" />
+    </resultMap>
+  	<resultMap id="userResultMap" type="com.aiiju.bean.oa.staff.User">
+        <result column="user_id" property="id" jdbcType="INTEGER" />
+        <result column="visit_id" property="companyId" jdbcType="INTEGER" />
+        <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
+    </resultMap>
+    <resultMap id="ruleResultMap" type="com.aiiju.bean.oa.workStage.SignInRulePojo">
+       <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="sign_in_time" property="signInTime" jdbcType="VARCHAR" />
+        <result column="sign_out_time" property="signOutTime" jdbcType="VARCHAR" />
+        <result column="is_sign_in_alert" property="isSignInAlert" jdbcType="TINYINT" />
+        <result column="is_sign_out_alert" property="isSignOutAlert" jdbcType="TINYINT" />
+        <result column="sign_out_alert_time" property="signOutAlertTime" jdbcType="INTEGER" />
+        <result column="sign_in_alert_time" property="signInAlertTime" jdbcType="INTEGER" />
+    </resultMap>
+	<!--获取考勤提醒规则 -->
+	<select id="getSignRuleByParams" parameterType="java.util.Map" resultMap="ruleResultMap">
+		SELECT
+		id,
+		sign_in_time,
+		sign_out_time,
+		is_sign_in_alert,
+		is_sign_out_alert,
+		sign_out_alert_time,
+		sign_in_alert_time
+		FROM zds_sign_in_rule
+		WHERE  (is_sign_in_alert=1 or is_sign_out_alert=1) and FIND_IN_SET(#{weekDay},week_day) 
+	</select>
+	
+    
+    <!-- 根据ruleId获取规则适用部门 -->
+    <select id="getDeptsByRuleId" parameterType="int" resultMap="deptResultMap">
+        SELECT 
+        dept_id,
+        visit_id 
+        FROM zds_sign_in_rule_dept 
+        where rule_id=#{ruleId}
+    </select>
+  
+    <!-- 获取用户适用的规则，针对一个人存在多个部门，到底哪个部门的rule起作用 -->
+    <select id="getSpecialUserByRuleId" parameterType="java.util.Map" resultMap="userResultMap">
+        SELECT 
+        user_id,
+        visit_id,
+        rule_id
+        FROM zds_sign_rule_user_map
+        where user_id in 
+         <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+	        #{item.id}
+	     </foreach>
+	     and rule_id!=#{ruleId}
+    </select>
+   
+</mapper>  
+

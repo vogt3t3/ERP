@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+
+
+<configuration>
+	<!-- setting 延迟加载  二级缓存 -->
+	
+	<!-- 别名 -->
+	<typeAliases>
+		<package name="com.aiiju.bean"/>
+	</typeAliases>
+	
+	<!-- 配置Mapper所在位置  与Spring整合不用再配置 -->
+<!--  	<mappers>
+		
+		<mapper  resource="com/aiiju/dao/oa/staff/UserMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/ContractAgreementMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/EducationLogMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/JobStatusLogMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/LanguageAbilityLogMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/PersonnelAffairsMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/ProfessionJobQualificationMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/ProfessionSkillQualificationMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/ReportRelationMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/SocietyRelationsMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/UserDutyLevelLogMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/staff/WorkCompanyLogMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/salary/SpwSalaryPayMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/salary/SpwSalaryBatchMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/salary/SpwSalaryTempMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/duty/AbilityRequireMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/duty/PositionTypeInfoMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/duty/CompanyDutyInfoMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/position/CompanyPositionInfoMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/position/WorkQualificationMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/common/BasicEnumMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/common/CommonPageMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/dept/DepartmentMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/dept/DepartmentPersonNumMapper.xml"/>
+		<mapper  resource="com/aiiju/dao/oa/dept/DepartmentPrincipalMapper.xml"/>
+	</mappers>  -->
+
+</configuration>

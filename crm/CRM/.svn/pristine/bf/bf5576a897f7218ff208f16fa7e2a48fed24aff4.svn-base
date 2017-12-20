@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<constant name="struts.objectFactory" value="spring" />
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.objectFactory.spring.autoWire.alwaysRespect" value="true" />
+	<constant name="struts.devMode" value="true" />
+	
+   
+   <include file="struts/base.xml"></include>
+   <include file="struts/client.xml"></include>
+ 
+   <include file="struts/service.xml"></include>
+   <include file="struts/stat.xml"></include>
+   <package name="index" extends="struts-default" namespace="/" >
+   	<action name="index" >
+   		<result>/WEB-INF/Index.html</result>
+   	</action>
+   	
+   	
+   </package>
+</struts>    

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="stat" extends="base"  namespace="/stat">
+		<result-types>
+            <result-type name="chart" class="org.apache.struts2.dispatcher.ChartResult"></result-type>
+        </result-types>
+		
+		<action name="*_*" class="com.crm.action.StatAction" method="{1}{2}">
+			<result name="contributionAnalysis" type="chart">
+				 <param name="width">500</param>
+                 <param name="height">350</param>
+			</result>
+			<result name="serviceAnalysis" type="chart">
+				 <param name="width">500</param>
+                 <param name="height">350</param>
+			</result>
+			<result name="formAnalysis" type="chart">
+				<param name="width">500</param>
+                 <param name="height">350</param>
+			</result>
+			
+			<result name="contributionAnalysisList">/WEB-INF/Template/statisticstable/cdevote.jsp</result>
+			<result name="serviceAnalysisList">/WEB-INF/Template/statisticstable/cserve.jsp</result>
+			<result name="formAnalysisList">/WEB-INF/Template/statisticstable/cmake.jsp</result>
+			<result name="lstAnalysis">/WEB-INF/Template/statisticstable/crun.jsp</result>
+		</action>
+		
+	</package>
+	
+	
+</struts>    

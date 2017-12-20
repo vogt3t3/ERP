@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="chance" extends="base"  namespace="/chance">
+		<action name="*_*" class="com.crm.action.SaleAction" method="{1}{2}">
+			<result name="chanceList">/WEB-INF/Template/marketingmanagement/chancelist.jsp</result>
+			<result name="chanceDetail">/WEB-INF/Template/marketingmanagement/chanceinfo.jsp</result>
+			<result name="chanceUpdate">/WEB-INF/Template/marketingmanagement/chanceinfo.jsp</result>
+		    <result name="planDetail">/WEB-INF/Template/marketingmanagement/planinfo.jsp</result>
+		    <result name="planExecute">/WEB-INF/Template/marketingmanagement/executeplan.jsp</result>
+		    <result name="planDel">/WEB-INF/Template/marketingmanagement/planinfo.jsp</result>
+    	</action>
+		
+	</package>
+	
+	
+	
+	
+</struts>    

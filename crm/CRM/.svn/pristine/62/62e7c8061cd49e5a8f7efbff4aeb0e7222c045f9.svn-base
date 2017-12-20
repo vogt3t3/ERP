@@ -1,0 +1,13 @@
+package com.crm.dao;
+
+import org.hibernate.Query;
+
+
+public interface BaseDao {
+
+	
+	<T> void saveOrUpdate(Object object);
+	<T> void delete(Object object);
+	<T> Query getQuery(String hql);
+	<T> T find(Class<T> clazz,Object id);
+}

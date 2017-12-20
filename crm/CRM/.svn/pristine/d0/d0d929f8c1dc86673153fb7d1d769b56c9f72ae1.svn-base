@@ -1,0 +1,70 @@
+package com.crm.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+/**
+ * 
+ * 系统角色表
+ * @author 洪学超
+ *
+ */
+@Entity
+public class Sys_role_t {
+	/*
+	 * 序号 
+	 */
+	@Id
+	@GeneratedValue
+	private int role_id;
+	
+	/*
+	 * 角色名称
+	 */
+	private String role_name;
+	
+	/*
+	 * 角色描述
+	 */
+	private String role_desc;
+	
+	/*
+	 * 角色状态
+	 */
+	private String role_flag;
+
+	public int getRole_id() {
+		return role_id;
+	}
+
+	public void setRole_id(int role_id) {
+		this.role_id = role_id;
+	}
+
+	public String getRole_name() {
+		return role_name;
+	}
+
+	public void setRole_name(String role_name) {
+		this.role_name = role_name;
+	}
+
+	public String getRole_desc() {
+		return role_desc;
+	}
+
+	public void setRole_desc(String role_desc) {
+		this.role_desc = role_desc;
+	}
+
+	public String getRole_flag() {
+		return role_flag;
+	}
+
+	public void setRole_flag(String role_flag) {
+		this.role_flag = role_flag;
+	}
+	
+	
+}

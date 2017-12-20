@@ -1,0 +1,173 @@
+package com.crm.action;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.interceptor.RequestAware;
+import org.apache.struts2.interceptor.SessionAware;
+
+import com.crm.model.Bas_Product_t;
+import com.crm.model.Bas_dict_t;
+import com.crm.service.DictService;
+
+
+public class DictAction implements RequestAware, SessionAware {
+
+
+	@Resource(name="DictService")
+	private DictService dictService;
+	
+	private Map request;
+	private	Map session;
+	//客户
+	private Bas_dict_t bas_dict_t;
+	private int id;
+	/**
+	 * 用于查询字典
+	 */
+	private String type;
+	private String name;
+	private String value;
+	/**
+	 * 用于查询产品
+	 */
+	private String pname;
+	private String ptype;
+	private String prank;
+	
+	
+	public String getPrank() {
+		return prank;
+	}
+	public void setPrank(String prank) {
+		this.prank = prank;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String addDict(){
+		dictService.saveDict(bas_dict_t);
+		request.put("bas_dict_t", bas_dict_t);
+		
+		return "dictCreate";
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String openInfoDict(){	
+		return "dictCreate";
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String openProduct(){	
+		return "dictProduct";
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String openStock(){	
+		return "dictStock";
+	}
+	public String openAlter(){	
+		return "dictAlter";
+	}
+	/**
+	 * 数据字典查询
+	 * @return
+	 */
+	public String searchDict(){
+		List<Bas_dict_t> list=dictService.showDict(type, name, value);
+		request.put("dictList", list);
+		return "dictOpen";
+	}
+	/**
+	 * 产品查询
+	 * @return
+	 */
+	public String searchPro(){
+		List<Bas_Product_t> list=dictService.showProduct(pname, ptype, prank);
+		request.put("proList", list);
+		return "dictProduct";
+	}
+	/**
+	 * 具体数据查询---可以省略
+	 * @return
+	 */
+	public String searchDictData(){
+		List<Bas_dict_t> list=dictService.showDict(id);
+		request.put("dictDataList", list);
+		System.out.println(id);
+		return "dictAlter";
+	}
+	public DictService getDictService() {
+		return dictService;
+	}
+	public void setDictService(DictService dictService) {
+		this.dictService = dictService;
+	}
+	public Bas_dict_t getBas_dict_t() {
+		return bas_dict_t;
+	}
+	public void setBas_dict_t(Bas_dict_t bas_dict_t) {
+		this.bas_dict_t = bas_dict_t;
+	}
+	/*public String listDict(){
+		List<Bas_dict_t> list=dictService.showDict();
+		request.put("dicttList", list);
+		return "dictList";
+	}*/
+	/**
+	 * 打开创建基础数据界面
+	 */
+	public String openCreateDict(){
+		return "dictOpen";
+	}
+	@Override
+	public void setSession(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		session=arg0;
+	}
+
+	@Override
+	public void setRequest(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		request=arg0;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+	
+}

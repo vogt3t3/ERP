@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.aiiju.dao.oa.workStage.IMessagePushLogsDao">
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.MessagePushLogsPojo">
+        <result column="company_id" property="companyId" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" />
+         <result column="relate_id" property="relateId" jdbcType="BIGINT" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+         <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="DATE" />
+    </resultMap>
+  
+    <sql id="Base_Column_List">
+        company_id, user_id,type, title,content, relate_id, date_format(create_time,'%Y-%m-%d %H:%i:%s') as create_time
+    </sql>
+   
+    <!-- 插入推送消息记录表 -->
+    <insert id="insertMessagePushLogs"   parameterType="java.util.List">
+        insert into zds_message_push_logs(company_id,user_id,title,type,create_time,relate_id,content)  
+            values  
+        <foreach collection="list" item="item" index="index" separator=",">
+     (#{item.companyId},#{item.userId},#{item.title},#{item.type},sysdate(),#{item.relateId},#{item.content})
+        </foreach>
+    </insert>
+    <delete id="delMessagePushLogs" parameterType="java.util.Map">
+    delete  from zds_message_push_logs where type=1 and relate_id=#{id}
+    </delete>
+    <!-- 获取消息列表 -->
+    <select id="getMessagePushLogsByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM zds_message_push_logs
+        WHERE user_id=#{userId} and company_id=#{companyId}
+        ORDER BY create_time DESC
+        LIMIT ${startRow},${pageSize}
+    </select>
+    <select id="getMessagePushLogsCountByParams" parameterType="java.util.Map" resultType="int">
+    select count(user_id) from zds_message_push_logs where  user_id=#{userId} and company_id=#{companyId}
+    </select>
+   
+</mapper>  
+

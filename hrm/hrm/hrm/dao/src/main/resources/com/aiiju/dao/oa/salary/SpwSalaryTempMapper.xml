@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.salary.ISpwSalaryTempDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.salary.SpwSalaryTemp">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="pid" jdbcType="VARCHAR" property="pid" />
+    <result column="origin_feild" jdbcType="VARCHAR" property="originFeild" />
+    <result column="feild_name" jdbcType="VARCHAR" property="feildName" />
+    <result column="feild_sort" jdbcType="VARCHAR" property="feildSort" />
+    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+  </resultMap>
+  
+  <!-- 根据条件查询工资单模板 -->
+  <select id="getSalaryTemp" parameterType="java.util.Map" resultMap = "BaseResultMap">
+  		select t.id,t.pid,t.origin_feild,t.feild_name,t.feild_sort,t.company_id
+  		from spw_salary_temp t
+  		where t.pid = #{pid}
+  		order by t.feild_sort
+  </select>
+  
+  <!-- 存储勾选字段作为工资单模板 -->
+  <insert id="insertTemp" parameterType="java.util.List">
+  		insert into spw_salary_temp(pid,origin_feild,feild_name,feild_sort,company_id)
+  		values
+  		<foreach collection ="list" item="item" index= "index" separator ="," >
+	    	<trim prefix="(" suffix=")" suffixOverrides=",">
+	  		#{item.pid},#{item.originFeild},#{item.feildName},#{item.feildSort},#{item.companyId},
+	 		</trim>
+   		</foreach>
+  </insert>
+  </mapper>

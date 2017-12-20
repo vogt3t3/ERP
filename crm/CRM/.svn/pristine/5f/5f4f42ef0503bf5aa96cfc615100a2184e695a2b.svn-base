@@ -1,0 +1,47 @@
+package com.crm.service;
+
+import com.crm.model.Cst_activity_t;
+import com.crm.model.Cst_customer_t;
+import com.crm.model.Cst_linkman_t;
+import com.crm.model.Cst_lst_t;
+import com.crm.model.Cst_service_t;
+/**
+ * 客户信息管理
+ * @author yuduan
+ *
+ */
+public interface ClientService extends BaseService{
+
+	/**
+	 * 客户信息-保存更新、删除
+	 * @param c 客户联系人信息
+	 */
+	void saveClient(Cst_customer_t c);
+	void delClient (Cst_customer_t c);
+	/**
+	 * 交往记录-保存更新、删除
+	 * @param a 交往记录
+	 */
+	void saveActivity(Cst_activity_t a);
+	void delActivity(Cst_activity_t a);
+	/**
+	 * 客户联系人-保存更新、删除
+	 * @param l 联系人
+	 */
+	void saveLinkman(Cst_linkman_t l);
+	void delLinkman(Cst_linkman_t l);
+	/**
+	 * 客户服务-保存更新、删除
+	 * @param s 服务
+	 */
+	void saveService(Cst_service_t s);
+	void delService(Cst_service_t s);
+
+	/**
+	 * 客户流失-确认流失时的删除
+	 * @param l
+	 */
+	void delLst(Cst_lst_t l);
+	
+	
+}

@@ -1,0 +1,43 @@
+package com.crm.service.impl;
+
+import org.hibernate.Query;
+
+import com.crm.model.Cst_service_t;
+import com.crm.service.ServiceService;
+
+public class ServiceServiceImpl extends BaseServiceImpl implements ServiceService {
+
+
+
+	/**
+	 * 服务创建
+	 * 完成为客户创建服务的操作
+	 */
+	@Override
+	public void saveService(Cst_service_t s) {
+		// TODO Auto-generated method stub
+
+	}
+	
+	/**
+	 * 服务分配
+	 * 将已有的服务分配给专门的客户经理进行服务
+	 * 
+	 */
+	
+	/**
+	 * 服务处理
+	 * 添加服务的处理结果
+	 */
+	
+	/**
+	 * 服务反馈
+	 * 录入客户对服务的结果满意度
+	 */
+	
+	/**
+	 * 服务归档
+	 * 如果客户反馈的满意度高于3则服务完成并进行归档否则重新处理
+	 */
+
+}

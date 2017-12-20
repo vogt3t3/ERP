@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.staff.IInviteUserDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.staff.InviteUser" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="dept_id" property="deptId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="invite_status" property="inviteStatus" jdbcType="TINYINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    
+    <association property="deptName" column="dept_id" select="selectDeptName"/>
+    <association property="companyName" column="company_id" select="selectCompanyName"/>
+  </resultMap>
+  
+    <sql id="Base_Column_List" >
+      id, company_id, dept_id, name, phone, invite_status, user_id, create_date, update_date
+  	</sql>
+  <select id="selectDeptName" resultType="java.lang.String">
+  select name from oa_department where id = #{deptId}
+  </select>  
+  <select id="selectCompanyName" resultType="java.lang.String">
+  select name from oa_department where id = #{companyId}
+  </select>  
+  
+  <select id="countInviteUser" resultType="java.lang.Integer" >
+  select count(*) from oa_invite_user
+  <where>
+     <if test="id != null" >
+        id = #{id}
+      </if>
+    <if test="deptId != null" >
+       and dept_id = #{deptId}
+      </if>
+    <if test="companyId != null" >
+       and company_id = #{companyId}
+      </if>
+      <if test="name != null" >
+       and name = #{name}
+      </if>
+      <if test="phone != null" >
+       and phone = #{phone}
+      </if>
+      <if test="inviteStatus != null" >
+       and invite_status = #{inviteStatus}
+      </if>
+      <if test="empId != null" >
+       and user_id = #{empId}
+      </if>
+      <if test="createDate != null" >
+       and create_date = #{createDate}
+      </if>
+      <if test="updateDate != null" >
+       and update_date = #{updateDate}
+      </if>
+  </where>
+  </select>
+  
+  
+  <delete id="deleteByIds" parameterType="java.util.Map">
+    delete from oa_invite_user
+    where id in
+    <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+      #{item}  
+    </foreach>
+  </delete>
+  
+  <insert id="insertInviteUser" parameterType="java.util.Map"  keyProperty="id" >
+   insert into oa_invite_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="deptId != null" >
+        dept_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="inviteStatus != null" >
+        invite_status,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="updateDate != null" >
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        #{companyId},
+      </if>
+      <if test="deptId != null" >
+        #{deptId},
+      </if>
+      <if test="name != null" >
+        #{name},
+      </if>
+      <if test="phone != null" >
+        #{phone},
+      </if>
+      <if test="inviteStatus != null" >
+        #{inviteStatus},
+      </if>
+      <if test="userId != null" >
+        #{userId},
+      </if>
+      <if test="createDate != null" >
+        #{createDate},
+      </if>
+      <if test="updateDate != null" >
+        #{updateDate},
+      </if>
+    </trim>
+  
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+  <select id="selectByInviteUsers" parameterType="java.util.Map" resultMap="BaseResultMap">
+  select 
+  <include refid="Base_Column_List"/>
+  from oa_invite_user
+  <where>
+    <if test="id != null" >
+        id = #{id}
+      </if>
+    <if test="deptId != null" >
+       and dept_id = #{deptId}
+      </if>
+      <if test="name != null" >
+       and name = #{name}
+      </if>
+      <if test="phone != null" >
+       and phone = #{phone}
+      </if>
+      <if test="inviteStatus != null" >
+       and invite_status = #{inviteStatus}
+      </if>
+      <if test="empId != null" >
+       and user_id = #{empId}
+      </if>
+      <if test="createDate != null" >
+       and create_date = #{createDate}
+      </if>
+      <if test="companyId != null" >
+       and company_id = #{companyId}
+      </if>
+      <if test="updateDate != null" >
+       and update_date = #{updateDate}
+      </if>
+	    <if test="pageSize != null">
+	  	limit #{startRow},#{pageSize}
+	  	</if>
+  </where>
+  </select>
+  
+  
+  <update id="updateInviteStatus" parameterType="com.aiiju.bean.oa.staff.InviteUser">
+  update oa_invite_user
+  <set>
+  <if test="deptId != null" >
+        dept_id = #{deptId},
+      </if>
+      <if test="name != null" >
+        name = #{name},
+      </if>
+      <if test="companyId != null" >
+       and company_id = #{companyId}
+      </if>
+      <if test="phone != null" >
+        phone = #{phone},
+      </if>
+      <if test="inviteStatus != null" >
+        invite_status = #{inviteStatus},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId},
+      </if>
+  </set>
+  where id = #{id}
+  </update>
+  
+  </mapper>

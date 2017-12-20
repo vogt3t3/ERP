@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.dept.IDepartmentPrincipalDao">
+	<!-- 部门负责人列表返回-->
+	<resultMap id="DepartmentPrincipalResultMap" type="com.aiiju.bean.oa.dept.DepartmentPrincipal">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="start_date" property="startDate" jdbcType="VARCHAR" />
+		<result column="end_date" property="endDate" jdbcType="VARCHAR" />
+		<result column="name" property="userName" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 获取部门维护里面的 部门负责人列表-->
+	<select id="getDepartmentPrincipal" parameterType="java.util.Map" resultMap="DepartmentPrincipalResultMap">
+		SELECT om.id,DATE_FORMAT(start_date,'%Y-%m-%d') start_date,DATE_FORMAT(end_date,'%Y-%m-%d') end_date,u.name,om.user_id
+		FROM oa_organization_manage om LEFT JOIN oa_user u ON om.user_id=u.id
+		WHERE om.dept_id=#{deptId} AND om.company_id=#{companyId}
+	</select>
+	<!-- 插入部门负责人时间段是否已存在-->
+	<select id="existsDepartmentPrincipal" parameterType="java.util.Map" resultType="int">
+		SELECT
+			count(id)
+		FROM
+			oa_organization_manage t
+		WHERE
+			dept_id = #{deptId}
+		AND company_id = #{companyId}
+		<![CDATA[
+		AND((
+				t.start_date <= DATE_FORMAT(
+					#{startDate},
+					'%Y-%m-%d %H:%i:%s'
+				)
+				AND t.end_date >= DATE_FORMAT(
+					#{startDate},
+					'%Y-%m-%d %H:%i:%s'
+				)
+			)
+		OR (
+			t.start_date <= DATE_FORMAT(
+				#{endDate},
+				'%Y-%m-%d %H:%i:%s'
+			)
+			AND t.end_date >= DATE_FORMAT(
+				#{endDate},
+				'%Y-%m-%d %H:%i:%s'
+			)
+		))
+		]]>
+		<if test="null != id">
+			AND id != #{id}
+		</if>
+	</select>
+	<!-- 新增部门负责人 -->
+	<insert id="addDepartmentPrincipal" parameterType="java.util.Map">
+		INSERT INTO 
+		oa_organization_manage(start_date,end_date,user_id,dept_id,company_id,create_date,update_date) 
+		VALUES(date_format(#{startDate},'%Y-%m-%d'),date_format(#{endDate},'%Y-%m-%d'),#{depManagerUserId},#{deptId},#{companyId},now(),now())
+	</insert>
+	<!-- 更新部门负责人-->
+	<update id="updateDepartmentPrincipal" parameterType="java.util.Map">
+		UPDATE oa_organization_manage
+		<set>
+			<if test="startDate != null">start_date=#{startDate},</if>
+			<if test="endDate != null">end_date=#{endDate},</if>
+			<if test="depManagerUserId != null">user_id=#{depManagerUserId},</if>
+			update_date=now()
+		</set>
+			WHERE id=#{id}
+	</update>
+	<!-- 删除部门负责人 -->
+	<delete id="delDepartmentPrincipal" parameterType="java.util.Map">
+		DELETE FROM oa_organization_manage WHERE id=#{id}
+	</delete>
+</mapper>
+
+ 

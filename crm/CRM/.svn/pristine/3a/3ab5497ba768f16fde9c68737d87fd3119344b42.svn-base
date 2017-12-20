@@ -1,0 +1,8 @@
+package com.crm.service;
+
+import com.crm.model.Cst_customer_t;
+
+public interface ClientService extends BaseService{
+
+	void saveClient(Cst_customer_t c);
+}

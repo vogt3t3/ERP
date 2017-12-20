@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.permission.IRoleDao">
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.permission.Role">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="role_name" property="roleName" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="company_id" property="companyId" jdbcType="BIGINT" />
+		<result column="parent_id" property="parentId" jdbcType="BIGINT" />
+		<result column="role_order" property="roleOrder" jdbcType="INTEGER" />
+		<collection property="permitList" ofType="com.aiiju.bean.oa.permission.Permit"
+			javaType="ArrayList" column="{roleId=id,companyId=company_id}" select="selectPermitList" />
+	</resultMap>
+  
+  <sql id="Base_Column_List">
+  	id,role_name,remark,company_id,parent_id,role_order
+  </sql>
+  
+  <!-- 根据公司查询角色列表 -->
+  <select id="getRolesByParam" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List"/>
+    from oa_role
+    <where>
+	    <if test="companyId!=null">
+	    and company_id=#{companyId}
+	    </if>
+    </where>
+  </select>
+  <select id="getRoleByUserId" resultMap="BaseResultMap" parameterType="java.util.Map">
+   select 
+    r.id,r.company_id,r.role_name,r.remark,r.create_date,r.update_date 
+    from oa_user_role_relation t left join oa_role r on t.role_id=r.id
+     where t.user_id=#{userId}
+  </select>
+ 
+  
+  <!-- 通过id删除 -->
+  <delete id="delRole" parameterType="java.util.Map" >
+    delete from perm_role
+    <where>
+	    <if test="id!=null">
+	    and id=#{id}
+	    </if>
+    </where>
+  </delete>
+  
+  <!-- 添加 -->
+  <insert id="addRole" parameterType="com.aiiju.bean.oa.permission.Role"  keyProperty="id">
+    INSERT INTO perm_role  
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="roleName != null" >
+        role_name,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="roleOrder != null" >
+        role_order
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        #{companyId},
+      </if>
+      <if test="roleName != null" >
+        #{roleName},
+      </if>
+      <if test="remark != null" >
+        #{remark},
+      </if>
+      <if test="parentId != null" >
+        #{parentId},
+      </if>
+      <if test="roleOrder != null" >
+        #{roleOrder}
+      </if>
+    </trim>
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   		SELECT LAST_INSERT_ID()
+    </selectKey>
+  </insert>
+  
+	<!-- 条件更新 -->
+  <update id="updateRole" parameterType="com.aiiju.bean.oa.permission.Role" >
+    UPDATE perm_role
+    <set >
+      <if test="roleName != null" >
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=TINYINT},
+      </if>
+      <if test="parentId != null" >
+        parent_id = #{parentId},
+      </if>
+      <if test="roleOrder != null" >
+        role_order = #{roleOrder,jdbcType=INTEGER},
+      </if>
+    </set>
+    WHERE id = #{id}
+  </update>
+  
+  <!-- 为用户设置角色 -->
+  <insert id="insertRoleOfUser" parameterType="java.util.Map">
+	INSERT INTO perm_role_user(user_id,role_id)
+	VALUES
+	<foreach collection="roleIdList" item="item" index="index" separator="," >  
+        (#{userId},#{item})
+    </foreach>
+  </insert>
+  
+  <!-- 根据公司ID获取角色信息(多条) -->
+  <select id="getRoleInfoListByParams" resultMap="BaseResultMap" parameterType="java.util.Map">
+    SELECT 
+    <include refid="Base_Column_List"/>
+    FROM perm_role
+    <where>
+    	<if test="companyId != null">
+    		company_id=#{companyId}
+    	</if>
+    	<if test="roleIds != null">
+    		AND id in (${roleIds})
+    	</if>
+    </where>
+  </select>
+  
+  <!-- 根据ID获取角色信息(单条) -->
+  <select id="getRoleInfoById" resultMap="BaseResultMap" parameterType="java.util.Map">
+    SELECT 
+    <include refid="Base_Column_List"/>
+    FROM perm_role
+    WHERE id = #{id}
+  </select>
+  
+  <select id="selectPermitList" parameterType="java.util.Map" resultType="com.aiiju.bean.oa.permission.Permit">
+  	SELECT t.id, t.parent_id parentId, t.name, t.origin_name originName, t.only, t.perm_except permExcept, t.permit_actions permitSctions
+  	FROM perm_permit t
+  	LEFT JOIN perm_permit_role r ON r.permit_id=t.id
+  	WHERE r.company_id=#{companyId}
+  	AND r.role_id=#{roleId}
+  </select>
+  
+  <!-- 批量新增角色权限 -->
+  <insert id="batchAddRolePermit" parameterType="java.util.Map">
+  	INSERT INTO perm_permit_role(company_id,role_id,permit_id)
+	VALUES
+	<foreach collection="permitIds" item="item" index="index" separator="," >  
+        (#{companyId},#{roleId},#{item})
+    </foreach>
+  </insert>
+  
+  <!-- 根据companyId和roleId删除权限 -->
+  <delete id="delRolePermit" parameterType="java.util.Map" >
+    DELETE from perm_permit_role
+    WHERE company_id=#{companyId}
+    AND role_id=#{roleId}
+  </delete>
+  
+  <!-- 根据roleId删除角色用户关联关系 -->
+  <delete id="delRoleUser" parameterType="java.util.Map" >
+    DELETE from perm_role_user
+    WHERE role_id=#{roleId}
+  </delete>
+  
+</mapper>

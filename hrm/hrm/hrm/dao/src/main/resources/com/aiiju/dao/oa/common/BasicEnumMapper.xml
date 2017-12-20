@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.common.IBasicEnumDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.common.BasicEnum" >
+    <result column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  <!-- 根据条件查询基础枚举表-->
+  <select id="getBasicEnumListByParams" resultMap="BaseResultMap" parameterType="java.util.Map">
+  		select id,name,parent_id,type from basic_enum 
+  		 <where>
+	  	<if test="type != null" >
+	  	and type=#{type}
+	  	</if>
+	  </where>
+  </select>
+  
+    <resultMap id="CityResultMap" type="com.aiiju.bean.common.City" >
+	    <result column="id" property="id" jdbcType="INTEGER" />
+	    <result column="code" property="code" jdbcType="VARCHAR" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+	    <result column="first_letter" property="firstLetter" jdbcType="VARCHAR" />
+	    <result column="level" property="level" jdbcType="INTEGER" />
+ 	</resultMap>
+  
+    <select id="getCitys" resultMap="CityResultMap" parameterType="java.util.Map">
+  		select id,code,name,parent_id,first_letter,level from city 
+  		<where>
+  			<if test="parentId !=null">
+  			parent_id=#{parentId}
+  			</if>
+  		</where>
+  	</select>
+  	
+  <resultMap id="SpecialtyResultMap" type="com.aiiju.bean.common.Specialty" >
+	    <result column="id" property="id" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="uid" property="uid" jdbcType="INTEGER" />
+ 	</resultMap>
+  
+  <select id="getSpecialty" resultMap="SpecialtyResultMap" parameterType="java.util.Map">
+  select id,name,uid from specialty
+  <where>
+  	<if test="uid!=null">
+  		uid=#{uid}
+  	</if>
+  </where>
+  
+  </select>
+   <resultMap id="UnivsResultMap" type="com.aiiju.bean.common.Univs" >
+	    <result column="id" property="id" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="pid" property="pid" jdbcType="INTEGER" />
+ 	</resultMap>
+ 	
+ 	 <select id="getUnivs" resultMap="UnivsResultMap" parameterType="java.util.Map">
+  select id,name,pid from university
+  <where>
+  	<if test="uid!=null">
+  		pid=#{pid}
+  	</if>
+  </where>
+  </select>
+</mapper>

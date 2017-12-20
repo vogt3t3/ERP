@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="client" extends="base"  namespace="/client">
+		<action name="*_*" class="com.crm.action.ClientAction" method="{1}{2}">
+			<result name="clientList">/WEB-INF/Template/clientmanagement/clientlist.jsp</result>
+			<result name="clientDetail">/WEB-INF/Template/clientmanagement/clientinformation.jsp</result>
+			<result name="clientUpdate">/WEB-INF/Template/clientmanagement/clientinformation.jsp</result>
+			<result name="linkMans">/WEB-INF/Template/clientmanagement/linkman.jsp</result>
+			<result name="createLinkMan">/WEB-INF/Template/clientmanagement/createlinkman.jsp</result>
+		</action>
+		
+	</package>
+	
+	
+</struts>    

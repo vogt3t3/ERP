@@ -1,0 +1,88 @@
+package com.crm.service.impl;
+
+import com.crm.model.Sal_chance_t;
+import com.crm.model.Sal_plan_t;
+import com.crm.service.SalService;
+/**
+ * 营销实现类
+ * @author yuduan
+ *
+ */
+public class SalServiceImpl extends BaseServiceImpl implements SalService {
+
+	/**
+	 * 创建指定开发计划-保存、更新
+	 * @param p 计划
+	 */
+	@Override
+	public void saveOrUpdatePlan(Sal_plan_t p) {
+		// TODO Auto-generated method stub
+
+	}
+	
+	/**
+	 * 删除开发计划
+	 * 
+	 */
+	@Override
+	public void delPlan(Sal_plan_t p) {
+		// TODO Auto-generated method stub
+
+	}
+	
+
+	/**
+	 * 执行开发计划
+	 * 按计划执行并记录执行结果
+	 */
+	@Override
+	public void executePlan(Sal_plan_t p) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	/**
+	 * 记录开发结果
+	 * 记录开发计划最终的执行结果
+	 * @Return ： success成功  ， false失败
+	 */
+	@Override
+	public void recordResult(Sal_plan_t p) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	/**
+	 * 创建、更新销售机会
+	 * 发现销售机会并将销售机会录入系统
+	 */
+	@Override
+	public void saveOrUpdateChance(Sal_chance_t c) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	/**
+	 * 删除销售机会
+	 * 对不可为的销售机会进行删除
+	 */
+	@Override
+	public void delChance(Sal_chance_t c) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	/**
+	 * 指派销售机会
+	 * 将销售机会指派给指定的客户经理
+	 */
+	@Override
+	public void chanceCharger(Sal_chance_t c) {
+		// TODO Auto-generated method stub
+		
+	}
+}

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.position.ICompanyPositionInfoDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.position.CompanyPositionInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="dept_id" property="deptId" jdbcType="BIGINT" />
+    <result column="duty_id" property="dutyId" jdbcType="BIGINT" />
+    <result column="duty_type_id" property="dutyTypeId" jdbcType="BIGINT" />
+    <result column="evaluation_score" property="evaluationScore" jdbcType="VARCHAR" />
+    <result column="evaluation_level" property="evaluationLevel" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="position_no" property="positionNo" jdbcType="VARCHAR" />
+    <result column="position_scope" property="positionScope" jdbcType="VARCHAR" />
+    <result column="position_require" property="positionRequire" jdbcType="VARCHAR" />
+    <result column="extra_remark" property="extraRemark" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+      
+      <association property="deptName" column="dept_id" select="selectDept" />
+      <association property="dutyName" column="duty_id" select="selectDuty" />
+      <association property="dutyTypeName" column="duty_type_id" select="selectDutyType" />
+  </resultMap>
+   <select id="selectDutyType" resultType="java.lang.String">
+        select name  from oa_position_type_info  where id=#{dutyTypeId}
+   </select>
+   <select id="selectDuty" resultType="java.lang.String">
+        select name   from oa_company_duty_info  where id=#{dutyId}
+   </select>
+   <select id="selectDept" resultType="java.lang.String">
+        select name   from oa_department  where id=#{deptId}
+   </select>
+
+  <sql id="Base_Column_List">
+  	id,name,company_id,dept_id,duty_id,duty_type_id,evaluation_score,evaluation_level,remark,position_no,
+  	position_scope,position_require,extra_remark,create_date,update_date
+  </sql>
+  <select id="getPositionInfoById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+   select 
+	  <include refid="Base_Column_List"/>
+	  from oa_company_position_info  where id=#{id}
+  </select>
+  
+  <select id="getPositionInfoByName" parameterType="com.aiiju.bean.oa.position.CompanyPositionInfo" resultMap="BaseResultMap">
+  	select id from oa_company_position_info where name=#{name} and company_id=#{companyId}
+  </select>
+  <!-- 按条件查询结果集 -->
+  <select id="getPositionInfoListByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+	  select 
+	  <include refid="Base_Column_List"/>
+	  from oa_company_position_info 
+	  <where>
+	  	<if test="companyId != null" >
+	  	and company_id=#{companyId}
+	  	</if>
+	  	<if test="subDepts != null" >
+	  	and dept_id in
+		  <foreach collection="subDepts" item="item" index="index" open="(" separator="," close=")">  
+		      #{item.id}  
+		    </foreach>
+	  	</if>
+	  
+	  	<if test="dutyId != null">
+	  	and duty_id=#{dutyId}
+	  	</if>
+	  	<if test="dutyTypeId != null">
+	  	and duty_type_id=#{dutyTypeId}
+	  	</if>
+	  	<if test="name != null">
+	    and name like '%'||#{name}||'%'
+	  	</if>
+	  </where>
+  	order by create_date desc
+  	<if test="pageSize != null">
+    limit #{startRow},#{pageSize}
+  	</if>
+  </select>
+  <select id="getPositionInfoListCountByParams" parameterType="java.util.Map" resultType="java.lang.Integer">
+	  select 
+	  count(id)
+	  from oa_company_position_info 
+	  <where>
+	  	<if test="companyId != null" >
+	  	and company_id=#{companyId}
+	  	</if>
+	  	<if test="subDepts != null" >
+	  	and dept_id in
+		  <foreach collection="subDepts" item="item" index="index" open="(" separator="," close=")">  
+		      #{item.id}  
+		    </foreach>
+	  	</if>
+	  
+	  	<if test="dutyId != null">
+	  	and duty_id=#{dutyId}
+	  	</if>
+	  	<if test="dutyTypeId != null">
+	  	and duty_type_id=#{dutyTypeId}
+	  	</if>
+	  	<if test="name != null">
+	    and name like '%'||#{name}||'%'
+	  	</if>
+	  </where>
+  </select>
+  <!-- 删除 -->
+  <delete id="delPositionInfo" parameterType="java.util.Map" >
+    delete from oa_company_position_info
+    where id in
+     <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+	      #{item}  
+	 </foreach>
+  </delete>
+  <!-- 添加 -->
+  <insert id="addPositionInfo" parameterType="com.aiiju.bean.oa.position.CompanyPositionInfo" keyProperty="id">
+   insert into oa_company_position_info 
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="dutyId != null" >
+        duty_id,
+      </if>
+       <if test="deptId != null" >
+        dept_id,
+      </if>
+      <if test="dutyTypeId != null" >
+        duty_type_id,
+      </if>
+      <if test="evaluationScore != null" >
+        evaluation_score,
+      </if>
+      <if test="evaluationLevel != null" >
+        evaluation_level,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="positionNo != null" >
+        position_no,
+      </if>
+     
+      <if test="positionScope != null" >
+        position_scope,
+      </if>
+      <if test="positionRequire != null" >
+        position_require,
+      </if>
+      <if test="extraRemark != null" >
+        extra_remark,
+      </if>
+        update_date
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+     <if test="companyId != null" >
+        #{companyId},
+      </if>
+      <if test="name != null" >
+       #{ name},
+      </if>
+      <if test="dutyId != null" >
+        #{dutyId},
+      </if>
+       <if test="deptId != null" >
+       #{ deptId},
+      </if>
+      <if test="dutyTypeId != null" >
+        #{dutyTypeId},
+      </if>
+      <if test="evaluationScore != null" >
+       #{ evaluationScore},
+      </if>
+      <if test="evaluationLevel != null" >
+        #{evaluationLevel},
+      </if>
+      <if test="remark != null" >
+        #{remark},
+      </if>
+      <if test="positionNo != null" >
+        #{positionNo},
+      </if>
+      <if test="startDate != null" >
+       #{ startDate},
+      </if>
+      <if test="endDate != null" >
+        #{endDate},
+      </if>
+      <if test="isSleep != null" >
+        #{isSleep},
+      </if>
+      <if test="positionScope != null" >
+        #{positionScope},
+      </if>
+      <if test="positionRequire != null" >
+        #{positionRequire},
+      </if>
+      <if test="extraRemark != null" >
+        #{extraRemark},
+      </if>
+        sysdate()
+        
+    </trim>
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+	<!-- 更新 -->
+  <update id="updatePositionInfo" parameterType="com.aiiju.bean.oa.position.CompanyPositionInfo" >
+    update oa_company_position_info
+    <set >
+     <if test="companyId != null" >
+        company_id=#{companyId},
+      </if>
+      <if test="name != null" >
+       name=#{ name},
+      </if>
+      <if test="dutyId != null" >
+        duty_id=#{dutyId},
+      </if>
+       <if test="deptId != null" >
+       dept_id=#{deptId},
+      </if>
+      <if test="dutyTypeId != null" >
+        duty_type_id=#{dutyTypeId},
+      </if>
+      <if test="evaluationScore != null" >
+       evaluation_score=#{evaluationScore},
+      </if>
+      <if test="evaluationLevel != null" >
+        evaluation_level=#{evaluationLevel},
+      </if>
+      <if test="remark != null" >
+       remark= #{remark},
+      </if>
+      <if test="positionNo != null" >
+        position_no=#{positionNo},
+      </if>
+      
+      <if test="positionScope != null" >
+       position_scope= #{positionScope},
+      </if>
+      <if test="positionRequire != null" >
+       position_require= #{positionRequire},
+      </if>
+      <if test="extraRemark != null" >
+        extra_remark=#{extraRemark},
+      </if>
+       update_date =sysdate() 
+    </set>
+       where id = #{id}
+  </update>
+  
+  <!-- 批量新增职位信息 -->
+  <insert id="batchAddPositionInfo" parameterType="java.util.Map">
+  	INSERT INTO oa_company_position_info (name, duty_id, dept_id, position_no, remark, company_id)
+  	VALUES
+  	<foreach collection="positionInfoAddList" item="item" index="index" separator=",">
+  	(#{item.name}, #{item.dutyId}, #{item.deptId}, #{item.positionNo}, #{item.remark}, #{item.companyId})
+  	</foreach>
+  </insert>
+  
+</mapper>

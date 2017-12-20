@@ -1,0 +1,31 @@
+package com.crm.action;
+
+import javax.annotation.Resource;
+
+import com.crm.model.Cst_customer_t;
+import com.crm.service.ClientService;
+
+public class ClientAction {
+
+	private Cst_customer_t cst_customer_t;
+	@Resource(name="ClientService")
+	private ClientService clientService;
+	
+	/**
+	 * 添加客户信息
+	 * @return 返回结果
+	 */
+	public String addClient(){
+		clientService.saveClient(cst_customer_t);
+		return "success";
+	}
+	public Cst_customer_t getCst_customer_t() {
+		return cst_customer_t;
+	}
+
+	public void setCst_customer_t(Cst_customer_t cst_customer_t) {
+		this.cst_customer_t = cst_customer_t;
+	}
+	
+	
+}

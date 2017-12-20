@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.salary.ISpwSalaryBatchDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.salary.SpwSalaryBatch" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="send_time" property="sendTime" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="is_withdraw" property="isWithdraw" jdbcType="TINYINT" />
+    <result column="is_send" property="isSend" jdbcType="TINYINT" />
+    <result column="salary_name" property="salaryName" jdbcType="VARCHAR" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+    <delete id="deleteById" parameterType="java.lang.Long">
+      delete from spw_salary_batch
+    where id = #{id}
+  </delete>
+  
+   <insert id="insert" parameterType="com.aiiju.bean.oa.salary.SpwSalaryBatch" keyProperty="id">
+    insert into spw_salary_batch
+    <trim prefix="(" suffix=")" suffixOverrides="," >  
+      <if test="sendTime != null" >
+        date_format(send_time,'%Y-%m-%d %H:%i:%s') send_time,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="isWithdraw != null" >
+        is_withdraw,
+      </if>
+      <if test="isSend != null" >
+        is_send,
+      </if>
+      <if test="salaryName != null" >
+        salary_name,
+      </if>
+      <if test="companyId != null" >
+        company_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="sendTime != null" >
+        #{sendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="isWithdraw != null" >
+        #{isWithdraw,jdbcType=TINYINT},
+      </if>
+      <if test="isSend != null" >
+        #{isSend,jdbcType=TINYINT},
+      </if>
+      <if test="salaryName != null" >
+        #{salaryName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null" >
+        #{companyId},
+      </if>
+    </trim>
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+  <!-- 根据ID更新薪酬批次表的状态 -->
+  <update id="updateStatusById" parameterType="java.util.Map">
+    UPDATE spw_salary_batch
+    <set>
+      <if test="isWithdraw != null">
+        is_withdraw = #{isWithdraw},
+      </if>
+      <if test="salaryName != null">
+        salary_name = #{salaryName},
+      </if>
+      <if test="isSend != null">
+        is_send = #{isSend},
+	    send_time=now()
+      </if>
+    </set>
+    WHERE id=#{id}
+  </update>
+  
+  <!-- 根据用户名查询历史记录 -->
+  <select id="queryHistorySalaryBatch" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	 	SELECT
+			t.id,
+			t.company_id,
+			date_format(t.send_time,'%Y-%m-%d %H:%i:%s') send_time,
+			t.user_id,
+			o. NAME user_name,
+			t.is_withdraw,
+			t.is_send,
+			t.salary_name,
+			t.create_time
+		FROM
+			spw_salary_batch t
+		LEFT JOIN oa_user o ON t.user_id = o.id
+		WHERE
+			t.company_id = #{companyId}
+		AND t.user_id = #{userId}
+		AND t.is_send = 1
+		order by t.create_time DESC
+		<if test="pageSize != null">
+	    	limit #{startRow},#{pageSize}
+	  	</if>
+  </select>
+  
+  <select id="getSalaryBatchCountByParams" parameterType="java.util.Map" resultType="java.lang.Integer">
+  		SELECT
+  			count(t.id)
+  		FROM
+			spw_salary_batch t
+		WHERE
+			t.company_id = #{companyId}
+		AND t.user_id = #{userId}
+		AND t.is_send = 1
+  </select>
+  
+  <!--  获取我的历史记录 -->
+  <select id="getMyHistorySalaryPayList" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	 	select 
+			p.id,
+			t.company_id,
+			date_format(t.send_time,'%Y-%m-%d %H:%i:%s') send_time,
+			t.user_id,
+			o. NAME user_name,
+			t.is_withdraw,
+			t.is_send,
+			t.salary_name,
+			t.create_time
+		FROM spw_salary_batch t
+		LEFT JOIN oa_user o ON t.user_id = o.id
+		LEFT JOIN spw_salary_pay p ON p.pid = t.id
+		where p.phone = #{phone}
+		and (p.is_send = 1 or p.is_email_send = 1)
+		and p.is_withdraw = 0
+		and p.is_del = 0
+		order by t.create_time DESC
+		<if test="pageSize != null">
+	    	limit #{startRow},#{pageSize}
+	  	</if>
+  </select>
+  
+  <select id="getMyHistorySalaryPayListCount" parameterType="java.util.Map" resultType="java.lang.Integer">
+  		SELECT
+  			count(t.id)
+  		FROM spw_salary_batch t
+		LEFT JOIN spw_salary_pay p ON p.pid = t.id
+		where p.phone = #{phone}
+		and (p.is_send = 1 or p.is_email_send = 1)
+		and p.is_withdraw = 0
+		and p.is_del = 0
+  </select>
+</mapper>

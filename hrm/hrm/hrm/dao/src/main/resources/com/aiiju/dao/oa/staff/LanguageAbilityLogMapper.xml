@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.staff.ILanguageAbilityLogDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.staff.LanguageAbilityLog">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="language" jdbcType="VARCHAR" property="language" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List">
+      id, language, level, user_id, company_id, create_date, update_date
+  </sql>
+  
+  <!-- 通过id查询 -->
+  <select id="selectByUserId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+      <include refid="Base_Column_List" />
+    from oa_language_ability_log
+    where id = #{id} 
+  </select>
+  
+    <!-- 按条件查询 -->
+  <select id="selectByExample" parameterType="java.util.Map" resultMap="BaseResultMap">
+  select 
+    <include refid="Base_Column_List"/>
+     from oa_language_ability_log
+    <where>
+         <if test="language != null">
+        language = #{language,jdbcType=VARCHAR}
+      </if>
+      <if test="level != null">
+      and   level = #{level,jdbcType=VARCHAR}
+      </if>
+      <if test="empId != null">
+      and   user_id = #{empId}
+      </if>
+      <if test="companyId != null">
+        and company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="createDate != null">
+      and   create_date = #{createDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateDate != null">
+       and  update_date = #{updateDate,jdbcType=TIMESTAMP}
+      </if>
+   	<if test="startPos != null">
+      limit #{startPos} , #{pageSize}
+    </if>
+    </where>
+  </select>
+  
+  <!-- 通过id删除 -->
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from oa_language_ability_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByUserId" parameterType="java.util.Map">
+    delete from oa_language_ability_log
+    where user_id in
+       <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+      #{item}  
+    </foreach>
+  </delete>
+  
+  <!-- 添加 -->
+  <insert id="insert" parameterType="com.aiiju.bean.oa.staff.LanguageAbilityLog">
+    insert into oa_language_ability_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="language != null">
+        language,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="language != null">
+        #{language,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 通过userid更新 -->
+  <update id="updateByExample" parameterType="com.aiiju.bean.oa.staff.LanguageAbilityLog">
+    update oa_language_ability_log
+    <set>
+      <if test="language != null">
+        language = #{language,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+</mapper>

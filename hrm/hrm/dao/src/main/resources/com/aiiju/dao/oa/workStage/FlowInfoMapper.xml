@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.workStage.IFlowInfoDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.FlowInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="file" property="file" jdbcType="VARCHAR" />
+    <result column="send_to_person" property="sendToPerson" jdbcType="LONGVARCHAR" />
+    <result column="step" property="step" jdbcType="TINYINT" />
+    <result column="update_date" property="updateDate" jdbcType="VARCHAR" />
+    <result column="create_date" property="createTime" jdbcType="VARCHAR" />
+    <result column="is_del" property="isDel" jdbcType="TINYINT" />
+    <result column="is_withdraw" property="isWithdraw" jdbcType="TINYINT" />
+    <result column="flow_type" property="flowType" jdbcType="TINYINT" />
+    <association property="reimburseList" column="id" select="getReimburseListByFlowId" />  
+    <association property="vacationList" column="id" select="getVacationListByFlowId" />
+    <association property="replyList" column="id" select="getReplyByFlowId" />
+    <association property="user" column="user_id" select="getUserInfo" />
+    <association property="sendToPersonList" column="send_to_person" select="getSendToPersons" />
+     <association property="fileLists" column="file" select="getFileInfoList" />
+    
+  </resultMap>
+  <resultMap id="ReplyBaseResultMap" type="com.aiiju.bean.oa.workStage.Reply">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="company_id" jdbcType="BIGINT" property="companyId" />
+		<result column="scene_type" jdbcType="TINYINT" property="sceneType" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="reply_pid" jdbcType="BIGINT" property="replyPid" />
+		<result column="pid" jdbcType="BIGINT" property="pid" />
+		<result column="pid_uid" jdbcType="BIGINT" property="pidUid" />
+		<result column="receive_uid" jdbcType="BIGINT" property="receiveUid" />
+		<result column="reply_con" jdbcType="VARCHAR" property="replyCon" />
+		<result column="is_del" jdbcType="TINYINT" property="isDel" />
+		<result column="is_agree" jdbcType="TINYINT" property="isAgree" />
+		<result column="is_withdraw" jdbcType="TINYINT" property="isWithdraw" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+	</resultMap>
+ <!-- 附件 对象 -->
+  	<resultMap type="com.aiiju.bean.oa.config.FileInfo" id="FileResultMap">
+  		<id column="id" property="id" jdbcType="BIGINT" />
+        <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+        <result column="file_size" property="fileSize" jdbcType="BIGINT" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+  	</resultMap>
+    <resultMap id="UserBaseResultMap" type="com.aiiju.bean.oa.staff.User">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+  </resultMap>
+  <resultMap id="ReimburseBaseResultMap" type="com.aiiju.bean.oa.workStage.FlowReimburse" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="flow_id" property="flowId" jdbcType="BIGINT" />
+    <result column="fee_type" property="feeType" jdbcType="SMALLINT" />
+    <result column="fees" property="fees" jdbcType="DOUBLE" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+  <resultMap id="VacationBaseResultMap" type="com.aiiju.bean.oa.workStage.FlowVacation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="flow_id" property="flowId" jdbcType="BIGINT" />
+    <result column="vacation_type" property="vacationType" jdbcType="INTEGER" />
+    <result column="start_date" property="startDate" jdbcType="VARCHAR" />
+    <result column="end_date" property="endDate" jdbcType="VARCHAR" />
+    <result column="period" property="period" jdbcType="FLOAT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+<!-- 查询文件列表 -->
+<select id="getFileInfoList" resultMap="FileResultMap" >
+	select t.id,t.file_name,t.file_size,t.url,t.type
+	from oa_file t
+	where  FIND_IN_SET(id, #{file})>0
+</select>
+   <select id="getUserInfo" resultMap="UserBaseResultMap">
+      select u.id,u.name,f.url from oa_user u left join oa_file f on u.id=f.fId and f.business_id=5 where u.id = #{userId} 
+   </select>
+   <select id="getSendToPersons" resultMap="UserBaseResultMap">
+     select id,name from oa_user where  FIND_IN_SET(id, #{sendToPerson}) > 0 order by FIND_IN_SET(id, #{sendToPerson}) 
+   </select>
+   <select id="getReplyByFlowId" resultMap="ReplyBaseResultMap">
+      select * from zds_reply  where scene_type=3 and pid = #{id} and is_agree in(1,2)   
+   </select>
+   
+   <select id="getVacationListByFlowId" resultMap="VacationBaseResultMap">
+      select  id,user_id,company_id,flow_id,vacation_type,start_date,end_date,period,create_date from zds_flow_vacation where flow_id=#{id}
+   </select>
+   
+   <select id="getReimburseListByFlowId" resultMap="ReimburseBaseResultMap">
+       select  id,user_id,company_id,flow_id,fee_type,fees,create_date,remark from zds_flow_reimburse where flow_id=#{id}
+   </select>
+  <sql id="Base_Column_List" >
+    distinct z.id,z.user_id,z.company_id,z.file,z.content,z.send_to_person,z.step,DATE_FORMAT(z.update_date,'%Y-%m-%d %H:%i:%s') as update_date,DATE_FORMAT(z.create_date,'%Y-%m-%d %H:%i:%s') AS create_date,z.is_del,z.is_withdraw,z.flow_type
+  </sql>
+  <insert id="addFlowInfo" parameterType="com.aiiju.bean.oa.workStage.FlowInfo" keyProperty="id">
+  insert into zds_flow_info(user_id,company_id,content,send_to_person,flow_type,file)values(#{userId},#{companyId},#{content},#{sendToPerson},#{flowType},#{file})
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  <update id="updateFlowInfo" parameterType="com.aiiju.bean.oa.workStage.FlowInfo" >
+	  update zds_flow_info 
+	  <set>
+	   <if test="step!=null">
+	   step=#{step},
+	   </if>
+	   <if test="content!=null">
+	    content=#{content},
+	   </if>
+	   <if test="sendToPerson!=null">
+	    send_to_person=#{sendToPerson},
+	   </if>
+	   <if test="isDel">
+	    is_del=#{isDel},
+	   </if>
+	   <if test="isWithdraw">
+	    is_withdraw=#{isWithdraw},
+	   </if>
+	  </set>
+	  where id=#{id}
+  </update>
+  <select id="getFlowInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+	   select   
+	   <include refid="Base_Column_List"/>
+	   from zds_flow_info  z left join zds_history_log l on z.id=l.ref_id  where z.company_id=#{companyId} and l.company_id=#{companyId}
+	   <if test="userId!=null">
+	   and z.user_id=#{userId}
+	   </if>
+	   <if test="flowType!=null">
+	   and z.flow_type=#{flowType}
+	   </if>
+	   <if test="receiveUid!=null">
+	   and l.receive_uid=#{receiveUid}
+	   </if>
+	   <if test="isWithdraw!=null">
+	   and z.is_withdraw=#{isWithdraw}
+	   </if>
+	   <if test="isDeal!=null">
+	   and l.is_read=#{isDeal}
+	   </if>
+	    <if test="flowId!=null">
+	   and z.id=#{flowId}
+	   </if>
+	    <if test="type!=null and type == 3">
+	   and (z.step =0 or z.step =1 )
+	   </if>
+	   order by z.create_date desc
+	    <if test="pageSize != null">
+	  	limit #{startRow},#{pageSize}
+	  	</if>
+  </select>
+    <select id="getFlowInfoCounts" parameterType="java.util.Map" resultType="java.lang.Integer">
+	   select   
+	   count(distinct z.id)
+	   from zds_flow_info  z left join zds_history_log l on z.id=l.ref_id  where z.company_id=#{companyId} and l.company_id=#{companyId}
+	  <if test="userId!=null">
+	   and z.user_id=#{userId}
+	   </if>
+	   <if test="flowType!=null">
+	   and z.flow_type=#{flowType}
+	   </if>
+	   <if test="receiveUid!=null">
+	   and l.receive_uid=#{receiveUid}
+	   </if>
+	   <if test="isWithdraw!=null">
+	   and z.is_withdraw=#{isWithdraw}
+	   </if>
+	    <if test="type!=null and type == 3">
+	   and (z.step =0 or z.step =1 )
+	   </if>
+	   <if test="isDeal!=null">
+	   and l.is_read=#{isDeal}
+	   </if>
+  </select>
+   <select id="getFlowInfoByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+	   select   
+	   <include refid="Base_Column_List"/>,u.name userName,u.dept_id,IFNULL(b.replyNum, 0) replyNum
+	   from zds_flow_info  z 
+	   LEFT JOIN oa_user u on u.id=z.user_id
+	   LEFT JOIN (
+				SELECT
+					r.pid,
+					count(r.id) replyNum
+				FROM
+					zds_reply r
+				WHERE
+					r.scene_type = 3
+				AND r.is_del = 0
+				AND r.is_withdraw = 0
+				GROUP BY
+					r.pid
+			) AS b ON b.pid = z.id
+	   where z.id=#{flowId} 
+  </select>
+  
+	<!-- 获取报销列表条数（请求参数，allUserList,companyId,flowType） -->
+	<select id="getFlowInfoCountsByParams" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(id)
+		FROM zds_flow_info z
+		WHERE z.company_id = #{companyId} 
+		AND z.flow_type = #{flowType}
+		AND DATE_FORMAT(z.create_date, '%Y-%m-%d') &gt;= #{startDate}
+		AND DATE_FORMAT(z.create_date, '%Y-%m-%d') &lt;= #{endDate}
+		<if test="null!= allUserList">
+			AND z.user_id in
+			<foreach collection="allUserList" index="index" item="item" open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+		</if>
+	</select>
+	
+	<!-- 获取报销列表（请求参数，allUserList,companyId,flowType） -->
+	<select id="getFlowInfoListByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" />
+		FROM zds_flow_info z
+		WHERE z.company_id = #{companyId} 
+		AND z.flow_type = #{flowType}
+		AND DATE_FORMAT(z.create_date, '%Y-%m-%d') &gt;= #{startDate}
+		AND DATE_FORMAT(z.create_date, '%Y-%m-%d') &lt;= #{endDate}
+		<if test="null != allUserList">
+			AND z.user_id in
+			<foreach collection="allUserList" index="index" item="item" open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+		</if>
+		ORDER BY z.create_date DESC
+        <if test="null != startPos and null != pageSize">
+            LIMIT ${startPos},${pageSize}
+        </if>
+	</select>
+</mapper>

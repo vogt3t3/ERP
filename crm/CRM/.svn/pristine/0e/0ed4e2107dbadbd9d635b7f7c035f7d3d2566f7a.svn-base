@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../Styles/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../Styles/admin-all.css" />
+    <script type="text/javascript" src="../../Scripts/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="../../Scripts/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../Styles/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript">
+        $(function () {
+            $(".datepicker").datepicker();
+
+            $('#list').hide();
+            $('#find').click(function () {
+                $('#list').show();
+            })
+        })
+
+    </script>
+</head>
+<body>
+    <div class="alert alert-info">当前位置<b class="tip"></b>客户信息管理<b class="tip"></b>交往记录<b class="tip"></b>新建交往记录</div>
+    <table class="table table-striped table-bordered table-condensed">
+        
+        <tbody>
+
+			
+             <tr>
+                <td colspan="4">
+                    <input class="btn btn-inverse" id="lxr" type="button" value="保存" />
+                   
+                    <input class="btn btn-inverse" type="button" value="返回"  onclick="window.location.href='contractrecord.html'" /></td>
+             </tr>
+            
+            <tr>
+           	<td width="40">时间*</td>
+			<td width="40"><input type="text"  /></td>
+            <td width="40">地点*</td>
+            <td width="40"><input type="text" /></td>
+            </tr>
+            <tr>
+           	<td width="40">概要*</td>
+             <td width="40"><input type="text" /></td>
+            <td width="40">备注</td>
+             <td width="40"><input type="text" /></td>
+            </tr>
+            <tr>
+           	<td colspan="2" width="40">详细信息</td>
+             	
+                 <td width="500" colspan="3" height="">
+                    <textarea name="bak" style="width: 95%" rows="4" cols="5"></textarea>                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

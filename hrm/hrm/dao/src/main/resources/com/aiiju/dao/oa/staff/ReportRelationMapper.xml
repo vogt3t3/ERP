@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.staff.IReportRelationDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.staff.ReportRelation">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="end_date" jdbcType="TIMESTAMP" property="endDate" />
+    <result column="report_basis" jdbcType="BIGINT" property="reportBasis" />
+    <result column="to_user_id" jdbcType="BIGINT" property="toUserId" />
+    <result column="from_user_id" jdbcType="BIGINT" property="fromUserId" />
+    <result column="to_dept_id" jdbcType="BIGINT" property="toDeptId" />
+    <result column="from_dept_id" jdbcType="BIGINT" property="fromDeptId" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+     <association property="userName" column="to_user_id" select="selectuserName"/>
+     <association property="toDeptName" column="to_dept_id" select="selectDeptName"/>
+     <association property="fromDeptName" column="from_dept_id" select="selectFromDeptName"/>
+  </resultMap>
+ 
+  <sql id="Base_Column_List">
+      id, start_date, end_date, report_basis, to_user_id, from_user_id, to_dept_id, from_dept_id, 
+      company_id, create_date, update_date
+  </sql>
+  
+  <select id="selectuserName" resultType="java.lang.String">
+  	select name from oa_user where id  =#{toUserId}
+  </select>
+  <select id="selectDeptName" resultType="java.lang.String">
+  	 select name from oa_department where id = #{toDeptId} 
+  </select>
+  <select id="selectFromDeptName" resultType="java.lang.String">
+  	 select name from oa_department where  id = #{fromDeptId}
+  </select>
+  
+  
+  <select id="selectByUserId" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List"/>
+    from oa_report_relation
+    where from_user_id = #{id}  and to_user_id=#{toUserId}
+  </select>
+  
+  <select id="selectByExample" parameterType="java.util.Map" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List"/>
+    from oa_report_relation
+    <where>
+     <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="endDate != null">
+       and  end_date = #{endDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="reportBasis != null">
+       and  report_basis = #{reportBasis,jdbcType=BIGINT}
+      </if>
+      <if test="toUserId != null">
+       and  to_user_id = #{toUserId,jdbcType=BIGINT}
+      </if>
+      <if test="fromUserId != null">
+       and  from_user_id = #{fromUserId,jdbcType=BIGINT}
+      </if>
+      <if test="toDeptId != null">
+       and  to_dept_id = #{toDeptId,jdbcType=BIGINT}
+      </if>
+      <if test="fromDeptId != null">
+       and  from_dept_id = #{fromDeptId,jdbcType=BIGINT}
+      </if>
+      <if test="companyId != null">
+       and  company_id = #{companyId,jdbcType=BIGINT}
+      </if>
+      <if test="createDate != null">
+       and  create_date = #{createDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updateDate != null">
+       and  update_date = #{updateDate,jdbcType=TIMESTAMP}
+      </if>
+      <if test="startPos != null">
+      limit #{startPos} , #{pageSize}
+      </if>
+    </where>
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Long">
+    delete from oa_report_relation
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <delete id="deleteByUserId" parameterType="java.util.Map">
+    delete from oa_report_relation
+    where from_user_id in
+       <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+      #{item}  
+    </foreach>
+  </delete>
+  
+  <insert id="insert" parameterType="com.aiiju.bean.oa.staff.ReportRelation">
+    insert into oa_report_relation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="startDate != null">
+        start_date,
+      </if>
+      <if test="endDate != null">
+        end_date,
+      </if>
+      <if test="reportBasis != null">
+        report_basis,
+      </if>
+      <if test="toUserId != null">
+        to_user_id,
+      </if>
+      <if test="fromUserId != null">
+        from_user_id,
+      </if>
+      <if test="toDeptId != null">
+        to_dept_id,
+      </if>
+      <if test="fromDeptId != null">
+        from_dept_id,
+      </if>
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="startDate != null">
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reportBasis != null">
+        #{reportBasis,jdbcType=BIGINT},
+      </if>
+      <if test="toUserId != null">
+        #{toUserId,jdbcType=BIGINT},
+      </if>
+      <if test="fromUserId != null">
+        #{fromUserId,jdbcType=BIGINT},
+      </if>
+      <if test="toDeptId != null">
+        #{toDeptId,jdbcType=BIGINT},
+      </if>
+      <if test="fromDeptId != null">
+        #{fromDeptId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null">
+        #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  
+
+  <update id="updateByExample" parameterType="com.aiiju.bean.oa.staff.ReportRelation">
+    update oa_report_relation
+    <set>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endDate != null">
+        end_date = #{endDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reportBasis != null">
+        report_basis = #{reportBasis,jdbcType=BIGINT},
+      </if>
+      <if test="toUserId != null">
+        to_user_id = #{toUserId,jdbcType=BIGINT},
+      </if>
+      <if test="toDeptId != null">
+        to_dept_id = #{toDeptId,jdbcType=BIGINT},
+      </if>
+      <if test="fromDeptId != null">
+        from_dept_id = #{fromDeptId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null">
+        company_id = #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where  id = #{id}
+  </update>
+ 
+
+</mapper>

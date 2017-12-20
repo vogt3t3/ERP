@@ -1,0 +1,320 @@
+package com.crm.action;
+
+import java.util.List;
+
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.interceptor.RequestAware;
+import org.apache.struts2.interceptor.SessionAware;
+
+import com.crm.model.Cst_activity_t;
+import com.crm.model.Cst_customer_t;
+import com.crm.model.Cst_indent_t;
+import com.crm.model.Cst_linkman_t;
+import com.crm.model.Cst_lst_t;
+import com.crm.service.ClientService;
+
+public class ClientAction  implements RequestAware,SessionAware{
+
+	
+	@Resource(name="ClientService")
+	private ClientService clientService;
+	
+	//客户id,根据id查询客户详细信息
+	private int id;
+	//联系人id
+	private int linkManId;
+	//交往记录id
+	private int activityId;
+	//订单记录
+	private int identId;
+	private Map request;
+	private	Map session;
+	//客户
+	private Cst_customer_t cst_customer_t;
+	//联系人
+	private Cst_linkman_t cst_linkman_t;
+	//交往记录
+	private Cst_activity_t cst_activity_t ;
+	/**
+	 * 添加客户信息
+	 * @return 返回结果
+	 */
+	public String addClient(){
+		clientService.saveClient(cst_customer_t);
+		request.put("cst_customer_t", cst_customer_t);
+		
+		return "clientDetail";
+	}
+	
+	/**
+	 * 客户信息列表
+	 * @return 
+	 */
+	public String listClient(){
+		List<Cst_customer_t> list=clientService.listClient();
+		request.put("clientList", list);
+		return "clientList";
+	}
+	
+	/**
+	 * 客户详细信息
+	 * @return
+	 */
+	public String detailClient(){
+		Cst_customer_t c =clientService.find(id, Cst_customer_t.class);
+		request.put("cst_customer_t", c);
+		return "clientDetail";
+	}
+	
+	/**
+	 * 打开创建客户界面
+	 */
+	public String openCreateClient(){
+		return "clientDetail";
+	}
+	
+	/**
+	 * 更新客户信息
+	 * @return
+	 */
+	public String updateClient(){
+		clientService.saveOrUpdate(cst_customer_t);
+		return "clientUpdate";
+	}
+	
+	/**
+	 * 获取联系人
+	 * @return
+	 */
+	public String getLinkMan(){
+		Cst_customer_t c =clientService.find(id, Cst_customer_t.class);
+		Set<Cst_linkman_t>  cst_linkman_ts=c.getCst_linkman_ts();
+		request.put("cst_linkman_ts", cst_linkman_ts);
+		request.put("cst_customer_t", c);
+		return "linkMans";
+	} 
+	
+	
+	/**
+	 * 打开创建联系人页面
+	 * @return
+	 */
+	public String openCreateLinkMan(){
+		Cst_customer_t c =clientService.find(id, Cst_customer_t.class);
+		request.put("cst_customer_t", c);
+		return "createLinkMan";
+	}
+	
+	/**
+	 * 创建联系人
+	 * @return
+	 */
+	public String addLinkMan(){
+		Cst_customer_t c=clientService.find(cst_linkman_t.getLink_cst_id(), Cst_customer_t.class);
+		clientService.saveLinkman(cst_linkman_t);
+		c.getCst_linkman_ts().add(cst_linkman_t);
+		id=cst_linkman_t.getLink_cst_id();
+		clientService.saveClient(c);
+		request.put("cst_linkman_ts", c.getCst_linkman_ts());
+		request.put("cst_customer_t", c);
+		return "linkMans";
+	}
+	
+	/**
+	 *  编辑联系人
+	 * @return
+	 */
+	public String editLinkMan(){
+		Cst_linkman_t c1 =clientService.find(linkManId, Cst_linkman_t.class);
+		Cst_customer_t c2 =clientService.find(id, Cst_customer_t.class);
+		request.put("cst_linkman_t", c1);
+		request.put("cst_customer_t", c2);
+		return "createLinkMan";
+	}
+	
+	/**
+	 * 删除联系人
+	 * @return
+	 */
+	public String deleteLinkMan(){
+		Cst_linkman_t c =clientService.find(linkManId, Cst_linkman_t.class);
+		clientService.delLinkman(c);
+		getLinkMan();
+		return "linkMans";
+	}
+	
+	/**
+	 * 交往记录
+	 * @return
+	 */
+	public String getActivity(){
+		Cst_customer_t c =clientService.find(id, Cst_customer_t.class);
+		request.put("cst_customer_t", c);
+		return "activity";
+	}
+	
+	/**
+	 * 打开创建交往记录
+	 */
+	public String openCreateActivity(){
+		Cst_customer_t c =clientService.find(id, Cst_customer_t.class);
+		request.put("cst_customer_t", c);
+		return "createActivity";
+	}
+	/**
+	 * 交往记录详细信息
+	 * @return
+	 */
+	public String getActivityDetail(){
+		Cst_activity_t a=clientService.find(activityId, Cst_activity_t.class);
+		request.put("cst_activity_t", a);
+		return "createActivity";
+	}
+	
+	/**
+	 * 保存交往记录
+	 * @return
+	 */
+	public String addActivity(){
+		Cst_customer_t c =clientService.find(id,  Cst_customer_t.class);
+		clientService.saveActivity(cst_activity_t);
+		request.put("cst_customer_t", c);
+		return "activity";
+	}
+	
+	/**
+	 * 获取历史订单
+	 * @return
+	 */
+	public String getIndent(){
+		Cst_customer_t c =clientService.find(id, Cst_customer_t.class);
+		request.put("cst_customer_t", c);
+		return "indent";
+	}
+	
+	/**
+	 * 历史订单详细信息
+	 * @return
+	 */
+	public String getIndentDetail(){
+		Cst_indent_t c =clientService.find(identId, Cst_indent_t.class);
+		request.put("cst_indent_t", c);
+		return "indentDetail";
+	}
+	
+	/**
+	 * 删除历史订单
+	 * @return
+	 */
+	public String deleteIndentDetail(){
+		Cst_indent_t indent =clientService.find(identId, Cst_indent_t.class);
+		Cst_customer_t c=clientService.find(indent.getCst_customer_t().getCst_id(), Cst_customer_t.class);
+		clientService.delete(indent);
+		request.put("cst_customer_t", c);
+		return "indent";
+	}
+	
+	/**
+	 * 流失预警客户名单（自动计算）
+	 * @return
+	 */
+	public void addLst(){
+		List<Cst_indent_t> list=clientService.LstList();
+		for(Cst_indent_t c:list)
+		{
+			Cst_lst_t lst=new Cst_lst_t();
+			lst.setLst_cst_manager_id(c.getCst_customer_t().getCst_manager_id());
+			lst.setLst_cst_manager_name("");
+			lst.setLst_cst_name(c.getCst_customer_t().getCst_name());
+			lst.setLst_last_order_date(c.getIndent_date());
+			lst.setLst_status("流失预警");
+			clientService.saveOrUpdate(lst);
+		}
+	}
+	
+	/**
+	 * 
+	 * 暂缓流失列表
+	 * @return
+	 */
+	public String listLst(){
+		List<Cst_lst_t> list=clientService.lstList();
+		request.put("lstList", list);
+		return "lstList";
+	}
+	
+	
+	public Cst_customer_t getCst_customer_t() {
+		return cst_customer_t;
+	}
+
+	public void setCst_customer_t(Cst_customer_t cst_customer_t) {
+		this.cst_customer_t = cst_customer_t;
+	}
+
+	@Override
+	public void setSession(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		session=arg0;
+	}
+
+	@Override
+	public void setRequest(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		request=arg0;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Cst_linkman_t getCst_linkman_t() {
+		return cst_linkman_t;
+	}
+
+	public void setCst_linkman_t(Cst_linkman_t cst_linkman_t) {
+		this.cst_linkman_t = cst_linkman_t;
+	}
+
+	public int getLinkManId() {
+		return linkManId;
+	}
+
+	public void setLinkManId(int linkManId) {
+		this.linkManId = linkManId;
+	}
+
+	public int getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(int activityId) {
+		this.activityId = activityId;
+	}
+
+	public Cst_activity_t getCst_activity_t() {
+		return cst_activity_t;
+	}
+
+	public void setCst_activity_t(Cst_activity_t cst_activity_t) {
+		this.cst_activity_t = cst_activity_t;
+	}
+
+	public int getIdentId() {
+		return identId;
+	}
+
+	public void setIdentId(int identId) {
+		this.identId = identId;
+	}
+	
+	
+}

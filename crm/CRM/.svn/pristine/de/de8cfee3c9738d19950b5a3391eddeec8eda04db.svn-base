@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../Styles/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../Styles/admin-all.css" />
+    <script type="text/javascript" src="../../Scripts/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="../../Scripts/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../Styles/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript">
+        $(function () {
+            $(".datepicker").datepicker();
+
+            $('#list').hide();
+            $('#find').click(function () {
+                $('#list').show();
+            })
+        })
+
+    </script>
+</head>
+<body>
+    <div class="alert alert-info">当前位置<b class="tip"></b>客户信息管理<b class="tip"></b>联系人<b class="tip"></b>新建联系人</div>
+    <table class="table table-striped table-bordered table-condensed">
+        
+        <tbody>
+
+			
+             <tr>
+                <td colspan="4">
+                    <input class="btn btn-inverse" id="lxr" type="button" value="保存" />
+                   
+                    <input class="btn btn-inverse" type="button" value="返回" onclick="window.location.href='linkman.html'"/></td>
+             </tr>
+            
+            <tr>
+           	<td width="40">姓名*</td>
+			<td width="40"><input type="text"  /></td>
+            <td width="40">性别</td>
+            <td width="40">女：<input type="radio"name="sex" value="female" />男：<input type="radio"name="sex" value="male" /></td>
+            </tr>
+            <tr>
+           	<td width="40">职位*</td>
+             <td width="40"><input type="text" /></td>
+            <td width="40">办公电话*</td>
+             <td width="40"><input type="text" /></td>
+            </tr>
+            <tr>
+           	<td width="40">手机</td>
+             <td width="40"><input type="text" /></td>
+            <td width="40">备注*</td>
+             <td width="40"><input type="text" /></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

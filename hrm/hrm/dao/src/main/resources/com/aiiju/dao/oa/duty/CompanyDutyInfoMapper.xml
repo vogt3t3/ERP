@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.duty.ICompanyDutyInfoDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.duty.CompanyDutyInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="duty_type_id" property="dutyTypeId" jdbcType="BIGINT" />
+    <result column="duty_level_bottom_id" property="dutyLevelBottomId" jdbcType="BIGINT" />
+    <result column="duty_level_top_id" property="dutyLevelTopId" jdbcType="BIGINT" />
+    <result column="duty_no" property="dutyNo" jdbcType="VARCHAR" />
+   
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="duty_scope" property="dutyScope" jdbcType="VARCHAR" />
+    <result column="duty_require" property="dutyRequire" jdbcType="VARCHAR" />
+    <result column="extra_remark" property="extraRemark" jdbcType="VARCHAR" />
+     <result column="startDateStr" property="startDateStr" jdbcType="VARCHAR" />
+     <result column="endDateStr" property="endDateStr" jdbcType="VARCHAR" />
+      <result property="dutyLevelBottomName" column="dutyLevelBottomName" jdbcType="VARCHAR"/>
+       <result property="dutyLevelTopName" column="dutyLevelTopName"  jdbcType="VARCHAR"/>
+      <result property="dutyTypeName" column="dutyTypeName"  jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+  	id,company_id,name,duty_type_id,duty_level_bottom_id,duty_level_top_id,duty_no,create_date,update_date,
+  	remark,duty_scope,duty_require,extra_remark,(select t1.name from oa_position_type_info t1 where t1.id=duty_type_id) as dutyTypeName,(select t2.name from oa_position_type_info t2 where t2.id=duty_level_top_id) as dutyLevelTopName,(select t3.name from oa_position_type_info t3 where t3.id=duty_level_bottom_id) as dutyLevelBottomName
+  </sql>
+  <select id="getDutyInfoById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+   select 
+	  <include refid="Base_Column_List"/>
+	  from oa_company_duty_info    where id=#{id}
+  </select>
+  <!-- 按条件查询结果集 -->
+  <select id="getDutyListByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+	  select 
+	  <include refid="Base_Column_List"/>
+	  from oa_company_duty_info  
+	  <where>
+	  	<if test="companyId != null" >
+	  	and company_id=#{companyId}
+	  	</if>
+	  	
+	  	<if test="dutyTypeId != null">
+	  	and duty_type_id=#{dutyTypeId}
+	  	</if>
+	  	<if test="name != null">
+	    and name like '%'||#{name}||'%' 
+	  	</if>
+	  </where>
+	    order by create_date desc
+	    <if test="pageSize != null">
+	  	limit #{startRow},#{pageSize}
+	  	</if>
+  </select>
+  <select id="getDutyListCountByParams" parameterType="java.util.Map" resultType="java.lang.Integer">
+	  select 
+	  count(id)
+	  from oa_company_duty_info 
+	  <where>
+	  	<if test="companyId != null" >
+	  	and company_id=#{companyId}
+	  	</if>
+	  	
+	  	<if test="dutyTypeId != null">
+	  	and duty_type_id=#{dutyTypeId}
+	  	</if>
+	  	<if test="name != null">
+	    and name like '%'||#{name}||'%'
+	  	</if>
+	  </where>
+  </select>
+  <!-- 删除 -->
+  <delete id="delDutyInfo" parameterType="java.util.Map" >
+    delete from oa_company_duty_info
+    where id in
+     <foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+	      #{item}  
+	 </foreach>
+  </delete>
+        
+  <!-- 添加 -->
+  <insert id="addDutyInfo" parameterType="com.aiiju.bean.oa.duty.CompanyDutyInfo"  keyProperty="id">
+    insert into oa_company_duty_info 
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+     
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="dutyTypeId != null" >
+        duty_type_id,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="dutyLevelBottomId != null" >
+        duty_level_bottom_id,
+      </if>
+      <if test="dutyLevelTopId != null" >
+        duty_level_top_id,
+      </if>
+      <if test="dutyNo != null" >
+        duty_no,
+      </if>
+       <if test="dutyScope != null" >
+        duty_scope ,
+      </if>
+       <if test="dutyRequire != null" >
+        duty_require,
+      </if>
+       <if test="extraRemark != null" >
+        extra_remark,
+      </if>
+        update_date
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+     <if test="companyId != null" >
+       #{companyId},
+      </if>
+      <if test="isSleep != null" >
+        #{isSleep},
+      </if>
+      <if test="name != null" >
+       #{ name},
+      </if>
+      <if test="dutyTypeId != null" >
+        #{dutyTypeId},
+      </if>
+      <if test="remark != null" >
+        #{remark},
+      </if>
+      <if test="dutyLevelBottomId != null" >
+        #{dutyLevelBottomId},
+      </if>
+      <if test="dutyLevelTopId != null" >
+       #{dutyLevelTopId},
+      </if>
+      <if test="dutyNo != null" >
+       #{dutyNo},
+      </if>
+      <if test="startDate != null" >
+        #{startDate},
+      </if>
+       <if test="endDate != null" >
+        #{endDate},
+      </if>
+       <if test="dutyScope != null" >
+        #{dutyScope},
+      </if>
+       <if test="dutyRequire != null" >
+         #{dutyRequire},
+      </if>
+       <if test="extraRemark != null" >
+        #{extraRemark},
+      </if>
+        sysdate()
+    </trim>
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+	<!-- 更新 -->
+  <update id="updateDutyInfo" parameterType="com.aiiju.bean.oa.duty.CompanyDutyInfo" >
+    update oa_company_duty_info
+    <set >
+     
+      <if test="name != null" >
+        name = #{name},
+      </if>
+      <if test="dutyTypeId != null" >
+        duty_type_id = #{dutyTypeId},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark},
+      </if>
+       <if test="dutyLevelBottomId != null" >
+        duty_level_bottom_id = #{dutyLevelBottomId},
+      </if>
+       <if test="dutyLevelTopId != null" >
+        duty_level_top_id = #{dutyLevelTopId},
+      </if>
+       <if test="dutyNo != null" >
+        duty_no = #{dutyNo},
+      </if>
+      <if test="dutyScope != null" >
+        duty_scope = #{dutyScope},
+      </if>
+       <if test="dutyRequire != null" >
+        duty_require = #{dutyRequire},
+      </if>
+       <if test="extraRemark != null" >
+        extra_remark = #{extraRemark},
+      </if>
+      update_date = sysdate()
+    </set>
+         where id = #{id}
+  </update>
+  
+  <!-- 批量新增职务信息 -->
+  <insert id="batchAddOrUpdateDutyInfo">
+  	INSERT INTO oa_company_duty_info (name, duty_type_id, duty_level_bottom_id, duty_level_top_id, remark, duty_no,  company_id)
+  	VALUES
+  	<foreach collection="list" item="item" index="index" separator=",">
+  	(#{item.name}, #{item.dutyTypeId}, #{item.dutyLevelBottomId}, #{item.dutyLevelTopId}, #{item.remark}, #{item.dutyNo}, #{item.companyId})
+  	</foreach>
+  </insert>
+  
+</mapper>

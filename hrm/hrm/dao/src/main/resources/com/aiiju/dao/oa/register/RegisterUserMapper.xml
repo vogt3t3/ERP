@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.register.IRegisterUserDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.register.RegisterUser">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+      id,account,phone,create_date,update_date,password
+  </sql>
+  
+  <!-- 获取注册用户信息 -->
+  <select id="getRegisterUserByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List"/>
+    from oa_register_user
+    <where>
+      <if test="phone != null">
+       and phone =#{phone}
+      </if>
+      <if test="account != null">
+       and account = #{account}
+      </if>
+    </where>
+  </select>
+  
+  <insert id="addRegisterUser" parameterType="java.util.Map" keyProperty="id" >
+    insert into oa_register_user(phone,password)values(#{phone},#{password})
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  <update id="updateRegisterUser" parameterType="java.util.Map">
+   update oa_register_user 
+   <set>
+    <if test="newPwd!=null">
+    password=#{newPwd}
+    </if>
+   </set>
+   where phone=#{phone}
+  </update>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IMsgDao">
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.Msg">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="company_id" jdbcType="BIGINT" property="companyId" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="scene_id" jdbcType="INTEGER" property="sceneId" />
+		<result column="scene_type" jdbcType="TINYINT" property="sceneType" />
+		<result column="sub_type" jdbcType="INTEGER" property="subType" />
+		<result column="author_id" jdbcType="INTEGER" property="authorId" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="is_read" jdbcType="TINYINT" property="isRead" />
+		<result column="is_del" jdbcType="TINYINT" property="isDel" />
+		<result column="is_deal" jdbcType="TINYINT" property="isDeal" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,company_id,user_id,scene_id,scene_type,sub_type,author_id,content,is_read,is_del,is_deal,DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') createTime
+	</sql>
+
+	<!-- 批量新增消息日志记录 -->
+    <insert id="batchAddMsgInfo" parameterType="java.util.Map">
+		INSERT INTO zds_msg
+		(company_id, user_id, scene_id, scene_type, sub_type, author_id, create_time)
+		VALUES
+		<foreach collection="receiveIds" item="item" index="index"
+			separator=",">
+			(#{companyId}, #{item}, #{sceneId}, #{sceneType}, #{subType}, #{authorId}, now())
+		</foreach>
+	</insert>
+	
+	<!-- 更新消息的状态    1.已读   2.删除   -->
+	<update id="batchUpdateMsg" parameterType="java.util.Map">
+			UPDATE zds_msg
+		<set>
+						<if test="replyStatus ==1">
+					is_read = 1,
+				</if>
+				<if test="replyStatus == 2">
+					is_del = 1,
+				</if>
+				
+			</set>
+			WHERE company_id = #{companyId}
+				AND user_id = #{userId}
+			<if test="replyIds != null">
+				AND reply_id in
+				<foreach collection="replyIds" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+				</foreach>
+			</if>
+				<if test="replyStatus ==1">
+					and is_read = 0
+				</if>
+				<if test="replyStatus == 2">
+					and is_del = 0
+				</if>
+				
+	</update>
+</mapper>

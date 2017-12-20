@@ -1,0 +1,91 @@
+package com.crm.model;
+
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+/**
+ * 客户交往记录表
+ * @author 洪学超
+ *
+ */
+@Entity
+public class Cst_activity_t {
+	
+	/**
+	 * 序号
+	 */
+	@Id
+	@GeneratedValue
+     private int atv_id;
+     /**
+ 	 * 客户id
+ 	 */
+     private int atv_cst_id;
+     /**
+ 	 * 客户名称
+ 	 */
+     private String atv_cst_name;
+     /**
+ 	 * 交往时间
+ 	 */
+     private Date atv_date;
+     /**
+ 	 * 交往地点
+ 	 */
+     private String atv_place;
+     /**
+ 	 * 交往概要
+ 	 */
+     private String atv_title;
+     /**
+ 	 * 交往备注
+ 	 */
+     private String atv_desc;
+     
+     
+     public int getAtv_id() {
+ 		return atv_id;
+ 	}
+ 	public void setAtv_id(int atv_id) {
+ 		this.atv_id = atv_id;
+ 	}
+ 	public int getAtv_cst_id() {
+ 		return atv_cst_id;
+ 	}
+ 	public void setAtv_cst_id(int atv_cst_id) {
+ 		this.atv_cst_id = atv_cst_id;
+ 	}
+ 	public String getAtv_cst_name() {
+ 		return atv_cst_name;
+ 	}
+ 	public void setAtv_cst_name(String atv_cst_name) {
+ 		this.atv_cst_name = atv_cst_name;
+ 	}
+ 	public Date getAtv_date() {
+ 		return atv_date;
+ 	}
+ 	public void setAtv_date(Date atv_date) {
+ 		this.atv_date = atv_date;
+ 	}
+ 	public String getAtv_place() {
+ 		return atv_place;
+ 	}
+ 	public void setAtv_place(String atv_place) {
+ 		this.atv_place = atv_place;
+ 	}
+ 	public String getAtv_title() {
+ 		return atv_title;
+ 	}
+ 	public void setAtv_title(String atv_title) {
+ 		this.atv_title = atv_title;
+ 	}
+ 	public String getAtv_desc() {
+ 		return atv_desc;
+ 	}
+ 	public void setAtv_desc(String atv_desc) {
+ 		this.atv_desc = atv_desc;
+ 	}
+}

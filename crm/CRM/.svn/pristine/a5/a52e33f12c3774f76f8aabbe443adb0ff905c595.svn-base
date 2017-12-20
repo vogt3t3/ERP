@@ -1,0 +1,140 @@
+package com.crm.action;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.interceptor.RequestAware;
+import org.apache.struts2.interceptor.SessionAware;
+
+import com.crm.model.Cst_service_t;
+import com.crm.service.ServiceService;
+
+public class ServiceAction implements RequestAware,SessionAware{
+	@Resource(name="ServiceService")
+	private ServiceService serviceService;
+	
+	public ServiceService getServiceService() {
+		return serviceService;
+	}
+
+	
+	public void setServiceService(ServiceService serviceService) {
+		this.serviceService = serviceService;
+	}
+	private int id;
+	
+	private Map<String, Object> request;
+	private	Map<String, Object> session;
+	private Cst_service_t cst_service_t;
+	
+	
+	public String addService(){
+		serviceService.saveService(cst_service_t);
+		request.put("cst_service_t", cst_service_t);
+		
+		return "serviceDetail";
+	}
+	public String addresolveService(){
+		System.out.println("id;"+cst_service_t.getSvc_id());
+		serviceService.saveService(cst_service_t);
+		request.put("cst_service_t", cst_service_t);
+		
+		return "serviceDetailresolve";
+	}
+	public String addbackService(){
+		System.out.println("id;"+cst_service_t.getSvc_id());
+		serviceService.saveService(cst_service_t);
+		request.put("cst_service_t", cst_service_t);
+		
+		return "serviceDetailback";
+	}
+	
+	/**
+	 * 打开创建界面
+	 */
+	public String openCreateService(){
+		return "serviceDetail";
+	}
+	public String openAssignService(){
+		List<Cst_service_t> list=serviceService.listService();
+		System.out.println(list.size());
+		request.put("serviceList", list);
+		return "serviceAssign";
+	}
+	public String openResolveService(){
+		List<Cst_service_t> list=serviceService.listService();
+		System.out.println(list.size());
+		request.put("serviceList", list);
+		return "serviceResolve";
+	}
+	public String openBackeService(){
+		List<Cst_service_t> list=serviceService.listService();
+		request.put("serviceList", list);
+		return "serviceBack";
+	}
+	public String openStoreService(){
+		List<Cst_service_t> list=serviceService.listService();
+		request.put("serviceList", list);
+		return "serviceStore";
+	}
+	
+	public String updateService(){
+		serviceService.saveOrUpdate(cst_service_t);
+		return "serviceUpdate";
+	}
+	
+	public String detailService(){
+		Cst_service_t c =serviceService.find(id, Cst_service_t.class);
+		request.put("cst_service_t", c);
+		return "serviceAssign";
+	}
+	public String detailresolveService(){
+		Cst_service_t c =serviceService.find(id, Cst_service_t.class);
+		request.put("cst_service_t", c);
+		return "serviceResolve1";
+	}
+	public String detailbackService(){
+		Cst_service_t c =serviceService.find(id, Cst_service_t.class);
+		request.put("cst_service_t", c);
+		return "serviceBack2";
+	}
+	public String detailstoreService(){
+		Cst_service_t c =serviceService.find(id, Cst_service_t.class);
+		request.put("cst_service_t", c);
+		return "serviceStore2";
+	}
+	
+	
+
+
+	@Override
+	public void setSession(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		session=arg0;
+		
+	}
+
+	@Override
+	public void setRequest(Map<String, Object> arg0) {
+		// TODO Auto-generated method stub
+		request=arg0;
+	}
+
+	public Cst_service_t getCst_service_t() {
+		return cst_service_t;
+	}
+
+	public void setCst_service_t(Cst_service_t cst_service_t) {
+		this.cst_service_t = cst_service_t;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	
+}

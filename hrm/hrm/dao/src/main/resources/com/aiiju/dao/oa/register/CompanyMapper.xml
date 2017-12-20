@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.register.ICompanyDao">
+
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.register.Company">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+      id,phone,company_name
+  </sql>
+  
+  <!-- 注册公司 -->
+  <insert id="addCompany" parameterType="java.util.Map" keyProperty="id" >
+    insert into dsb_company(phone,company_name)values(#{phone},#{companyName})
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+</mapper>

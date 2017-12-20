@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IReplyDao">
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.Reply">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="company_id" jdbcType="BIGINT" property="companyId" />
+		<result column="scene_type" jdbcType="TINYINT" property="sceneType" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="reply_pid" jdbcType="BIGINT" property="replyPid" />
+		<result column="pid" jdbcType="BIGINT" property="pid" />
+		<result column="pid_uid" jdbcType="BIGINT" property="pidUid" />
+		<result column="receive_uid" jdbcType="BIGINT" property="receiveUid" />
+		<result column="reply_con" jdbcType="VARCHAR" property="replyCon" />
+		<result column="is_del" jdbcType="TINYINT" property="isDel" />
+		<result column="is_agree" jdbcType="TINYINT" property="isAgree" />
+		<result column="is_withdraw" jdbcType="TINYINT" property="isWithdraw" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+		<association property="userName" column="user_id" select="selectUserName"/>
+		<association property="receiveName" column="receive_uid" select="selectReceiveName"/>
+		<association property="isRead" column="{reply_id=id,receive_uid=user_id}"  select="selectIsRead"/>
+	</resultMap>
+	
+	<resultMap id="ReplyListResultMap" type="com.aiiju.bean.oa.workStage.Reply">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="company_id" jdbcType="BIGINT" property="companyId" />
+		<result column="scene_type" jdbcType="TINYINT" property="sceneType" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" />
+		<result column="reply_pid" jdbcType="BIGINT" property="replyPid" />
+		<result column="pid" jdbcType="BIGINT" property="pid" />
+		<result column="pid_uid" jdbcType="BIGINT" property="pidUid" />
+		<result column="receive_uid" jdbcType="BIGINT" property="receiveUid" />
+		<result column="reply_con" jdbcType="VARCHAR" property="replyCon" />
+		<result column="is_del" jdbcType="TINYINT" property="isDel" />
+		<result column="is_agree" jdbcType="TINYINT" property="isAgree" />
+		<result column="is_withdraw" jdbcType="TINYINT" property="isWithdraw" />
+		<result column="create_time" jdbcType="VARCHAR" property="createTime" />
+		<association property="userName" column="user_id" select="selectUserName"/>
+		<association property="receiveName" column="receive_uid" select="selectReceiveName"/>
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,company_id,scene_type,user_id,reply_pid,pid,pid_uid,receive_uid,reply_con,is_del,is_agree,is_withdraw,DATE_FORMAT(create_time, '%Y-%m-%d %H:%i:%s') createTime
+	</sql>
+
+	<!-- 获取用户收到的回复列表 -->
+	<select id="getReplyList" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM zds_reply t
+		WHERE t.id IN
+		(SELECT reply_id
+		FROM zds_reply_log
+		WHERE company_id=#{companyId} 
+		AND receive_uid=#{userId})
+		ORDER BY t.create_time DESC
+		LIMIT
+		${startPos},${pageSize}
+	</select>
+	
+	<!-- 根据pid获取用户收到的回复列表 -->
+	<select id="getReplyListByPid" parameterType="java.util.Map"
+		resultMap="ReplyListResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM zds_reply
+		WHERE company_id=#{companyId}
+		AND pid=#{pid}
+		AND scene_type=#{sceneType}
+		AND is_del =0
+		and is_withdraw=0
+	</select>
+	
+	<select id="selectUserName" resultType="java.lang.String">
+		SELECT name userName
+		FROM oa_user
+		WHERE id=#{user_id}
+	</select>
+	
+	<select id="selectReceiveName" resultType="java.lang.String">
+		SELECT name receiveName
+		FROM oa_user
+		WHERE id=#{receive_uid}
+	</select>
+	
+	<select id="selectLoGo" resultType="java.lang.String">
+		SELECT url receiveName
+		FROM oa_file
+		WHERE fid=#{user_id} and business_id =5
+	</select>
+	
+	<select id="selectIsRead" resultType="java.lang.Integer" >
+		SELECT is_read isRead
+		FROM zds_reply_log
+		WHERE reply_id=#{id} and receive_uid=#{user_id}
+	</select>
+	
+	<!-- 根据pid获取用户收到的回复列表总数 -->
+	<select id="getReplyListCountByPid" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(id)
+		FROM zds_reply
+		WHERE company_id=#{companyId}
+		AND pid=#{pid}
+		AND scene_type=#{sceneType}
+		AND is_withdraw=0
+	</select>
+	
+	<!-- 更新回复日志记录的状态（已读，撤回，删除） -->
+	<update id="updateReplyStatusById" parameterType="java.util.Map">
+		UPDATE zds_reply
+	    <set >
+	      <if test="isDel != null" >
+	        is_del = #{isDel},
+	      </if>
+	      <if test="isAgree != null" >
+	        is_agree = #{isAgree},
+	      </if>
+	      <if test="isWithdraw != null" >
+	        is_withdraw = #{isWithdraw},
+	      </if>
+	    </set>
+	    WHERE id=#{id}
+    </update>
+    
+    <!-- 新增回复详细 -->
+	<insert id="addReplyInfo" parameterType="com.aiiju.bean.oa.workStage.Reply" >
+		INSERT INTO zds_reply(company_id,scene_type,user_id,reply_pid,pid,pid_uid,receive_uid,reply_con,create_time,is_agree)
+		VALUES(#{companyId},#{sceneType},#{userId},#{replyPid},#{pid},#{pidUid},#{receiveUid},#{replyCon},now(),#{isAgree})
+		 <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   		SELECT LAST_INSERT_ID() 
+   		 </selectKey>
+	</insert>
+	
+	<select id="getReplyById" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM zds_reply
+		WHERE id=#{replyPid}
+	</select>
+
+</mapper>

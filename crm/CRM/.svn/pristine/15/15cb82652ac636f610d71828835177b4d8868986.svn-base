@@ -1,0 +1,18 @@
+package com.crm.service.impl;
+import com.crm.model.Cst_customer_t;
+import org.springframework.stereotype.Service;
+
+import com.crm.service.ClientService;
+@Service("ClientService")
+public class ClientServiceImpl extends BaseServiceImpl implements ClientService {
+
+
+	@Override
+	public void saveClient(Cst_customer_t c) {
+		// TODO Auto-generated method stub
+		saveOrUpdate(c);
+	}
+	
+	
+
+}

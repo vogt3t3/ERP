@@ -1,0 +1,68 @@
+package com.crm.service.impl;
+
+import java.util.List;
+
+import org.hibernate.Query;
+
+import com.crm.model.Bas_dict_t;
+import com.crm.service.DictService;
+/**
+ * 数据字典实现类
+ * @author yuduan
+ *
+ */
+public class DictServiceImpl extends BaseServiceImpl implements DictService {
+
+	/**
+	 * 基础数据字典-保存更新
+	 * @param b 基础数据字典
+	 */
+	@Override
+	public void saveDict(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * 基础数据字典-删除
+	 * @param b 基础数据字典
+	 */
+	@Override
+	public void delDict(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * 基础数据字典-查询
+	 * @param b 基础数据字典
+	 */
+	@Override
+	public List<Bas_dict_t> showDict(String item) {
+		// TODO Auto-generated method stub
+		Query query = getQuery("from Bas_dict_t d where d.dict_type="+item);
+		return query.list();
+	}
+	/**
+	 * 产品数据查询-显示产品信息
+	 */
+	@Override
+	public void showProduct(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * 库存查询-得到库存信息
+	 */
+	@Override
+	public void showStock(Bas_dict_t b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+
+	
+
+
+}
+
+

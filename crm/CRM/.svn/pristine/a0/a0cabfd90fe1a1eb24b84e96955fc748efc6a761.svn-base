@@ -1,0 +1,24 @@
+package com.crm.service;
+
+import com.crm.model.Sys_user_t;
+/**
+ * 系统用户信息管理
+ * @author yuduan
+ *
+ */
+public interface UsersService extends BaseService {
+ 
+	/**
+	 * 系统用户-保存更新、查询
+	 * @param u 用户
+	 */
+	void saveUser(Sys_user_t u);
+	
+	
+	/**
+	 *  系统用户-删除
+	 * @param u
+	 */
+	void delUser(Sys_user_t u);
+	
+}

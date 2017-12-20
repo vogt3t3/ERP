@@ -1,0 +1,19 @@
+package com.crm.service;
+
+import com.crm.model.Bas_dict_t;
+import com.crm.model.Cst_customer_t;
+/**
+ * 数据字典信息管理
+ * @author yuduan
+ *
+ */
+public interface DictService extends BaseService {
+	/**
+	 * 基础数据字典-保存更新、删除
+	 * @param b 基础数据字典
+	 */
+	
+	void saveDict(Bas_dict_t b);
+	void delDict (Bas_dict_t b);
+	
+}

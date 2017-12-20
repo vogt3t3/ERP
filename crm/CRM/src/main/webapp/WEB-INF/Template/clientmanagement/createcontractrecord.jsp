@@ -1,0 +1,80 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <link rel="stylesheet" type="text/css" href="Styles/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="Styles/admin-all.css" />
+    <script type="text/javascript" src="Scripts/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="Scripts/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="Styles/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript">
+        $(function () {
+        	
+        	var date=new Date();
+			var day=date.getDay();
+			var week;
+			
+			var today=date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+			$("#today").val(today);
+			
+            $(".datepicker").datepicker();
+
+            $('#list').hide();
+            $('#lxr').click(function () {
+            	if($('#myid').val()!='')
+            		{
+            		$('#activityInfo').attr('action','client/mod_Activity');
+            		}
+                $('#activityInfo').submit();
+            })
+        })
+
+    </script>
+</head>
+<body>
+    <div class="alert alert-info">当前位置<b class="tip"></b>客户信息管理<b class="tip"></b>交往记录<b class="tip"></b>新建交往记录</div>
+    <form id="activityInfo" action="client/add_Activity?id=${cst_customer_t.cst_id }" method="post">
+    <table class="table table-striped table-bordered table-condensed">
+        
+        <tbody>
+
+			
+             <tr>
+                <td colspan="4">
+                    <input class="btn btn-inverse" id="lxr" type="button" value="保存" />
+                   	<input type="hidden" value="${cst_customer_t.cst_id }" name="cst_activity_t.cst_customer_t.cst_id" />
+                   	<input type="hidden" value="${cst_customer_t.cst_id }" name="id"/>
+                   	<input type="hidden" id="myid" value="${cst_activity_t.atv_id }" name="cst_activity_t.atv_id" />
+                    <input class="btn btn-inverse" type="button" value="返回"  onclick="javascript:history.back()" /></td>
+             </tr>
+            
+            <tr>
+           	<td width="40">时间*</td>
+			<td width="40"><input type="text"  value="${cst_activity_t.atv_date }" name="cst_activity_t.atv_date" <c:if test="${cst_activity_t.atv_id==0||cst_activity_t==null }">id="today"</c:if> /></td>
+            <td width="40">地点*</td>
+            <td width="40"><input type="text" value="${cst_activity_t.atv_place }" name="cst_activity_t.atv_place"/></td>
+            </tr>
+            <tr>
+           	<td width="40">概要*</td>
+             <td width="40"><input type="text" value="${cst_activity_t.atv_title }" name="cst_activity_t.atv_title"/></td>
+            <td width="40">备注</td>
+             <td width="40"><input type="text" value="${cst_activity_t.atv_desc }" name="cst_activity_t.atv_desc"/></td>
+            </tr>
+            <tr>
+           	<td colspan="2" width="40">详细信息</td>
+             	
+                 <td width="500" colspan="3" height="">
+                    <textarea name="cst_activity_t.atv_detail" style="width: 95%" rows="4" cols="5">${cst_activity_t.atv_detail }</textarea>                </td>
+            </tr>
+        </tbody>
+    </table>
+    </form>
+</body>
+</html>

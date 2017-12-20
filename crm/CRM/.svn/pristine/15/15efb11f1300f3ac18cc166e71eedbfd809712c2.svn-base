@@ -1,0 +1,54 @@
+package com.crm.dao.impl;
+
+import javax.annotation.Resource;
+
+import org.hibernate.Query;
+import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
+
+import com.crm.dao.BaseDao;
+
+@Repository("baseDao")
+public class BaseDaoImpl implements BaseDao {
+	
+	@Resource(name="sessionFactory")
+	private SessionFactory sessionfactory;
+
+	/**
+	 * 保存
+	 * @param object 保存对象
+	 */
+	public <T> void saveOrUpdate(Object object) {
+		this.sessionfactory.getCurrentSession().saveOrUpdate(object);
+	}
+	
+	/**
+	 * 删除
+	 * @param object 删除的对象
+	 */
+	@Override
+	public <T> void delete(Object object) {
+		this.sessionfactory.getCurrentSession().delete(object);
+	}
+
+	/**
+	 * 查询语句，获取Query对象
+	 * @param hql hql语言
+	 * 
+	 */
+	@Override
+	public <T> Query getQuery(String hql) {
+		 return (Query) this.sessionfactory.getCurrentSession().createQuery(hql);
+	}
+
+	/**
+	 * 根据Id查找对象
+	 *@param id 对象的
+	 */
+	@Override
+	public <T> T find(Class<T> clazz, Object id) {
+		// TODO Auto-generated method stub
+		 return (T) this.sessionfactory.getCurrentSession().load(clazz, Integer.parseInt(id.toString()));
+	}
+
+}

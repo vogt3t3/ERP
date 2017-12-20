@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.usbKey.IUsbKeyDao"> 
+	<resultMap id="UsbKeyResultMap" type="com.aiiju.bean.oa.usbKey.UsbKey">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="lock_id" property="lockId" jdbcType="VARCHAR" />
+		<result column="serial_number" property="serialNumber" jdbcType="VARCHAR" />
+		<result column="activation_code" property="activationCode" jdbcType="VARCHAR" /> 
+		<result column="pin_code" property="pinCode" jdbcType="VARCHAR" /> 
+		<result column="private_key" property="privateKey" jdbcType="VARCHAR" /> 
+		<result column="public_key_x" property="publicKeyX" jdbcType="VARCHAR" /> 
+		<result column="public_key_y" property="publicKeyY" jdbcType="VARCHAR" /> 
+		<result column="identity" property="identity"  jdbcType="VARCHAR"/> 
+	</resultMap>
+	
+	<sql id="UsbKey_Column">
+		id,lock_id,serial_number,activation_code,pin_code,private_key,public_key_x,public_key_y,identity
+	</sql>
+	
+	<!-- 查询部门是否已经存在该名称 -->
+	<select id="selectUsbKey" parameterType="java.util.Map" resultMap="UsbKeyResultMap">
+		SELECT 
+			<include refid="UsbKey_Column" />
+		FROM  usb_usbkey
+		<where>
+         	<if test="id != null">
+        		and id = #{id}
+     		</if>
+         	<if test="lockId != null">
+        		and lock_id = #{lockId}
+     		</if>
+         	<if test="serialNumber != null">
+        		and serial_number = #{serialNumber}
+     		</if>
+         	<if test="activationCode != null">
+        		and activation_code = #{activationCode}
+     		</if>
+         	<if test="pinCode != null">
+        		and pin_code = #{pinCode}
+     		</if>
+         	<if test="privateKey != null">
+        		and private_key = #{privateKey}
+     		</if>
+         	<if test="publicKeyX != null">
+        		and public_key_x = #{publicKeyX}
+     		</if>
+         	<if test="publicKeyY != null">
+        		 and public_key_y = #{publicKeyY}
+     		</if>
+         	<if test="identity != null">
+        		and identity = #{identity}
+     		</if>
+		</where>
+	</select>
+	
+</mapper>
+
+ 

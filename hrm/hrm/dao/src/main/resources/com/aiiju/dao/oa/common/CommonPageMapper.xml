@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.common.ICommonPageDao" >
+  
+ 	 <!-- 附件 对象 -->
+  	<resultMap type="com.aiiju.bean.oa.config.FileInfo" id="FileResultMap">
+  		<id column="id" property="id" jdbcType="BIGINT" />
+        <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+        <result column="file_size" property="fileSize" jdbcType="BIGINT" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+  	</resultMap>
+  
+  	<!-- 附件上传之后，插入附件表记录 -->
+  	<insert id="insertFileRecord" parameterType="com.aiiju.bean.oa.config.FileInfo" useGeneratedKeys="true" keyProperty="id">
+  		insert into oa_file(file_name,file_size,url,type,fId,business_id,company_id) 
+  			values
+           (#{fileName},#{fileSize},#{url},#{type},#{fid},#{businessId},#{companyId})
+  	</insert>
+  
+  	<!-- 查询文件列表 -->
+  	<select id="getFileInfoList" resultMap="FileResultMap" parameterType="java.util.Map">
+  		select t.id,t.file_name,t.file_size,t.url,t.type
+  		from oa_file t
+  		<where>
+	  		<if test="companyId!=null">
+	  			t.company_id = #{companyId}
+	  		</if> 
+	  		<if test="fId!=null and businessId!=null">
+		  		and t.fId = #{fId}
+		  		and t.business_id = #{businessId}
+	  		</if>
+	  		<if test="id!=null">
+	  			and FIND_IN_SET(id,#{id})
+	  		</if>
+	  		<if test="type!=null">
+	  			and t.type in 
+	  			<foreach collection="types" item="item" close=")" open="(" separator=","></foreach>
+	  			#{item}
+	  		</if>
+	  		<if test="pageSize != null">
+		    	limit #{startRow},#{pageSize}
+		  	</if>
+	  	</where>
+  	</select>
+  
+  	<!-- 查询文件列表 -->
+  	<select id="getFileInfoListCount" resultType="int" parameterType="java.util.Map">
+  		select count(t.id)
+  		from oa_file t
+  		where 
+  		<if test="fId!=null and businessId!=null">
+	  			t.fId = #{fId}
+	  		and t.business_id = #{businessId}
+  		</if>
+  	</select>
+  
+  	<!-- 根据附件ID，删除附件信息 -->
+  	<delete id="delFileRecord" parameterType="java.util.Map">
+  		delete from oa_file where id = #{id}
+  	</delete>
+  	
+  	<!-- 根据ID批量修改文件信息 -->
+	<update id="batchUpdateFileInfo" parameterType="java.util.Map">
+		update oa_file
+			<set >
+		      <if test="fId != null" >
+		        fId = #{fId},
+		      </if>
+		      <if test="businessId != null" >
+		        business_id = #{businessId},
+		      </if>
+		    </set>
+		where id in
+		<foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+		</foreach>
+	</update>
+	
+	<update id="updateFileInfo" parameterType="com.aiiju.bean.oa.config.FileInfo">
+		update oa_file
+			<set >
+		      <if test="fileName != null" >
+		        file_name = #{fileName},
+		      </if>
+		      <if test="fileSize != null" >
+		        file_size = #{fileSize},
+		      </if>
+		      <if test="url != null" >
+		        url = #{url},
+		      </if>
+		       <if test="type != null" >
+		        type = #{type},
+		      </if>
+		      <if test="fid != null" >
+		        fId = #{fid},
+		      </if>
+		      <if test="businessId != null" >
+		        business_id = #{businessId},
+		      </if>
+		       <if test="updateDate != null" >
+		        update_date = #{updateDate},
+		      </if>
+		      <if test="companyId != null" >
+		        company_id = #{companyId}
+		      </if>
+		    </set>
+		where id = #{id}
+	  </update>
+	  <!-- 选择性的插入一条文件记录 -->
+	   <insert id="insertFileInfoSelective" parameterType="com.aiiju.bean.oa.config.FileInfo" useGeneratedKeys="true" keyProperty="id">
+	    insert into oa_file
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        id,
+	      </if>
+	      <if test="fileName != null" >
+	        file_name,
+	      </if>
+	      <if test="fileSize != null" >
+	        file_size,
+	      </if>
+	      <if test="url != null" >
+	        url,
+	      </if>
+	      <if test="type != null" >
+	        type,
+	      </if>
+	      <if test="fid != null" >
+	        fId,
+	      </if>
+	      <if test="businessId != null" >
+	        business_id,
+	      </if>
+	      <if test="createDate != null" >
+	        create_date,
+	      </if>
+	      <if test="updateDate != null" >
+	        update_date,
+	      </if>
+	      <if test="companyId != null" >
+	        company_id,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="id != null" >
+	        #{id},
+	      </if>
+	      <if test="fileName != null" >
+	        #{fileName},
+	      </if>
+	      <if test="fileSize != null" >
+	        #{fileSize},
+	      </if>
+	      <if test="url != null" >
+	        #{url},
+	      </if>
+	      <if test="type != null" >
+	        #{type},
+	      </if>
+	      <if test="fid != null" >
+	        #{fid},
+	      </if>
+	      <if test="businessId != null" >
+	        #{businessId},
+	      </if>
+	      <if test="createDate != null" >
+	        #{createDate},
+	      </if>
+	      <if test="updateDate != null" >
+	        #{updateDate},
+	      </if>
+	      <if test="companyId != null" >
+	        #{companyId},
+	      </if>
+	    </trim>
+	  </insert>
+	  <!--通过主键id查询单个文件记录-->
+	  <select id="selectById" parameterType="long" resultType="com.aiiju.bean.oa.config.FileInfo">
+	  	select id,file_name,file_size,url,type,fId,business_id,create_date,update_date,company_id from oa_file 
+	  </select>
+</mapper>

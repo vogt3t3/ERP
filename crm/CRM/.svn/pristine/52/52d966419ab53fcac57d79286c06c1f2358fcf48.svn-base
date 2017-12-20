@@ -1,0 +1,34 @@
+package com.crm.service.impl;
+
+import java.lang.Object;
+
+import org.hibernate.Query;
+
+import com.crm.model.Sys_user_t;
+import com.crm.service.UsersService;
+/**
+ * 系统用户信息实现类
+ * @author yuduan
+ *
+ */
+public class UsersServiceImpl extends BaseServiceImpl implements UsersService {
+
+	/**
+	 * 系统用户-保存更新、删除
+	 * @param u 用户
+	 */
+
+	@Override
+	public void saveUser(Sys_user_t u) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void delUser(Sys_user_t u) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+}

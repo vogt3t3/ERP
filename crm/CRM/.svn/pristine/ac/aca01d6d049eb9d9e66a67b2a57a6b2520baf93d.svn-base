@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../Styles/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../Styles/admin-all.css" />
+    <script type="text/javascript" src="../../Scripts/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="../../Scripts/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../Styles/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript">
+        $(function () {
+            $('.modal').show();
+        })
+    </script>
+</head>
+<body>
+    <div class="alert alert-info">当前位置<b class="tip"></b>服务管理<b class="tip"></b>服务创建</div>
+
+    <table class="table table-striped table-bordered table-condensed list">
+        
+        <tbody>
+            <tr>
+                <td width="15%"><div align="center">编号</div></td>
+                <td width="500">
+                    <input name="Name" value="" type="text" />                </td>
+                <td width="500"><div align="center">服务类型<font color="FF0000">*</font></div></td>
+                <td width="500"><select name="Address">
+                        <option selected="selected">请选择... </option>
+                        <option value=" ">...</option>
+                 
+                    </select></td>
+            </tr>
+            <tr>
+                <td><div align="center">概要<font color="FF0000">*</font></div></td>
+              <td colspan="3">
+              <input name="Name" value="" type="text" style="width: 80%" /></td>
+            </tr>
+            <tr>
+                <td><div align="center">客户<font color="FF0000">*</font></div></td>
+              <td>
+                    <input name="Name" value="" type="text" "  /></td>
+                <td><div align="center">状态<font color="FF0000"></font></div></td>
+              <td>新创建</td>
+            </tr>
+            <tr>
+              <td><div align="center">
+                <p>&nbsp;</p>
+                <p>服务请求<font color="FF0000">*</font></p>
+              </div></td>
+              <td width="500" colspan="3" height="">
+                    <textarea name="bak" style="width: 95%" rows="4" cols="5"></textarea>                </td>
+            </tr>
+            <tr>
+                <td><div align="center">创建人<font color="FF0000">*</font></div></td>
+                <td><input name="Name2" value="" type="text"></td>
+                <td><div align="center">创建时间<font color="FF0000">*</font></div></td>
+                <td><input name="Name3" value="" type="text"></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <input class="btn btn-inverse" id="find" type="button" value="保存" />
+                    <input class="btn btn-inverse" type="button" value="帮助" /></td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

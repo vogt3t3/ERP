@@ -1,0 +1,51 @@
+package com.crm.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+/**
+ * 
+ * 角色权限表
+ * @author 洪学超
+ *
+ */
+@Entity
+public class Sys_role_right_t {
+	
+	/*
+	 * 序号
+	 */
+	@Id
+	@GeneratedValue
+    private int rr_id;
+    
+	/*
+	 * 角色id
+	 */
+    private int rr_role_id;
+    
+	/*
+	 * 权限id
+	 */
+    private int rr_right_id;
+    
+	public int getRr_id() {
+		return rr_id;
+	}
+	public void setRr_id(int rr_id) {
+		this.rr_id = rr_id;
+	}
+	public int getRr_role_id() {
+		return rr_role_id;
+	}
+	public void setRr_role_id(int rr_role_id) {
+		this.rr_role_id = rr_role_id;
+	}
+	public int getRr_right_id() {
+		return rr_right_id;
+	}
+	public void setRr_right_id(int rr_right_id) {
+		this.rr_right_id = rr_right_id;
+	}
+}

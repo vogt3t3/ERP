@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IAnnouncementDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.Announcement">
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="files" property="files" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="signature" property="signature" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="recipient_dept" property="recipientDept" jdbcType="LONGVARCHAR" />
+     <association property="userName" column="user_id" select="selectName"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+  id,company_id,user_id,create_time,files,title,
+  content,signature,recipient_dept,date_format(update_time,'%Y-%m-%d %H:%i:%s')
+  </sql>
+  
+    <select id="selectName" resultType="java.lang.String">
+  select name from oa_user where id = #{userId} 
+  </select>
+  
+    <delete id="deleteAnnouncementId" parameterType="java.lang.Long" >
+    delete from zds_announcement
+    where id = #{id}
+  </delete>
+  
+    <insert id="addAnnouncement" parameterType="com.aiiju.bean.oa.workStage.Announcement" keyProperty="id">
+    insert into zds_announcement
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="files != null" >
+        files,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="signature != null" >
+        signature,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="recipientDept != null" >
+        recipient_dept,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        #{companyId},
+      </if>
+      <if test="userId != null" >
+        #{userId},
+      </if>
+      <if test="files != null" >
+        #{files},
+      </if>
+      <if test="title != null" >
+        #{title},
+      </if>
+      <if test="signature != null" >
+        #{signature},
+      </if>
+      <if test="content != null" >
+        #{content},
+      </if>
+      <if test="recipientDept != null" >
+        #{recipientDept},
+      </if>
+    </trim>
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+  
+    <update id="updateAnnouncement" parameterType="com.aiiju.bean.oa.workStage.Announcement" >
+    update zds_announcement
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId},
+      </if>
+      <if test="files != null" >
+        files = #{files},
+      </if>
+      <if test="title != null" >
+        title = #{title},
+      </if>
+      <if test="signature != null" >
+        signature = #{signature},
+      </if>
+      <if test="content != null" >
+        content = #{content},
+      </if>
+      <if test="recipientDept != null" >
+        recipient_dept = #{recipientDept},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  <select id="selectAnnouncement" parameterType="java.util.Map" resultMap="BaseResultMap">
+  select 
+  <include refid="Base_Column_List"/>
+  from zds_announcement
+  <where>
+  <!-- 	  <if test="ids!=null">
+  	 	and id in
+  	  	<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">  
+	      #{item.announcementId}   
+	    </foreach>
+  	  </if> -->
+  	  <if test="companyId != null" >
+      and  company_id = #{companyId}
+      </if>
+      <if test="userId != null" >
+       and user_id = #{userId}
+      </if>
+      <if test="createTime != null" >
+       and create_time = #{createTime}
+      </if>
+      <if test="files != null" >
+       and files = #{files}
+      </if>
+      <if test="title != null" >
+       and title = #{title}
+      </if>
+      <if test="signature != null" >
+       and signature = #{signature}
+      </if>
+      <if test="updateTime != null" >
+       and update_time = #{updateTime}
+      </if>
+      <if test="content != null" >
+       and content = #{content}
+      </if>
+      <if test="recipientDept != null" >
+       and recipient_dept = #{recipientDept}
+      </if>
+      order by update_time desc
+	    <if test="pageSize != null">
+	  	limit #{startRow},#{pageSize}
+	  	</if>
+  </where>
+  </select>
+  
+  <select id="getAnnouncements" parameterType="java.util.Map" resultMap="BaseResultMap">
+  	select   
+  	  b.id,b.company_id,b.user_id,DATE_FORMAT(b.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+  	  b.files,b.title,b.content,b.signature,b.recipient_dept,DATE_FORMAT(b.update_time,'%Y-%m-%d %H:%i:%s') update_time,
+  	  a.is_top isTop
+  	 from zds_announcement b
+ 	inner join 
+ 	( select announcement_id,is_top from zds_announcement_read_logs where recipient=#{recipient} )a 
+ 	on b.id =a.announcement_id and b.company_id=#{companyId}
+ 	<if test="empId!=null">
+ 	or b.user_id=#{empId}
+ 	</if>
+ 	order by a.is_top desc,b.update_time desc 
+ 	<if test="pageSize != null">
+	  limit #{startRow},#{pageSize}
+	</if>
+  </select>
+  
+    <select id="seleteAnnouncementId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List"/>
+    from zds_announcement
+    where id = #{id}
+  </select>
+  </mapper>

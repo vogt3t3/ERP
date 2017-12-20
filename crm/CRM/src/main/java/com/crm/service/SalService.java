@@ -1,0 +1,85 @@
+package com.crm.service;
+
+import java.util.List;
+
+import com.crm.model.Sal_chance_t;
+import com.crm.model.Sal_plan_t;
+/**
+ * 营销信息管理
+ * @author yuduan
+ *
+ */
+public interface SalService extends BaseService {
+
+	/**
+	 * 创建指定开发计划-保存、更新
+	 * @param p 计划
+	 */
+	void saveOrUpdatePlan(Sal_plan_t p);
+	
+	/**
+	 * 执行开发计划
+	 * 按计划执行并记录执行结果
+	 */
+	void executePlan(Sal_plan_t p);
+	
+	/**
+	 * 删除开发计划
+	 * 
+	 */
+	void delPlan(Sal_plan_t p);
+	/**
+	 * 查询开发计划
+	 * @param p 计划序号
+	 * @return 查询结果
+	 */
+	List<Sal_plan_t> showPlan(String p);
+
+	/**
+	 * 记录开发结果
+	 * 记录开发计划最终的执行结果
+	 * @Return ： success成功  ， false失败
+	 */
+	void recordResult(Sal_plan_t p);
+	
+	
+	/**
+	 * 创建、更新销售机会
+	 * 发现销售机会并将销售机会录入系统
+	 */
+	void saveOrUpdateChance(Sal_chance_t c);
+	
+	
+	/**
+	 * 删除销售机会
+	 * 对不可为的销售机会进行删除
+	 */
+	void delChance(Sal_chance_t c);
+
+	/**
+	 * 销售机会列表
+	 */
+	List<Sal_chance_t> listchance();
+	
+	/**
+	 * 指派销售机会
+	 * 将销售机会指派给指定的客户经理
+	 */
+	void chanceCharger(Sal_chance_t c);
+	/**
+	 * 销售机会查询
+	 * @param d 负责人
+	 */
+	List<Sal_chance_t> showChance(String d);
+	
+	List<Sal_plan_t> listplan(int cid);
+	
+	/**
+	 * 营销机会信息查询
+	 * @param manager
+	 * @param area
+	 * @param credit
+	 * @return
+	 */
+	List<Sal_chance_t> searchChance(String title,String name,String linkman);
+}

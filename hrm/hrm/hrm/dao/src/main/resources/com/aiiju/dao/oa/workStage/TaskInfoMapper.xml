@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.ITaskInfoDao">
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.TaskInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="task_type" jdbcType="INTEGER" property="taskType" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="expire_date" jdbcType="TIMESTAMP" property="expireDate" />
+    <result column="send_to_person" jdbcType="VARCHAR" property="sendToPerson" />
+    <result column="step" jdbcType="TINYINT" property="step" />
+    <result column="task_args" jdbcType="VARCHAR" property="taskArgs" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="is_del" jdbcType="TINYINT" property="isDel" />
+    <result column="is_withdraw" jdbcType="TINYINT" property="isWithdraw" />
+    <result column="is_forward" jdbcType="TINYINT" property="isForward" />
+    <result column="sender_logo" jdbcType="VARCHAR" property="senderLogo" />
+   		
+      <association property="userName" column="user_id" select="selectName"/>
+      <association property="sendToPersonName" column="send_to_person" select="selectSendToPersonName"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+  id,company_id,user_id,task_type,title,content,
+  DATE_FORMAT(start_date,'%Y-%m-%d %H:%i:%s')start_date,
+  DATE_FORMAT(expire_date,'%Y-%m-%d %H:%i:%s')expire_date,
+  send_to_person,step,task_args,
+  DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time,
+  DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s') update_time,is_del,is_withdraw
+  </sql>
+  
+  
+      <select id="selectName" resultType="java.lang.String">
+  select name from oa_user where id = #{userId} 
+  </select>
+      <select id="selectSendToPersonName" resultType="java.lang.String">
+  select name from oa_user where id = #{sendToPerson} 
+  </select>
+  
+  
+    <delete id="deleteTaskInfoId" parameterType="java.lang.Integer" >
+    delete from zds_task_info
+    where id = #{id}
+  </delete>
+  
+  
+   <insert id="addTaskInfo" parameterType="com.aiiju.bean.oa.workStage.TaskInfo" keyProperty="id">
+    insert into zds_task_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="taskType != null" >
+        task_type,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="startDate != null" >
+        start_date,
+      </if>
+      <if test="expireDate != null" >
+        expire_date,
+      </if>
+      <if test="sendToPerson != null" >
+        send_to_person,
+      </if>
+      <if test="step != null" >
+        step,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+      <if test="isWithdraw != null" >
+        is_withdraw,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="taskArgs != null" >
+        task_args,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        #{companyId},
+      </if>
+      <if test="userId != null" >
+        #{userId},
+      </if>
+      <if test="taskType != null" >
+        #{taskType},
+      </if>
+      <if test="title != null" >
+        #{title},
+      </if>
+      <if test="startDate != null" >
+        #{startDate},
+      </if>
+      <if test="expireDate != null" >
+        #{expireDate},
+      </if>
+      <if test="sendToPerson != null" >
+        #{sendToPerson},
+      </if>
+      <if test="step != null" >
+        #{step},
+      </if>
+      <if test="isDel != null" >
+        #{isDel},
+      </if>
+      <if test="isWithdraw != null" >
+        #{isWithdraw},
+      </if>
+      <if test="content != null" >
+        #{content},
+      </if>
+      <if test="taskArgs != null" >
+        #{taskArgs},
+      </if>
+    </trim>
+    <selectKey  resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  
+  <update id="updateTaskInfo" parameterType="java.util.Map" >
+    update zds_task_info
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId},
+      </if>
+      <if test="taskType != null" >
+        task_type = #{taskType},
+      </if>
+      <if test="title != null" >
+        title = #{title},
+      </if>
+      <if test="startDate != null" >
+        start_date = #{startDate},
+      </if>
+      <if test="expireDate != null" >
+        expire_date = #{expireDate},
+      </if>
+      <if test="sendToPerson != null" >
+        send_to_person = #{sendToPerson},
+      </if>
+      <if test="step != null" >
+        step = #{step},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel},
+      </if>
+      <if test="isWithdraw != null" >
+        is_withdraw = #{isWithdraw},
+      </if>
+      <if test="content != null" >
+        content = #{content},
+      </if>
+      <if test="taskArgs != null" >
+        task_args = #{taskArgs},
+      </if>
+    </set>
+    where id = #{id}
+    
+    <!-- 修改任务：STEP（过期的任务无法修改状态）
+    		0.说明要对处理中 1的任务状态变更为待处理0
+    		1.说明要对待处理 0的任务状态变更为处理中	1
+    		2.说明要对处理中 1的任务状态变更为已完成 2
+    		3.说明要对处理中 1的任务状态变更为已撤销 3
+    		4.说明要对待处理 0 或者处理中 1的任务状态变更为已过期 4
+    	当isforward 不为null说明当前操作是转发，因为任务对转发没有定义STEP，当过它来标记
+     -->
+    <if test="step !=null and isforward ==null">
+    	<if test="step == 1">
+    		and step = 0
+	    </if>
+	    <if test="step == 0 or step == 2 ">
+	   		 and step = 1
+	    </if> 
+	     <if test="step == 3 or step == 4">
+	   		 and (step =0 or step =1 )
+	    </if>   
+	</if>
+	<if test="step !=null and isforward !=null">
+		 and (step =0 or step =1 )
+	</if>
+	<if test="userIdCon !=null ">
+    	and user_id = #{userIdCon}
+	</if>
+	<if test="sendToPersonCon !=null ">
+    	and send_to_person = #{sendToPersonCon}
+	</if>
+	
+  </update>
+  
+    <select id="selectTaskInfoId" parameterType="java.lang.Integer" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />,
+     (SELECT url  FROM oa_file  WHERE fid = z.user_id and business_id =5 )sender_logo
+    from zds_task_info z
+    where z.id = #{id}
+  </select>
+  
+    <select id="countTaskInfoByMe" resultType="java.lang.Integer">
+   select 
+    count(DISTINCT id)
+    from zds_task_info b
+    
+     right join
+     (select ref_id from zds_history_log where receive_uid=#{receiveUid} 
+    and scene_type=2 
+    <if test="isRead!=null">
+     and is_read=#{isRead} 
+    </if>
+    ) a 
+     on b.id =a.ref_id 
+     <where>
+      <if test="companyId != null" >
+      and  b.company_id = #{companyId}
+      </if>
+     
+      
+      <if test="userId != null ">
+    		 <![CDATA[  		and  b.user_id <> #{userId} ]]>
+      	</if>
+       
+      
+      <if test="taskType != null" >
+       and b.task_type = #{taskType}
+      </if>
+      
+      <!-- 待我执行的任务列表 需要Step = 0 或 1  -->
+      <choose>
+	      <when test="type != null and type == 3">
+	      and (b.step = 0 or b.step = 1)
+	      </when>
+	      <otherwise> 
+	      <if test="step !=null">
+	      	and b.step = #{step}
+	      	</if>
+	      </otherwise>
+      </choose>
+       <if test="type != null and type == 3" >
+	      <![CDATA[
+	       	and b.expire_date >= now()
+	       ]]>
+      </if>
+      
+      <if test="isDel != null" >
+       and b.is_del = #{isDel}
+      </if>
+      <if test="isWithdraw != null" >
+       and b.is_withdraw = #{isWithdraw}
+      </if>
+      
+     </where>
+  </select>
+  
+  
+  
+  <select id="selectTaskInfoByMe" parameterType="java.util.Map" resultMap="BaseResultMap">
+   select  DISTINCT
+      b.id,b.company_id,b.user_id,b.task_type,b.title,b.content,DATE_FORMAT(b.start_date,'%Y-%m-%d %H:%i:%s') as startDate,
+       DATE_FORMAT(b.expire_date,'%Y-%m-%d %H:%i:%s') as expireDate,b.send_to_person,b.step,b.task_args,DATE_FORMAT(b.create_time,'%Y-%m-%d %H:%i:%s') as createTime,
+      DATE_FORMAT(b.update_time,'%Y-%m-%d %H:%i:%s') as updateTime,b.is_del,b.is_withdraw ,
+      IFNULL((SELECT DISTINCT is_forward from zds_history_log h where b.id = h.ref_id and  h.receive_uid =#{userId}  and (is_forward = 1 or is_forward = 0 )),'2')is_forward,
+      (SELECT url  FROM oa_file  WHERE fid = #{userId} and business_id =5 )sender_logo
+    from zds_task_info b
+
+     right join
+     (select ref_id from zds_history_log where receive_uid=#{receiveUid} 
+    and scene_type=2 
+    <if test="isRead!=null">
+     and is_read=#{isRead} 
+    </if>
+    ) a 
+     on b.id =a.ref_id 
+     <where>
+     <if test="companyId != null" >
+      and  b.company_id = #{companyId}
+      </if>
+      <!-- <if test="receiveUid != null" >
+      	<if test="from == null or from !='APP'" >
+      		and  b.send_to_person = #{receiveUid}
+      	</if>
+      </if> -->
+     
+      <if test="userId != null " >
+    		 <![CDATA[  		and  b.user_id <> #{userId} ]]>
+      	</if>
+      
+      
+      <if test="taskType != null" >
+       and b.task_type = #{taskType}
+      </if>
+    <choose>
+	      <when test="type != null and type == 3">
+	      and (b.step = 0 or b.step = 1)
+	      </when>
+	      <otherwise> 
+	      <if test="step !=null">
+	      	and b.step = #{step}
+	      	</if>
+	      </otherwise>
+      </choose>
+      <if test="isDel != null" >
+       and b.is_del = #{isDel}
+      </if>
+      <if test="isWithdraw != null" >
+       and b.is_withdraw = #{isWithdraw}
+      </if>
+      <if test="type != null and type == 3" >
+	      <![CDATA[
+	       	and b.expire_date >= now()
+	       ]]>
+      </if>
+      ORDER BY update_time DESC
+       <if test="pageSize != null">
+	  	limit #{startRow},#{pageSize}
+	  </if>
+     </where>
+  </select>
+  
+  
+  <select id="getTaskInfoByMe" parameterType="java.util.Map" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List" /> 
+    	,IFNULL((SELECT DISTINCT is_forward from zds_history_log h where t.id = h.ref_id and t.send_to_person = h.receive_uid and (is_forward = 1 or is_forward = 0 )),'2')is_forward
+    	,(SELECT url  FROM oa_file  WHERE fid = #{userId} and business_id =5 )sender_logo
+    from zds_task_info t
+    <where>
+     <if test="companyId != null" >
+      and  company_id = #{companyId}
+      </if>
+     <if test="userId != null" >
+      and  user_id = #{userId}
+      </if>
+      <if test="taskType != null" >
+       and task_type = #{taskType}
+      </if>
+      <if test="title != null" >
+       and title = #{title}
+      </if>
+      <if test="startDate != null" >
+       and start_date = #{startDate}
+      </if>
+      <if test="expireDate != null" >
+       and expire_date = #{expireDate}
+      </if>
+      <if test="sendToPerson != null" >
+       and send_to_person = #{sendToPerson}
+      </if>
+      <if test="step != null" >
+       and step = #{step}
+      </if>
+      <if test="isDel != null" >
+       and is_del = #{isDel}
+      </if>
+      <if test="isWithdraw != null" >
+       and is_withdraw = #{isWithdraw}
+      </if>
+      <if test="content != null" >
+       and content = #{content}
+      </if>
+      <if test="taskArgs != null" >
+       and task_args = #{taskArgs}
+      </if>
+      <if test="createTime != null" >
+      and  create_time = #{createTime}
+      </if>
+      <if test="updateTime != null" >
+       and update_time = #{updateTime}
+      </if>
+      ORDER BY update_time DESC
+       <if test="pageSize != null">
+	  	limit #{startRow},#{pageSize}
+	  </if>
+    </where>
+  </select>
+  
+  
+  <select id="countTask" resultType="java.lang.Integer">
+   select 
+    count( DISTINCT id)
+    from zds_task_info
+    <where>
+     <if test="companyId != null" >
+      and  company_id = #{companyId}
+      </if>
+     <if test="userId != null" >
+      and  user_id = #{userId}
+      </if>
+      <if test="taskType != null" >
+       and task_type = #{taskType}
+      </if>
+      <if test="title != null" >
+       and title = #{title}
+      </if>
+      <if test="startDate != null" >
+       and start_date = #{startDate}
+      </if>
+      <if test="expireDate != null" >
+       and expire_date = #{expireDate}
+      </if>
+      <if test="sendToPerson != null" >
+       and send_to_person = #{sendToPerson}
+      </if>
+      <if test="step != null" >
+       and step = #{step}
+      </if>
+      <if test="isDel != null" >
+       and is_del = #{isDel}
+      </if>
+      <if test="isWithdraw != null" >
+       and is_withdraw = #{isWithdraw}
+      </if>
+      <if test="content != null" >
+       and content = #{content}
+      </if>
+      <if test="taskArgs != null" >
+       and task_args = #{taskArgs}
+      </if>
+      <if test="createTime != null" >
+      and  create_time = #{createTime}
+      </if>
+      <if test="updateTime != null" >
+       and update_time = #{updateTime}
+      </if>
+    </where>
+  </select>
+  <!-- 条件查询任务列表(不带分页) -->
+   <select id="selectTaskInfoListByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+   select 
+    <include refid="Base_Column_List" />
+    from zds_task_info
+    <where>
+     <if test="companyId != null" >
+      and  company_id = #{companyId}
+      </if>
+     <if test="userId != null" >
+      and  user_id = #{userId}
+      </if>
+      <if test="taskType != null" >
+       and task_type = #{taskType}
+      </if>
+      <if test="title != null" >
+       and title = #{title}
+      </if>
+      <if test="startDate != null" >
+       and start_date = #{startDate}
+      </if>
+      <if test="expireDate != null" >
+       and expire_date = #{expireDate}
+      </if>
+      <!-- 定时器中用到到以下条件 -->
+      <if test="startTime != null and endTime !=null" >
+       and expire_date between #{startTime} and #{endTime}
+      </if>
+      <if test="sendToPerson != null" >
+       and send_to_person = #{sendToPerson}
+      </if>
+      <if test="step != null" >
+       and step = #{step}
+      </if>
+      <if test="isDel != null" >
+       and is_del = #{isDel}
+      </if>
+      <if test="isWithdraw != null" >
+       and is_withdraw = #{isWithdraw}
+      </if>
+      <if test="content != null" >
+       and content = #{content}
+      </if>
+      <if test="taskArgs != null" >
+       and task_args = #{taskArgs}
+      </if>
+      <if test="createTime != null" >
+      and  create_time = #{createTime}
+      </if>
+      <if test="updateTime != null" >
+       and update_time = #{updateTime}
+      </if>
+    </where>
+  </select>
+  
+  <resultMap id="replyResultMap" type="com.aiiju.bean.oa.workStage.TaskInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="replyNum" jdbcType="INTEGER" property="replyNum" />
+  </resultMap>
+  <!-- 这个方法目前仅用于查询任务的回复总数 -->
+  <select id="getTaskReplyNum" parameterType="java.util.Map" resultMap="replyResultMap">
+  	SELECT 
+	  r.pid as id,
+	  COUNT(r.id) AS replyNum 
+	FROM
+	  zds_reply r 
+	WHERE r.scene_type = 2 
+	  AND r.is_del = 0 
+	  AND r.is_withdraw = 0 
+	  AND r.company_id = #{companyId}
+	  AND r.user_id = #{userId}
+	GROUP BY r.pid 
+  </select>
+</mapper>

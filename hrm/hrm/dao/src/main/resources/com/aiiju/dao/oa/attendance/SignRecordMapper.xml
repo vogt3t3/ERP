@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.attendance.ISignRecordDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.attendance.SignRecord" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <id column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="INTEGER" />
+    <result column="dept_id" property="deptId" jdbcType="INTEGER" />
+    <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
+    <result column="sign_type" property="signType" jdbcType="VARCHAR" />
+    <result column="position_lon" property="positionLon" jdbcType="VARCHAR" />
+    <result column="position_lat" property="positionLat" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="sign_time" property="signTime" jdbcType="TIMESTAMP" />
+    <result column="sign_status" property="signStatus" jdbcType="TINYINT" />
+    <result column="sign_date" property="signDate" jdbcType="DATE" />
+    <result column="rule_type" property="ruleType" jdbcType="TINYINT" />
+    <result column="work_day" property="workDay" jdbcType="TINYINT" />
+    <result column="rule_time" property="ruleTime" jdbcType="VARCHAR" />
+    <result column="sign_result" property="signResult" jdbcType="VARCHAR" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, company_id, dept_id, rule_id, sign_type, position_lon, position_lat, 
+    position, sign_time, sign_status, sign_date, rule_type, work_day, rule_time, sign_result, 
+    create_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.aiiju.bean.oa.attendance.SignRecordKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from zds_sign_record
+    where id = #{id,jdbcType=BIGINT}
+      and user_id = #{userId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.aiiju.bean.oa.attendance.SignRecordKey" >
+    delete from zds_sign_record
+    where id = #{id,jdbcType=BIGINT}
+      and user_id = #{userId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.aiiju.bean.oa.attendance.SignRecord" >
+    insert into zds_sign_record (id, user_id, company_id, 
+      dept_id, rule_id, sign_type, 
+      position_lon, position_lat, position, 
+      sign_time, sign_status, sign_date, 
+      rule_type, work_day, rule_time, 
+      sign_result, create_date)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{companyId,jdbcType=INTEGER}, 
+      #{deptId,jdbcType=INTEGER}, #{ruleId,jdbcType=INTEGER}, #{signType,jdbcType=VARCHAR}, 
+      #{positionLon,jdbcType=VARCHAR}, #{positionLat,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, 
+      #{signTime,jdbcType=TIMESTAMP}, #{signStatus,jdbcType=TINYINT}, #{signDate,jdbcType=DATE}, 
+      #{ruleType,jdbcType=TINYINT}, #{workDay,jdbcType=TINYINT}, #{ruleTime,jdbcType=VARCHAR}, 
+      #{signResult,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.aiiju.bean.oa.attendance.SignRecord" >
+    insert into zds_sign_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="deptId != null" >
+        dept_id,
+      </if>
+      <if test="ruleId != null" >
+        rule_id,
+      </if>
+      <if test="signType != null" >
+        sign_type,
+      </if>
+      <if test="positionLon != null" >
+        position_lon,
+      </if>
+      <if test="positionLat != null" >
+        position_lat,
+      </if>
+      <if test="position != null" >
+        position,
+      </if>
+      <if test="signTime != null" >
+        sign_time,
+      </if>
+      <if test="signStatus != null" >
+        sign_status,
+      </if>
+      <if test="signDate != null" >
+        sign_date,
+      </if>
+      <if test="ruleType != null" >
+        rule_type,
+      </if>
+      <if test="workDay != null" >
+        work_day,
+      </if>
+      <if test="ruleTime != null" >
+        rule_time,
+      </if>
+      <if test="signResult != null" >
+        sign_result,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="companyId != null" >
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="deptId != null" >
+        #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="ruleId != null" >
+        #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null" >
+        #{signType,jdbcType=VARCHAR},
+      </if>
+      <if test="positionLon != null" >
+        #{positionLon,jdbcType=VARCHAR},
+      </if>
+      <if test="positionLat != null" >
+        #{positionLat,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="signTime != null" >
+        #{signTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="signStatus != null" >
+        #{signStatus,jdbcType=TINYINT},
+      </if>
+      <if test="signDate != null" >
+        #{signDate,jdbcType=DATE},
+      </if>
+      <if test="ruleType != null" >
+        #{ruleType,jdbcType=TINYINT},
+      </if>
+      <if test="workDay != null" >
+        #{workDay,jdbcType=TINYINT},
+      </if>
+      <if test="ruleTime != null" >
+        #{ruleTime,jdbcType=VARCHAR},
+      </if>
+      <if test="signResult != null" >
+        #{signResult,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.aiiju.bean.oa.attendance.SignRecord" >
+    update zds_sign_record
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="deptId != null" >
+        dept_id = #{deptId,jdbcType=INTEGER},
+      </if>
+      <if test="ruleId != null" >
+        rule_id = #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="signType != null" >
+        sign_type = #{signType,jdbcType=VARCHAR},
+      </if>
+      <if test="positionLon != null" >
+        position_lon = #{positionLon,jdbcType=VARCHAR},
+      </if>
+      <if test="positionLat != null" >
+        position_lat = #{positionLat,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null" >
+        position = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="signTime != null" >
+        sign_time = #{signTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="signStatus != null" >
+        sign_status = #{signStatus,jdbcType=TINYINT},
+      </if>
+      <if test="signDate != null" >
+        sign_date = #{signDate,jdbcType=DATE},
+      </if>
+      <if test="ruleType != null" >
+        rule_type = #{ruleType,jdbcType=TINYINT},
+      </if>
+      <if test="workDay != null" >
+        work_day = #{workDay,jdbcType=TINYINT},
+      </if>
+      <if test="ruleTime != null" >
+        rule_time = #{ruleTime,jdbcType=VARCHAR},
+      </if>
+      <if test="signResult != null" >
+        sign_result = #{signResult,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and user_id = #{userId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.aiiju.bean.oa.attendance.SignRecord" >
+    update zds_sign_record
+    set company_id = #{companyId,jdbcType=INTEGER},
+      dept_id = #{deptId,jdbcType=INTEGER},
+      rule_id = #{ruleId,jdbcType=INTEGER},
+      sign_type = #{signType,jdbcType=VARCHAR},
+      position_lon = #{positionLon,jdbcType=VARCHAR},
+      position_lat = #{positionLat,jdbcType=VARCHAR},
+      position = #{position,jdbcType=VARCHAR},
+      sign_time = #{signTime,jdbcType=TIMESTAMP},
+      sign_status = #{signStatus,jdbcType=TINYINT},
+      sign_date = #{signDate,jdbcType=DATE},
+      rule_type = #{ruleType,jdbcType=TINYINT},
+      work_day = #{workDay,jdbcType=TINYINT},
+      rule_time = #{ruleTime,jdbcType=VARCHAR},
+      sign_result = #{signResult,jdbcType=VARCHAR},
+      create_date = #{createDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+      and user_id = #{userId,jdbcType=BIGINT}
+  </update>
+   <!-- 根据条件查询考勤签到签退记录 -->
+  <select id="selectRecordsByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+	   SELECT <include refid="Base_Column_List"/> from zds_sign_record
+	   <where>
+	    	<if test="companyId != null">
+	    		and company_id = #{companyId,jdbcType=BIGINT}
+	    	</if>
+	    	<if test="deptId != null">
+		  		and dept_id = #{deptId,jdbcType=BIGINT}
+		  	</if>
+	    	<if test="userId != null">
+	    		and user_id = #{userId,jdbcType=BIGINT}
+	    	</if>
+	    	<if test="signDate != null">
+	    		and sign_date = #{signDate,jdbcType=DATE}
+	    	</if>
+	    </where>
+  </select>
+</mapper>

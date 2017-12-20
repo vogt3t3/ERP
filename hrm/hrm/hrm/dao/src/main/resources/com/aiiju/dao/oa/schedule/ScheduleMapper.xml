@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.schedule.IScheduleDao">
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.schedule.Schedule">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="company_id" property="companyId" jdbcType="BIGINT" />
+		<result column="content" property="content" jdbcType="VARCHAR" />
+		<result column="create_date" property="createDate" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" />
+		<result column="timing" property="timing" jdbcType="DATE" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id,company_id,content,create_date,user_id,timing
+	</sql>
+
+	<!-- 根据公司ID和用户ID获取待办事项的数量 -->
+	<select id="getScheduleCountByUser" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(id)
+		FROM oa_schedule
+		WHERE company_id=#{companyId}
+		AND user_id=#{userId}
+	</select>
+
+	<!-- 根据公司ID，用户ID和指定年月获取待办事项列表 -->
+	<select id="getScheduleListByUser" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+		SELECT id, content, DATE_FORMAT(create_date,'%Y-%m-%d') create_date,timing
+		FROM oa_schedule
+		WHERE company_id=#{companyId}
+		AND user_id=#{userId}
+		
+			<![CDATA[
+				and DATE_FORMAT(timing,'%Y-%m')=#{chooseDate}
+			]]>
+		
+		
+		ORDER BY create_date desc
+	</select>
+
+	<!-- 新增待办事项 -->
+	<insert id="insertSchedule" parameterType="com.aiiju.bean.oa.schedule.Schedule"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO oa_schedule(company_id,content,create_date,user_id,timing)
+		VALUES(#{companyId},#{content},now(),#{userId},#{timing})
+	</insert>
+	
+	<!-- 根据ID更新待办事项 -->
+	<update id="updateScheduleById" parameterType="java.util.Map">
+		UPDATE oa_schedule
+		<set>
+			<if test="content != null">
+				content=#{content}
+			</if>
+		</set>
+		WHERE id=#{id} and user_id=#{userId} and company_id = #{companyId}
+	</update>
+	
+	<!-- 根据ID删除待办事项（单条） -->
+	<delete id="delScheduleById" parameterType="java.util.Map">
+		DELETE FROM oa_schedule WHERE id=#{id} and user_id=#{userId} and company_id = #{companyId}
+	</delete>
+</mapper>

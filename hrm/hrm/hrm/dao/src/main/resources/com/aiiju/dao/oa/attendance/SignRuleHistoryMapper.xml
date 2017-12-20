@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.attendance.ISignRuleHistoryDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.attendance.SignRuleHistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="company_id" property="companyId" jdbcType="INTEGER" />
+    <result column="rule_id" property="ruleId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="rule_type" property="ruleType" jdbcType="TINYINT" />
+    <result column="is_legal_holidays" property="isLegalHolidays" jdbcType="TINYINT" />
+    <result column="position_lon" property="positionLon" jdbcType="VARCHAR" />
+    <result column="position_lat" property="positionLat" jdbcType="VARCHAR" />
+    <result column="position_offset" property="positionOffset" jdbcType="BIGINT" />
+    <result column="force_time" property="forceTime" jdbcType="TIMESTAMP" />
+    <result column="company_address" property="companyAddress" jdbcType="VARCHAR" />
+    <result column="creator_id" property="creatorId" jdbcType="BIGINT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, company_id, rule_id, name, rule_type, is_legal_holidays, position_lon, position_lat, 
+    position_offset, force_time, company_address, creator_id, create_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from zds_sign_rule_history
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from zds_sign_rule_history
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.aiiju.bean.oa.attendance.SignRuleHistory" >
+    insert into zds_sign_rule_history (id, company_id, rule_id, 
+      name, rule_type, is_legal_holidays, 
+      position_lon, position_lat, position_offset, 
+      force_time, company_address, creator_id, 
+      create_date)
+    values (#{id,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{ruleId,jdbcType=INTEGER}, 
+      #{name,jdbcType=VARCHAR}, #{ruleType,jdbcType=TINYINT}, #{isLegalHolidays,jdbcType=TINYINT}, 
+      #{positionLon,jdbcType=VARCHAR}, #{positionLat,jdbcType=VARCHAR}, #{positionOffset,jdbcType=BIGINT}, 
+      #{forceTime,jdbcType=TIMESTAMP}, #{companyAddress,jdbcType=VARCHAR}, #{creatorId,jdbcType=BIGINT}, 
+      #{createDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.aiiju.bean.oa.attendance.SignRuleHistory" >
+    insert into zds_sign_rule_history
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="companyId != null" >
+        company_id,
+      </if>
+      <if test="ruleId != null" >
+        rule_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="ruleType != null" >
+        rule_type,
+      </if>
+      <if test="isLegalHolidays != null" >
+        is_legal_holidays,
+      </if>
+      <if test="positionLon != null" >
+        position_lon,
+      </if>
+      <if test="positionLat != null" >
+        position_lat,
+      </if>
+      <if test="positionOffset != null" >
+        position_offset,
+      </if>
+      <if test="forceTime != null" >
+        force_time,
+      </if>
+      <if test="companyAddress != null" >
+        company_address,
+      </if>
+      <if test="creatorId != null" >
+        creator_id,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="companyId != null" >
+        #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="ruleId != null" >
+        #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleType != null" >
+        #{ruleType,jdbcType=TINYINT},
+      </if>
+      <if test="isLegalHolidays != null" >
+        #{isLegalHolidays,jdbcType=TINYINT},
+      </if>
+      <if test="positionLon != null" >
+        #{positionLon,jdbcType=VARCHAR},
+      </if>
+      <if test="positionLat != null" >
+        #{positionLat,jdbcType=VARCHAR},
+      </if>
+      <if test="positionOffset != null" >
+        #{positionOffset,jdbcType=BIGINT},
+      </if>
+      <if test="forceTime != null" >
+        #{forceTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="companyAddress != null" >
+        #{companyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="creatorId != null" >
+        #{creatorId,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.aiiju.bean.oa.attendance.SignRuleHistory" >
+    update zds_sign_rule_history
+    <set >
+      <if test="companyId != null" >
+        company_id = #{companyId,jdbcType=INTEGER},
+      </if>
+      <if test="ruleId != null" >
+        rule_id = #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="ruleType != null" >
+        rule_type = #{ruleType,jdbcType=TINYINT},
+      </if>
+      <if test="isLegalHolidays != null" >
+        is_legal_holidays = #{isLegalHolidays,jdbcType=TINYINT},
+      </if>
+      <if test="positionLon != null" >
+        position_lon = #{positionLon,jdbcType=VARCHAR},
+      </if>
+      <if test="positionLat != null" >
+        position_lat = #{positionLat,jdbcType=VARCHAR},
+      </if>
+      <if test="positionOffset != null" >
+        position_offset = #{positionOffset,jdbcType=BIGINT},
+      </if>
+      <if test="forceTime != null" >
+        force_time = #{forceTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="companyAddress != null" >
+        company_address = #{companyAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="creatorId != null" >
+        creator_id = #{creatorId,jdbcType=BIGINT},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.aiiju.bean.oa.attendance.SignRuleHistory" >
+    update zds_sign_rule_history
+    set company_id = #{companyId,jdbcType=INTEGER},
+      rule_id = #{ruleId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      rule_type = #{ruleType,jdbcType=TINYINT},
+      is_legal_holidays = #{isLegalHolidays,jdbcType=TINYINT},
+      position_lon = #{positionLon,jdbcType=VARCHAR},
+      position_lat = #{positionLat,jdbcType=VARCHAR},
+      position_offset = #{positionOffset,jdbcType=BIGINT},
+      force_time = #{forceTime,jdbcType=TIMESTAMP},
+      company_address = #{companyAddress,jdbcType=VARCHAR},
+      creator_id = #{creatorId,jdbcType=BIGINT},
+      create_date = #{createDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+   <select id="selectListByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+   SELECT <include refid="Base_Column_List" />
+   FROM zds_sign_rule_history
+   <where>
+    	<if test="companyId != null">
+    		and company_id = #{companyId}
+    	</if>
+    	<if test="ruleId != null">
+	  		and rule_id = #{ruleId}
+	  	</if>
+    </where>
+    ORDER BY create_date DESC
+  </select>
+</mapper>

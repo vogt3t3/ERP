@@ -1,0 +1,90 @@
+﻿<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <link rel="stylesheet" type="text/css" href="Styles/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="Styles/admin-all.css" />
+    <script type="text/javascript" src="Scripts/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="Scripts/jquery-ui-1.8.22.custom.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="Styles/ui-lightness/jquery-ui-1.8.22.custom.css" />
+    <script type="text/javascript">
+        $(function () {
+            $(".datepicker").datepicker();
+ 			$('#list').show();
+ 
+            $('#find').click(function () {
+            	var pro=$('#pro').val();
+            	var depot=$('#depot').val();
+            	
+            	window.location.href='dict/search_Stock?pro='+pro+'&depot='+depot;
+               
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <div class="alert alert-info">当前位置<b class="tip"></b>基础数据<b class="tip"></b>查询库存</div>
+    <table class="table table-striped table-bordered table-condensed">
+        
+        <tbody>
+
+            <tr>
+                <td width="7%"><div align="center">产品</div></td>
+                <td width="29%" class="detail">
+              <input id="pro"type="text" />                </td>
+                <td width="7%"><div align="center">仓库</div></td>
+                <td width="25%" class="td_detail">
+              <input id="depot"type="text" /></td>
+            </tr>
+            <tr>
+                <td colspan="6" align="right">
+                    <input type="button" class="btn btn-inverse" id="find" value="查询">&nbsp;
+                    <input class="btn btn-inverse" type="button" value="新建库存" onclick="window.location.href='dict/open_InfoSto'"/>&nbsp;
+                    </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-striped table-bordered table-condensed" id="list">
+        <thead>
+            <tr class="tr_detail">
+                <td width="13%"><div align="center">序号</div></td>
+                <td width="33%"><div align="center">产品</div></td>
+                <td width="19%"><div align="center">仓库</div></td>
+                <td width="14%"><div align="center">货位</div></td>
+                <td width="12%"><div align="center">件数</div></td>
+                <td width="9%"><div align="center">备注</div></td>
+                <td width="9%"><div align="center">操作</div></td>
+            </tr>
+        </thead>
+         <c:forEach items="${stoList }" var="sto">
+        	
+            <tr>
+                <td><div align="center">${sto.pro_id }</td>
+                <td><div align="center">${sto.pro_name}</td>
+                <td><div align="center">${sto.pro_depot}</td>
+                <td><div align="center">${sto.pro_goods_unit}</td>
+                <td><div align="center">${sto.pro_no }</td>            
+                <td><div align="center">${sto.pro_remark }</td>
+                <td><div align="center"><input type="button" class="btn btn-inverse" id="edit" value="编辑" onclick="window.location.href='dict/sto_Alter?id=${sto.pro_id}' "/></td>
+ 
+            </tr>
+            </c:forEach>
+        
+        <tbody>
+            
+            <tr class="tr_pagenumber">
+                <td colspan="100">当前第5页/共55页&nbsp;&nbsp;共650条记录&nbsp;&nbsp;<a class="badge badge-inverse">首页</a>&nbsp;<a class="badge badge-inverse">下一页</a>&nbsp;
+                    <a class="badge badge-inverse">1</a>&nbsp;<a class="badge badge-inverse">2</a>&nbsp;<a class="badge badge-inverse">3</a>&nbsp;<a class="badge badge-inverse">4</a>&nbsp;
+                    <a class="badge badge-warning">5</a>&nbsp;<a class="badge badge-inverse">...</a>&nbsp;<a class="badge badge-inverse">55</a>&nbsp;<a class="badge badge-inverse">上一页</a>&nbsp;<a class="badge badge-inverse">尾页</a></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

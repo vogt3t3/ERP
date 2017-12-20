@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.aiiju.dao.oa.workStage.IFlowVacationDao" >
+  <resultMap id="BaseResultMap" type="com.aiiju.bean.oa.workStage.FlowVacation" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="company_id" property="companyId" jdbcType="BIGINT" />
+    <result column="flow_id" property="flowId" jdbcType="BIGINT" />
+    <result column="vacation_type" property="vacationType" jdbcType="INTEGER" />
+    <result column="start_date" property="startDate" jdbcType="VARCHAR" />
+    <result column="end_date" property="endDate" jdbcType="VARCHAR" />
+    <result column="period" property="period" jdbcType="FLOAT" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <association property="userName" column="user_id" select="selectNameByUserId" />
+    <association property="deptName" column="user_id" select="selectDeptNameByUserId" />
+    <association property="content" column="flow_id" select="selectContentByFlowId" />
+	<association property="sendToPerson" column="flow_id" select="selectSendToPersonByFlowId" />
+	<association property="step" column="flow_id" select="selectStepByFlowId" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id,user_id,company_id,flow_id,vacation_type,start_date,end_date,period,create_date
+  </sql>
+  <insert id="addFlowVacation" parameterType="com.aiiju.bean.oa.workStage.FlowVacation" keyProperty="id">
+  insert into zds_flow_vacation(user_id,company_id,flow_id,vacation_type,period,start_date,end_date)values(#{userId},#{companyId},#{flowId},#{vacationType},#{period},#{startDate},#{endDate})
+    <selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+  </insert>
+  <select id="getFlowVacationByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+	   select   
+	   <include refid="Base_Column_List"/>
+	   from zds_flow_vacation  where flow_id=#{flowId}
+  </select>
+  
+  <!-- 根据参数获取报销数据列表总数 -->
+	<select id="getTotalNumByParams" parameterType="java.util.Map"
+		resultType="int">
+		SELECT count(id) 
+		FROM zds_flow_vacation
+		WHERE company_id=#{companyId}
+		AND DATE_FORMAT(create_date,'%Y-%m-%d') &gt;= #{startDate}
+        AND DATE_FORMAT(create_date,'%Y-%m-%d') &lt;= #{endDate}
+        <if  test="null!= allUserList">
+            AND user_id in
+            <foreach collection="allUserList" index="index" item="item" open="(" separator="," close=")" >
+                #{item.id}
+            </foreach>
+        </if>
+	</select>
+	
+	<!-- 根据参数获取报销数据列表 -->
+	<select id="getFlowVacationListByParams" parameterType="java.util.Map"
+		resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List" />
+        FROM zds_flow_vacation
+        WHERE company_id=#{companyId}
+        AND DATE_FORMAT(create_date,'%Y-%m-%d') &gt;= #{startDate}
+        AND DATE_FORMAT(create_date,'%Y-%m-%d') &lt;= #{endDate}
+        <if  test="null!= allUserList">
+            AND user_id in
+            <foreach collection="allUserList" index="index" item="item" open="(" separator="," close=")" >
+                #{item.id}
+            </foreach>
+        </if>
+        ORDER BY create_date DESC
+        <if test="null != startPos and null != pageSize">
+            LIMIT ${startPos},${pageSize}
+        </if>
+	</select>
+	
+	<!-- 根据用户ID获取姓名 -->
+    <select id="selectNameByUserId" resultType="java.lang.String">
+       SELECT
+       name userName
+       FROM oa_user
+       WHERE id=#{user_id}
+    </select>
+    
+    <!-- 根据用户ID获取部门（单部门） -->
+    <select id="selectDeptNameByUserId" resultType="java.lang.String">
+       SELECT
+       t.name deptName
+       FROM oa_department t
+       LEFT JOIN oa_user u ON u.dept_id=t.id
+       WHERE u.id=#{user_id}
+    </select>
+	
+	<!-- 根据报销详情ID获取报销内容 -->
+    <select id="selectContentByFlowId" resultType="java.lang.String">
+       SELECT
+       content
+       FROM zds_flow_info
+       WHERE id=#{flow_id}
+    </select>
+    
+    <!-- 根据报销详情ID获取接收人 -->
+    <select id="selectSendToPersonByFlowId" resultType="java.lang.String">
+       SELECT
+       send_to_person sendToPerson
+       FROM zds_flow_info
+       WHERE id=#{flow_id}
+    </select>
+    
+    <!-- 根据报销详情ID获取状态 -->
+    <select id="selectStepByFlowId" resultType="java.lang.Integer">
+       SELECT
+       step
+       FROM zds_flow_info
+       WHERE id=#{flow_id}
+    </select>
+</mapper>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.dept.IDepartmentDao"> 
+	<resultMap id="BaseResultMap" type="com.aiiju.bean.oa.dept.Department">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="short_name" property="shortName" jdbcType="VARCHAR" />
+		<result column="parent_dept_id" property="parentDeptId" jdbcType="BIGINT" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="level" property="level" jdbcType="INTEGER" />
+		<result column="dept_no" property="deptNo" jdbcType="VARCHAR" />
+		<result column="industry_type" property="industryType" jdbcType="VARCHAR" />
+		<result column="register_type" property="registerType" jdbcType="VARCHAR" />
+		<result column="company_no" property="companyNo" jdbcType="VARCHAR" />
+		<result column="corporate" property="corporate" jdbcType="VARCHAR" />
+		<result column="taxpayer_registration_no" property="taxpayerRegistrationNo" jdbcType="VARCHAR" />
+		<result column="approval_doc_no" property="approvalDocNo" jdbcType="VARCHAR" />
+		<result column="administrative_division_code" property="administrativeDivisionCode" jdbcType="VARCHAR" />
+		<result column="company_id" property="companyId" jdbcType="BIGINT" />
+		<result column="person_num" property="personNum" jdbcType="INTEGER" />
+		<result column="curPerson_num" property="curPersonNum" jdbcType="INTEGER" />
+		<result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="update_date" property="updateDate" jdbcType="DATE" />
+		<result column="username" property="userName" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="parentDeptName" property="parentDeptName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="NewBaseResultMap" type="com.aiiju.bean.oa.dept.Department">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="parent_dept_id" property="parentDeptId" jdbcType="BIGINT" />
+		<result column="level" property="level" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<resultMap id="DepartmentTreeResultMap" type="com.aiiju.bean.oa.dept.DepartmentTreePojo">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="parent_dept_id" property="parentDeptId" jdbcType="BIGINT" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="curPerson_num" property="curPersonNum" jdbcType="BIGINT" />
+		<result column="lackPerson_num" property="lackPersonNum" jdbcType="BIGINT" />
+		<result column="person_num" property="personNum" jdbcType="BIGINT" />
+		<result column="level" property="level" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id,name,short_name,parent_dept_id,remark,level,dept_no,industry_type,register_type,company_no,corporate,
+		taxpayer_registration_no,approval_doc_no,administrative_division_code,company_id,person_num,curPerson_num,create_date,update_date
+	</sql>
+	<!-- 加入表的别名 -->
+	<sql id="Base_Column_ListAddAlias">
+		d.id,d.name,d.short_name,d.parent_dept_id,d.remark,d.level,d.dept_no,d.industry_type,d.register_type,d.company_no,d.corporate,d.
+		taxpayer_registration_no,d.approval_doc_no,d.administrative_division_code,d.company_id,d.person_num,d.curPerson_num,d.create_date,d.update_date
+	</sql>
+	
+	<!-- 查询部门是否已经存在该名称 -->
+	<select id="getCntByDeptName" parameterType="java.util.Map" resultType="int">
+		select count(id) from oa_department
+		where name = #{name} and company_id=#{companyId}
+	</select>
+	
+	<!--新增部门 -->
+	<insert id="addDepartment" parameterType="java.util.Map" keyProperty="id">
+		INSERT INTO oa_department (
+			name,
+			short_name,
+			parent_dept_id,
+			remark,
+			<if test="level != null">
+			level,
+			</if>
+			dept_no,
+			company_id,
+			curPerson_num
+		)
+		VALUES
+			(#{name},#{shortName},#{parentDeptId},#{remark},
+			<if test="level != null">
+			#{level},
+			</if>
+			#{deptNo},#{companyId},
+			<choose>
+				<when test="curPersonNum !=null">
+					#{curPersonNum})
+				</when>
+				<otherwise>
+					0)
+				</otherwise>
+			</choose>
+			
+			
+	<selectKey  resultType="java.lang.Long" order="AFTER" keyProperty="id">
+   	SELECT LAST_INSERT_ID() 
+    </selectKey>
+	</insert>
+	<!-- 更新部门 -->
+	<update id="updateDepartment" parameterType="java.util.Map">
+		UPDATE oa_department
+		<set>
+			<if test="name != null">name=#{name},</if>
+			<if test="shortName != null">short_name=#{shortName},</if>
+			<if test="parentDeptId != null">parent_dept_id=#{parentDeptId},</if>
+			<if test="remark != null">remark=#{remark},</if>
+			<if test="level != null">level=#{level},</if>
+			<if test="deptNo != null">dept_no=#{deptNo},</if>
+			<if test="industryType != null">industry_type=#{industryType},</if>
+			<if test="registerType != null">register_type=#{registerType},</if>
+			<if test="companyNo != null">company_no=#{companyNo},</if>
+			<if test="corporate != null">corporate=#{corporate},</if>
+			<if test="taxpayerRegistrationNo != null">taxpayer_registration_no=#{taxpayerRegistrationNo},</if>
+			<if test="approvalDocNo != null">approval_doc_no=#{approvalDocNo},</if>
+			<if test="administrativeDivisionCode != null">administrative_division_code=#{administrativeDivisionCode},</if>
+			<if test="personNum != null">person_num=#{personNum},</if>
+			
+			
+			<!-- 在组织管理中添加员工时，并更新当前在编人数 -->
+			
+				<if test="curPersonNum != null ">
+					curPerson_num=curPerson_num+#{curPersonNum},
+				</if>
+			
+			
+			
+			update_date=now()
+		</set>
+		<where>
+		  		id = #{deptId}
+		</where>
+	</update>
+	<!-- 获取部门直属子部门 数-->
+	<select id="getSubdeptCount" parameterType="String" resultType="int">
+		<!-- 暂时可不加companyId -->
+		SELECT count(id) FROM oa_department WHERE parent_dept_id=#{deptId}
+	</select>
+	
+	<!-- 获取部门下员工数-->
+	<select id="getEmpCount" parameterType="String" resultType="int">
+		SELECT count(id) FROM oa_user WHERE dept_id=#{deptId}
+	</select>
+	
+	<!-- 根据部门id删除部门(可批量) -->
+	<delete id="delDepartmentByIds" parameterType="java.util.Map">
+		DELETE FROM oa_department
+		WHERE id IN
+		<foreach collection="idsArray" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+	<!-- 部门维护中获取部门信息列表总数(可获取全公司、可根据部门名等关键词查找)-->
+	<select id="getDepartmentListCount" parameterType="java.util.Map" resultType="int"> 
+		SELECT count(id) FROM 
+		oa_department 
+		<where>
+		  company_id=#{companyId}
+		  <if test="keyword !=null">
+		  AND (name LIKE '%#{keyword}%' OR short_name LIKE '%#{keyword}%')
+		  </if>
+		  <if test="list !=null">
+			AND id IN
+			<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		  </if>
+		</where> 
+	</select>
+	<!-- 获取部门信息列表(可获取公司、可根据部门名等关键词查找)-->
+	<select id="getDepartmentList" parameterType="java.util.Map" resultMap="BaseResultMap"> 
+		SELECT <include refid="Base_Column_ListAddAlias"/>,
+		(select t.name from oa_department t where t.id = d.parent_dept_id) parentDeptName
+		FROM 
+			oa_department d
+		<where>
+		  company_id=#{companyId}
+		  <if test="keyword !=null">
+		  AND (name LIKE '%#{keyword}%' OR short_name LIKE '%#{keyword}%')
+		  </if>
+		  <if test="null !=list">
+			AND id IN
+			<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+				#{item}
+			</foreach>
+		  </if>
+		</where>
+		order by level,create_date
+		<if test="null != startPos and null != pageSize">
+            LIMIT ${startPos},${pageSize}
+        </if>
+	</select>
+	<!-- 获取一个公司的部门树（员工职务等共用） -->
+	<select id="getDepartmentTreeCompanyId" parameterType="java.util.Map" resultMap="DepartmentTreeResultMap"> 
+		SELECT id,name,parent_dept_id,level FROM oa_department WHERE company_id=#{companyId}
+	</select>
+	<!-- 根据id获取单独一个部门信息 （递归时用，不要根据关键字搜索部门合并）-->
+	<select id="getDepartmentById" parameterType="java.util.Map" resultMap="BaseResultMap">
+		SELECT
+			<include refid="Base_Column_List" />
+			FROM oa_department WHERE id=#{id}
+	</select>
+	<!-- 获取一个公司的部门架构图(（主要是人员编制等）含子部门架构 )-->
+	<select id="getDepartmentFramework" parameterType="java.util.Map" resultMap="DepartmentTreeResultMap">    
+		SELECT d.id,d.name,d.parent_dept_id,m.user_id,m.name username,level,
+			IFNULL(d.person_num,0) person_num,
+			IFNULL(d.curPerson_num,0) curPerson_num,
+			IFNULL(d.person_num,0) - IFNULL(d.curPerson_num,0) lackPerson_num
+		FROM oa_department d LEFT JOIN 
+		(SELECT om.user_id,u.name,om.dept_id FROM oa_organization_manage  om
+		 LEFT JOIN oa_user u ON  om.user_id=u.id  WHERE  om.end_date &gt;=now() AND om.start_date &lt;=now()) m
+		ON m.dept_id=d.id 
+		WHERE d.company_id=#{companyId}
+<!-- 		<if test="null !=allDepts"> -->
+<!-- 			AND d.id IN -->
+<!-- 			<foreach collection="allDepts" item="item" index="index" open="(" close=")" separator=","> -->
+<!-- 				#{item.id} -->
+<!-- 			</foreach> -->
+<!-- 		</if> -->
+	</select>
+	 <!-- 批量新增部门信息 -->
+	<insert id="batchAddDeptInfo" parameterType="java.util.Map">
+		INSERT INTO oa_department (name, short_name,level, parent_dept_id, dept_no, remark, company_id,curPerson_num)
+		VALUES
+		<foreach collection="deptAddList" item="item" index="index" separator=",">
+			(#{item.name}, #{item.shortName}, #{item.level},#{item.parentDeptId}, #{item.deptNo}, #{item.remark}, #{companyId},0)
+		</foreach>
+	</insert>
+	
+	<!-- 批量更新部门信息 -->
+	<update id="batchUpdateDeptParentId" parameterType="java.util.Map">
+		 <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+				UPDATE oa_department d
+				<set>
+				  parent_dept_id = #{item.parentDeptId},
+				  level = #{item.level}
+				</set>
+				where name = #{item.name}
+				AND company_id = #{item.companyId}
+		 </foreach>
+	</update>
+	<!-- 获取顶级组织 -->
+	<select id="selectDepartmentByCompanyId" parameterType="java.util.Map" resultMap="BaseResultMap"> 
+		SELECT id,name,parent_dept_id FROM oa_department WHERE company_id=#{companyId} and parent_dept_id=0
+	</select>
+	
+	<!-- 获取部门信息列表(APP 新版通讯录使用)-->
+	<select id="getNewDepartmentList" parameterType="java.util.Map" resultMap="BaseResultMap"> 
+		SELECT id,name,parent_dept_id,level
+		FROM 
+			oa_department d
+		<where>
+		  company_id=#{companyId}
+		</where>
+		order by level,id
+	</select>
+	
+	<!-- 通过部门ID（多个用,隔开）   获得该部门下的所有子部门ID包括自己（已排重） -->
+	<select id="getDeptChildIds" parameterType="java.util.Map" resultType="java.lang.String">
+		select getDeptChild(#{deptIds},#{companyId})	from dual
+	
+	</select>
+</mapper>
+
+ 

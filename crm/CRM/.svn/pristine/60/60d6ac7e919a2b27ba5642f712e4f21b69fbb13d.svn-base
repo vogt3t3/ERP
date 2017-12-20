@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="dict" extends="base"  namespace="/dict">
+		<action name="*_*" class="com.crm.action.DictAction" method="{1}{2}">
+			<result name="dictCreate">/WEB-INF/Template/basicdata/dictcreate.jsp</result>
+			<result name="dictOpen">/WEB-INF/Template/basicdata/datadictionary.jsp</result>
+			<result name="dictProduct">/WEB-INF/Template/basicdata/datadictionary.jsp</result>
+			<result name="dictStock">/WEB-INF/Template/basicdata/datadictionary.jsp</result>
+
+		</action>
+		
+	</package>
+	
+	
+</struts>    

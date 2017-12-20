@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <!-- struts基础配置文件，包含全局result -->
+	<package name="client" extends="base"  namespace="/client">
+		<action name="*_*" class="com.crm.action.{2}Action" method="{1}{2}">
+			<result>/WEB-INF/page/success.jsp</result>
+		</action>
+		
+	</package>
+	
+	
+</struts>    

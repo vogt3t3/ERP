@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aiiju.dao.oa.workStage.IWorkReportDao">
+	<!-- 工作汇报列表 -->
+	<resultMap id="WorkReportMap" type="com.aiiju.bean.oa.workStage.WorkReport">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="company_id" property="companyId" jdbcType="BIGINT" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="work_log_type" property="workReportType" jdbcType="INTEGER" />
+		<result column="content" property="content" jdbcType="VARCHAR" />
+		<result column="is_read" property="isRead" jdbcType="INTEGER" />
+		<result column="replyNum" property="replyNum" jdbcType="INTEGER" />
+		<result column="likeNum" property="likeNum" jdbcType="INTEGER" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="likeUserId" property="likeUserId" jdbcType="INTEGER" />
+		<result column="likeVisitId" property="likeVisitId" jdbcType="INTEGER" />
+		<result column="depts" property="depts" jdbcType="VARCHAR" />
+		<result column="persons" property="persons" jdbcType="VARCHAR" />
+		<association property="likeId" column="{id=id,likeUserId=likeUserId,likeVisitId=likeVisitId}" select="queryLike" />
+		<association property="likePersons" column="{id=id}" select="queryLikePersons" />
+	</resultMap>
+	
+	<resultMap id="NewWorkReportMap" type="com.aiiju.bean.oa.workStage.WorkReport">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="company_id" property="companyId" jdbcType="BIGINT" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="work_log_type" property="workReportType" jdbcType="INTEGER" />
+		<result column="content" property="content" jdbcType="VARCHAR" />
+		<result column="create_time" property="createTime" jdbcType="VARCHAR" />
+		<result column="send_to_dept" property="sendToDept" jdbcType="VARCHAR" />
+		<result column="send_to_person" property="sendToPerson" jdbcType="VARCHAR" />
+		<association property="likeId" column="{id=id,likeUserId=likeUserId,likeVisitId=likeVisitId}" select="queryLike" />
+		<association property="likePersons" column="{id=id}" select="queryLikePersons" />
+		<association property="userInfo" column="{id=user_id}" select="com.aiiju.dao.oa.staff.IUserDao.seleteById" />
+		<collection  property="replys" javaType="list"  ofType="com.aiiju.bean.oa.workStage.Reply">
+				<id column="r_id" jdbcType="BIGINT" property="id" />
+				<result column="r_user_id" jdbcType="BIGINT" property="userId" />
+				<result column="reply_con" jdbcType="VARCHAR" property="replyCon" />
+				<result column="receive_uid" jdbcType="BIGINT" property="receiveUid" />
+				<result column="r_create_time" jdbcType="VARCHAR" property="createTime" />
+				<association property="userName" column="r_user_id" select="com.aiiju.dao.oa.workStage.IReplyDao.selectUserName"/>
+				<association property="receiveName" column="receive_uid" select="com.aiiju.dao.oa.workStage.IReplyDao.selectReceiveName"/>
+				<association property="logo" column="r_user_id" select="com.aiiju.dao.oa.workStage.IReplyDao.selectLoGo"/>
+		</collection>
+		<collection  property="departments" column="send_to_dept" select="selectdepts"/>
+		<collection  property="users" column="send_to_person" select="selectpersons"/> 
+		
+		
+	</resultMap>
+	
+	<!-- 根据用户ID查询该用户未读数 -->
+	<select id="getUnReadNumByUserId" parameterType="java.util.Map" resultType="Integer">
+		SELECT
+			count(h.id) unReadNum
+		FROM
+			zds_history_log h,zds_work_log w
+		WHERE
+			h.receive_uid = #{userId}
+		AND h.company_id = #{companyId}
+		AND h.is_read != 1
+		AND h.scene_type = 1
+		AND h.ref_id = w.id
+		AND w.is_withdraw = 0
+	</select>
+	<!-- 根据信息查询工作汇报列表 -->
+	<select id="getWorkReportList" parameterType="java.util.Map" resultMap="WorkReportMap">
+		SELECT
+			w.id,
+			w.company_id,
+			w.user_id,
+			w.work_log_type,
+			w.content,
+			1 is_read,
+			(SELECT GROUP_CONCAT(a. NAME ORDER BY FIND_IN_SET(a.id, w.send_to_person))
+				FROM
+					oa_user a
+				WHERE
+					FIND_IN_SET(a.id, w.send_to_person) > 0
+				AND a.company_id = #{companyId}) persons,
+			(SELECT GROUP_CONCAT(a. NAME ORDER BY FIND_IN_SET(a.id, w.send_to_dept))
+				FROM
+					oa_department a
+				WHERE
+					FIND_IN_SET(a.id, w.send_to_dept) > 0
+				AND a.company_id = #{companyId}) depts,
+			IFNULL(l.likeNum, 0) likeNum,
+			IFNULL(b.replyNum, 0) replyNum,
+<!-- 			FROM_UNIXTIME(w.create_time,'%Y-%m-%d %H:%i:%s') AS create_time, -->
+			DATE_FORMAT(w.create_time,'%Y-%m-%d %H:%i:%s')  AS create_time,
+			#{userId} likeUserId,
+			#{companyId} likeVisitId
+		FROM
+			zds_work_log AS w
+		LEFT JOIN (
+			SELECT
+				a.scene_id,
+				count(a.id) likeNum
+			FROM
+				zds_like a
+			WHERE
+				a.scene_type = 1
+			GROUP BY
+				a.scene_id
+		) AS l ON l.scene_id = w.id
+		LEFT JOIN (
+			SELECT
+				r.pid,
+				count(r.id) replyNum
+			FROM
+				zds_reply r
+			WHERE
+				r.scene_type = 1
+			AND r.is_del = 0
+			AND r.is_withdraw = 0
+			GROUP BY
+				r.pid
+		) AS b ON b.pid = w.id
+		WHERE
+			w.user_id = #{userId}
+		AND w.company_id = #{companyId}
+		<if test="workLogType != null">
+			AND w.work_log_type = #{workLogType}
+		</if>
+		AND w.is_withdraw = 0
+		ORDER BY
+			w.create_time DESC
+		LIMIT ${startRow},${pageSize}
+	</select>
+	
+	
+	<!-- 查询部门数组-->
+ 	<select id="selectdepts" parameterType="java.util.Map" resultType="com.aiiju.bean.oa.dept.Department">
+		select id,name from oa_department
+		where FIND_IN_SET(id,#{send_to_dept})
+	</select>
+	
+	<!-- 查询接收人数组 -->
+	<select id="selectpersons" parameterType="java.util.Map" resultType="com.aiiju.bean.oa.staff.User">
+		select id,name from oa_user
+		where FIND_IN_SET(id,#{send_to_person})
+	</select> 
+	<!-- 查询总数汇报 -->
+	<select id="getWorkReportListTotalNum" parameterType="java.util.Map" resultType="int">
+		select count(id)
+		from zds_work_log 
+		where user_id = #{userId}
+		AND company_id = #{companyId}
+		AND is_del = 0
+		AND is_withdraw = 0
+	</select>
+	
+	<!-- 查询我接收的汇报列表 -->
+	<select id="getReceiveWorkReportList" parameterType="java.util.Map" resultMap="WorkReportMap">
+		SELECT
+			w.id,
+			w.company_id,
+			w.user_id,
+			w.work_log_type,
+			w.content,
+			h.is_read,
+			(SELECT GROUP_CONCAT(a. NAME ORDER BY FIND_IN_SET(a.id, w.send_to_person))
+				FROM
+					oa_user a
+				WHERE
+					FIND_IN_SET(a.id, w.send_to_person) > 0
+				AND a.company_id = #{companyId}) persons,
+			(SELECT GROUP_CONCAT(a. NAME ORDER BY FIND_IN_SET(a.id, w.send_to_dept))
+				FROM
+					oa_department a
+				WHERE
+					FIND_IN_SET(a.id, w.send_to_dept) > 0
+				AND a.company_id = #{companyId}) depts,
+			IFNULL(l.likeNum, 0) likeNum,
+			IFNULL(b.replyNum, 0) replyNum,
+<!-- 			FROM_UNIXTIME(w.create_time,'%Y-%m-%d %H:%i:%s') AS create_time, -->
+			DATE_FORMAT(w.create_time,'%Y-%m-%d %H:%i:%s')  AS create_time,
+			#{userId} likeUserId,
+			#{companyId} likeVisitId
+		FROM
+			zds_work_log AS w 
+			LEFT JOIN (
+					SELECT
+						a.scene_id,
+						count(a.id) likeNum
+					FROM
+						zds_like a
+					WHERE
+						a.scene_type = 1
+					GROUP BY
+						a.scene_id
+				) AS l ON l.scene_id = w.id
+		LEFT JOIN (
+				SELECT
+					r.pid,
+					count(r.id) replyNum
+				FROM
+					zds_reply r
+				WHERE
+					r.scene_type = 1
+				AND r.is_del = 0
+				AND r.is_withdraw = 0
+				GROUP BY
+					r.pid
+			) AS b ON b.pid = w.id,
+			zds_history_log h
+		WHERE
+			w.id = h.ref_id
+		AND h.scene_type = 1
+		<if test="workLogType != null">
+			AND w.work_log_type = #{workLogType}
+		</if>
+		AND h.receive_uid = #{userId}
+		AND h.company_id = #{companyId}
+		AND w.is_withdraw = 0
+		ORDER BY
+			w.create_time DESC
+		limit ${startRow},${pageSize}
+	</select>
+	
+	<!-- 查询我接收的总数汇报 -->
+	<select id="getReceiveWorkReportListTotalNum" parameterType="java.util.Map" resultType="int">
+	    select count(id) from zds_history_log 
+	    where receive_uid = #{userId}
+	    AND company_id = #{companyId}
+	    AND scene_type = 1
+	</select>
+	
+	<!-- 查询我接收的总数汇报 -->
+	<select id="queryReceiveWorkReportListTotalNum" parameterType="java.util.Map" resultType="int">
+	    SELECT
+			count(1)
+		FROM
+			zds_work_log w,
+			zds_history_log h
+		WHERE
+			w.id = h.ref_id
+		AND h.scene_type = 1
+		AND h.receive_uid = #{userId}
+		AND h.company_id = #{companyId}
+		AND w.is_del = 0
+		AND w.is_withdraw = 0
+		AND (
+		<if test="userListsForUser==null and userLists==null">
+			1>1
+		</if>
+		<if test="userListsForUser!=null">
+			w.user_id in
+			<foreach collection="userListsForUser" item="item" index="index" open="(" close=")" separator=",">
+				#{item.id}
+			</foreach>
+		</if>
+		<if test="userListsForUser!=null and userLists!=null">
+			OR
+		</if>
+		<if test="userLists!=null">
+			w.user_id in
+			<foreach collection="userLists" item="item" index="index" open="(" close=")" separator=",">
+		        #{item.id}
+		     </foreach>
+		</if>
+		 )
+	</select>
+	
+	<select id="queryReceiveWorkReportList" parameterType="java.util.Map" resultMap="WorkReportMap">
+	     SELECT
+			w.id,
+			w.company_id,
+			w.user_id,
+			w.work_log_type,
+			w.content,
+			h.is_read,
+			(SELECT GROUP_CONCAT(a. NAME ORDER BY FIND_IN_SET(a.id, w.send_to_person))
+				FROM
+					oa_user a
+				WHERE
+					FIND_IN_SET(a.id, w.send_to_person) > 0
+				AND a.company_id = #{companyId}) persons,
+			(SELECT GROUP_CONCAT(a. NAME ORDER BY FIND_IN_SET(a.id, w.send_to_dept))
+				FROM
+					oa_department a
+				WHERE
+					FIND_IN_SET(a.id, w.send_to_dept) > 0
+				AND a.company_id = #{companyId}) depts,
+			IFNULL(l.likeNum, 0) likeNum,
+			IFNULL(b.replyNum, 0) replyNum,
+<!-- 			FROM_UNIXTIME(w.create_time,'%Y-%m-%d %H:%i:%s') AS create_time, -->
+			DATE_FORMAT(w.create_time,'%Y-%m-%d %H:%i:%s')  AS create_time,
+			#{userId} likeUserId,
+			#{companyId} likeVisitId
+		FROM
+			zds_work_log AS w
+				LEFT JOIN (
+					SELECT
+						a.scene_id,
+						count(a.id) likeNum
+					FROM
+						zds_like a
+					WHERE
+						a.scene_type = 1
+					GROUP BY
+						a.scene_id
+				) AS l ON l.scene_id = w.id
+				LEFT JOIN (
+					SELECT
+						r.pid,
+						count(r.id) replyNum
+					FROM
+						zds_reply r
+					WHERE
+						r.scene_type = 1
+					AND r.is_del = 0
+					AND r.is_withdraw = 0
+					GROUP BY
+						r.pid
+				) AS b ON b.pid = w.id,
+			zds_history_log h
+		WHERE
+			w.id = h.ref_id
+		AND h.scene_type = 1
+		AND h.receive_uid = #{userId}
+		AND h.company_id = #{companyId}
+		<if test="workLogType != null">
+			AND w.work_log_type = #{workLogType}
+		</if>
+		AND w.is_withdraw = 0
+		AND (
+		<if test="userListsForUser==null and userLists==null">
+			1>1
+		</if>
+		<if test="userListsForUser!=null">
+			w.user_id in
+			<foreach collection="userListsForUser" item="item" index="index" open="(" close=")" separator=",">
+				#{item.id}
+			</foreach>
+		</if>
+		<if test="userListsForUser!=null and userLists!=null">
+			OR
+		</if>
+		<if test="userLists!=null">
+			w.user_id in
+			<foreach collection="userLists" item="item" index="index" open="(" close=")" separator=",">
+		        #{item.id}
+		     </foreach>
+		</if>
+		 )
+		 ORDER BY
+			w.create_time DESC
+		limit ${startRow},${pageSize}
+	</select>
+	
+	<!-- 点赞ID -->
+	<select id="queryLike" resultType="java.lang.Integer">
+		SELECT
+			if(count(id)=0,0,id) likeId
+		FROM
+			zds_like
+		WHERE
+			scene_type = 1
+		AND scene_id = #{id}
+		AND user_id = #{likeUserId}
+		AND company_id = #{likeVisitId}
+	</select>
+	
+	<!-- 点赞人信息 -->
+	<select id="queryLikePersons" resultType="java.util.Map">
+		SELECT
+			a.id,a.name,f.url pic
+		FROM
+			(zds_like t,oa_user a) LEFT JOIN oa_file f on f.fid = a.id and f.business_id=5 
+		WHERE
+			t.scene_type = 1
+		AND t.scene_id = #{id}
+		AND t.user_id = a.id
+	</select>
+	<!-- 回复列表 -->
+	<select id="selectreplys" resultType="java.util.Map">
+		SELECT
+			a.id,a.name,f.url pic
+		FROM
+			zds_like t,oa_user a,oa_file f
+		WHERE
+			t.scene_type = 1
+		AND t.scene_id = #{id}
+		AND t.user_id = a.id
+		and f.fid = a.id and f.business_id=5
+	</select>
+	
+	<!-- 保存工作汇报 -->
+	<insert id="saveWorkReport" parameterType="com.aiiju.bean.oa.workStage.WorkReport" useGeneratedKeys="true" keyProperty="id">
+		insert into zds_work_log(company_id,user_id,content,work_log_type,send_to_dept,send_to_person,send_date,is_del,is_withdraw,fileIds)
+		values(#{companyId},#{userId},#{content},#{workReportType},#{sendToDept},#{sendToPerson},now(),#{isDel},#{isWithdraw},#{fileIds})
+	</insert>
+	
+	<!-- 手动点赞 -->
+	<insert id="addLike" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO zds_like (
+				company_id,user_id,scene_type,scene_id
+			)
+		VALUES
+			(#{companyId},#{userId},#{sceneType},#{sceneId})
+	</insert>
+	
+	<!-- 查看是否点赞 -->
+	<select  id="selectLike" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT  COUNT(id) 
+		FROM zds_like 
+		WHERE company_id = #{companyId} AND scene_id = #{id} AND user_id =#{userId} 
+	</select>
+	
+	<!-- 手动取消点赞 -->
+	<delete id="deleteLike" parameterType="java.util.Map">
+		delete from zds_like where id = #{likeId}
+	</delete>
+	
+	<!-- 更新工作汇报 -->
+	<update id="updateReport" parameterType="java.util.Map">
+		update zds_work_log
+		<set >
+	      <if test="isWithdraw != null" >
+	        is_withdraw = #{isWithdraw},
+	      </if>
+	    </set>
+	    where id = #{id}
+	</update>
+	
+	<!-- 回复模块需要的工作汇报列表 -->
+	<select id="getWorkReportById" parameterType="java.util.Map" resultMap="WorkReportMap">
+		SELECT
+			w.id,
+			w.company_id,
+			w.user_id,
+			u.name userName,
+			w.work_log_type,
+			w.content,
+			(SELECT GROUP_CONCAT(a. NAME ORDER BY FIND_IN_SET(a.id, w.send_to_person))
+				FROM
+					oa_user a
+				WHERE
+					FIND_IN_SET(a.id, w.send_to_person) > 0
+				AND a.company_id = #{companyId}) persons,
+			(SELECT GROUP_CONCAT(a. NAME ORDER BY FIND_IN_SET(a.id, w.send_to_dept))
+				FROM
+					oa_department a
+				WHERE
+					FIND_IN_SET(a.id, w.send_to_dept) > 0
+				AND a.company_id = #{companyId}) depts,
+			IFNULL(l.likeNum, 0) likeNum,
+			IFNULL(b.replyNum, 0) replyNum,
+<!-- 			FROM_UNIXTIME(w.create_time,'%Y-%m-%d %H:%i:%s') AS create_time, -->
+			DATE_FORMAT(w.create_time,'%Y-%m-%d %H:%i:%s')  AS create_time,
+			#{userId} likeUserId,
+			#{companyId} likeVisitId
+		FROM
+			zds_work_log AS w
+			LEFT JOIN (
+					SELECT
+						a.scene_id,
+						count(a.id) likeNum
+					FROM
+						zds_like a
+					WHERE
+						a.scene_type = 1
+					GROUP BY
+						a.scene_id
+				) AS l ON l.scene_id = w.id
+				LEFT JOIN (
+					SELECT
+						r.pid,
+						count(r.id) replyNum
+					FROM
+						zds_reply r
+					WHERE
+						r.scene_type = 1
+					AND r.is_del = 0
+					AND r.is_withdraw = 0
+					GROUP BY
+						r.pid
+				) AS b ON b.pid = w.id
+				LEFT JOIN oa_user u on u.id=w.user_id
+		WHERE
+			w.id=#{id}
+	</select>
+	
+	<!-- 查看工作汇报      详情(APP) -->
+	<select id="selectReportDetail" parameterType="java.util.Map" resultMap="NewWorkReportMap">
+		SELECT
+			w.id,
+			w.company_id,
+			w.user_id,
+			w.work_log_type,
+			w.content,
+			#{userId} likeUserId,
+			#{companyId} likeVisitId,
+			w.send_to_dept,
+			w.send_to_person,
+			DATE_FORMAT(w.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			r.id r_id,
+			r.reply_con,
+			r.user_id r_user_id,
+			r.receive_uid,
+			r.create_time r_create_time
+		FROM
+			zds_work_log w 
+		left  join  zds_reply r
+		on 	r.scene_type = 1
+			AND r.is_del = 0
+			AND r.is_withdraw = 0
+			AND r.pid = w.id
+		where w.id =#{id}
+		<if test="startRow !=null and pageSize!=null ">
+		limit ${startRow},${pageSize}
+		</if>
+	</select>
+</mapper>  
+
